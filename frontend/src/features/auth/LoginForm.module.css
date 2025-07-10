@@ -1,0 +1,15 @@
+.login-form {
+  position: relative;
+  background-color: var(--color-gray50);
+  height: 100vh;
+  width: 100vw;
+}
+
+.logo-container {
+  text-align: center;
+  margin: 2.4rem 0;
+}
+
+.content-container {
+  max-width: 22rem;
+}

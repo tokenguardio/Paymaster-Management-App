@@ -1,0 +1,21 @@
+.paymaster-slide {
+  min-width: 34.6rem;
+  text-align: center;
+
+  @media (max-width: 480px) {
+    min-width: 100%;
+  }
+}
+
+.settings-bar {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 1.2rem;
+  align-items: center;
+  padding: 0 1.2rem;
+  margin-bottom: 2.4rem;
+  background-color: var(--color-gray50);
+  border-radius: 0.8rem;
+  border: 1px solid var(--color-gray200);
+  height: 4rem;
+}

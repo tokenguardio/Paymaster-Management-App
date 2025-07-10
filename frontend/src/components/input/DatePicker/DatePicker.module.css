@@ -1,0 +1,13 @@
+.date-picker-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.full-width svg image {
+  float: none;
+}

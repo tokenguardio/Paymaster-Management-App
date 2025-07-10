@@ -1,0 +1,48 @@
+.breadcrumbs {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 2.1rem;
+  background-color: var(--color-gray50);
+  border: 0.1rem solid var(--color-gray200);
+  padding: 0.8rem 2.4rem;
+  border-radius: var(--radius);
+}
+
+.breadcrumbs li a::after {
+  content: url('data:image/svg+xml,%3Csvg width%3D%2212%22 height%3D%2212%22 viewBox%3D%220%200%2012%2012%22 fill%3D%22none%22 xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath fill-rule%3D%22evenodd%22 clip-rule%3D%22evenodd%22 d%3D%22M3.35284%202.10558C3.69162%201.93619%204.09703%201.97274%204.40005%202.20001L8.40005%205.2C8.65185%205.38886%208.80005%205.68524%208.80005%206C8.80005%206.31476%208.65185%206.61115%208.40005%206.8L4.40005%209.79999C4.09703%2010.0273%203.69162%2010.0638%203.35284%209.89442C3.01405%209.72503%202.80005%209.37877%202.80005%209V3C2.80005%202.62123%203.01405%202.27497%203.35284%202.10558Z%22 fill%3D%22%2398A2B3%22/%3E%3C/svg%3E');
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  height: 1.8rem;
+  right: -1.8rem;
+}
+
+.breadcrumbs li:last-child a::after {
+  content: '';
+}
+
+.link {
+  cursor: pointer;
+  background-color: var(--color-gray50);
+  padding: 0.4rem 1rem 0.4rem 0;
+  color: var(--color-gray500);
+  border-radius: var(--radius);
+  text-decoration: none;
+  position: relative;
+  font-size: 1.4rem;
+  line-height: 2rem;
+  font-weight: 500;
+}
+
+.link &:hover {
+  color: var(--color-green600);
+}
+
+.active-link {
+  color: var(--color-primary500);
+}
+
+.activeLink &:hover {
+  color: lighten(var(--color-primary500), 30%);
+}

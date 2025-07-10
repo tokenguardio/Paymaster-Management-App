@@ -1,0 +1,10 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.4rem;
+  align-items: center;
+
+  @media (max-width: 480px) {
+    min-width: 100%;
+  }
+}
