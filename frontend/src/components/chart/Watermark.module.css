@@ -1,0 +1,10 @@
+.watermark {
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 2rem);
+  transform: translate(-50%, -50%);
+  height: 10rem;
+  width: 10rem;
+  opacity: 0.2;
+  z-index: 0;
+}

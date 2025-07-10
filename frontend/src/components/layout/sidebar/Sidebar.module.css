@@ -1,0 +1,108 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  z-index: 2;
+  padding: 2.4rem;
+  text-align: left;
+  margin: auto;
+  overflow: hidden;
+  background-color: var(--color-gray50);
+  transition: all 0.2s ease-out;
+  border-right: 0.1rem solid var(--color-gray100);
+}
+
+@media (max-width: var(--breakpoint-mobile)) {
+  .sidebar {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    border-right: none;
+  }
+}
+
+@media (min-width: var(--breakpoint-mobile)) {
+  .sidebar section.menu {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 8.8rem - 2.4rem);
+    margin-top: 2.4rem;
+    justify-content: space-between;
+  }
+
+  .sidebar-mobile .btn-togglenav {
+    display: none !important;
+  }
+}
+
+@media (max-width: var(--breakpoint-mobile)) {
+  .sidebar-mobile {
+    position: relative;
+    background-color: var(--color-gray50);
+    z-index: 6;
+  }
+
+  .sidebar-mobile .bar-wrapper {
+    border-bottom: 1px solid var(--color-gray200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2.4rem;
+    height: 8rem;
+    background-color: var(--color-gray50);
+    position: relative;
+    z-index: 9;
+  }
+
+  .sidebar-mobile .bar-wrapper img {
+    width: auto;
+    height: 40rem;
+    margin: 20rem 0;
+  }
+
+  .sidebar-mobile .btn-togglenav {
+    position: relative;
+    z-index: 6;
+  }
+
+  .sidebar-mobile.open {
+    position: fixed;
+    width: 100%;
+    min-height: 100vh;
+    overflow-y: scroll;
+  }
+
+  .sidebar-mobile.open .menu {
+    display: grid !important;
+  }
+
+  .sidebar-mobile.close .menu {
+    display: block !important;
+    animation-name: slide-up;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+  }
+
+  .sidebar-mobile section.menu {
+    position: absolute;
+    margin-top: 8rem;
+    padding: 0 2.4rem 2.4rem 2.4rem;
+    min-height: calc(100vh - 13.4rem);
+    z-index: 6;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--color-gray50);
+    animation-name: slide-down;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+  }
+
+  .sidebar-mobile .bottom-part {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+}

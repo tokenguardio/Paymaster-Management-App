@@ -1,0 +1,15 @@
+.paymaster {
+  padding: 2.4rem 3.2rem;
+}
+
+.breadcrumb-container {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2.4rem;
+}
+
+.headline-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}

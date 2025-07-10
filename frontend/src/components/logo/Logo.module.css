@@ -1,0 +1,10 @@
+.logo {
+  display: block;
+  height: auto;
+  margin: 0;
+  outline: none;
+
+  @media (max-width: 1024px) {
+    width: 8rem;
+  }
+}

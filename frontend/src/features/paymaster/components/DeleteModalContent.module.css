@@ -1,0 +1,6 @@
+.action-bar {
+    display: flex;
+    margin-top: 2.4rem;
+    justify-content: center;
+    gap: 0.8rem;
+}

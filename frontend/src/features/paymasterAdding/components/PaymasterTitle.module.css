@@ -1,0 +1,26 @@
+.paymaster-title-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  position: relative;
+}
+
+.title {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 1.8rem;
+  line-height: 2.8rem;
+  font-weight: 500;
+  padding: 0;
+  margin: 0;
+}
+
+.char-count {
+  color: var(--color-gray500);
+  position: absolute;
+  bottom: -1.4rem;
+  left: 0.4rem;
+}

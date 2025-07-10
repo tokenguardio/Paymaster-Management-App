@@ -1,0 +1,135 @@
+.button {
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: 0.8rem;
+  border: 0;
+  background-color: var(--color-primary500);
+  color: var(--color-white);
+  border-color: var(--color-primary500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border-width: 1px;
+  border-style: solid;
+}
+
+@media (max-width: 480px) {
+  .button {
+    max-width: 30rem;
+  }
+}
+
+.xxsmall {
+  height: 2.4rem;
+  padding: 0 0.6rem;
+}
+
+.xsmall {
+  height: 2.8rem;
+  padding: 0.6rem 1.6rem;
+}
+
+.small {
+  height: 3.2rem;
+  padding: 0.6rem 1.2rem;
+}
+
+.medium {
+  height: 3.6rem;
+  padding: 0.8rem 1.6rem;
+  font-weight: 600;
+  font-size: 1.4rem;
+  line-height: 2rem;
+  font-family: 'Roboto', sans-serif;
+}
+
+.large {
+  height: 4rem;
+  padding: 1rem 1.6rem;
+  font-weight: 600;
+  font-size: 1.4rem;
+  line-height: 2rem;
+  font-family: 'Roboto', sans-serif;
+}
+
+.xlarge {
+  height: 4.4rem;
+  padding: 1rem 1.6rem;
+  font-weight: 600;
+  font-size: 1.6rem;
+  line-height: 2.4rem;
+  font-family: 'Roboto', sans-serif;
+}
+
+.xxlarge {
+  height: 6rem;
+  padding: 1.6rem 2.4rem;
+  font-weight: 600;
+  font-size: 1.8rem;
+  line-height: 2.8rem;
+  font-family: 'Roboto', sans-serif;
+}
+
+.primary {
+  background-color: var(--color-primary500);
+  color: var(--color-white);
+  border-color: var(--color-primary500);
+}
+
+.green500 {
+  background-color: var(--color-green500);
+  color: var(--color-white);
+  border-color: var(--color-green500);
+}
+
+.red500 {
+  background-color: var(--color-red500);
+  color: var(--color-white);
+  border-color: var(--color-red500);
+}
+
+.gray {
+  background-color: var(--color-gray50);
+  color: var(--color-gray800);
+  border-color: var(--color-gray200);
+}
+
+.white {
+  background-color: var(--color-white);
+  color: var(--color-gray800);
+  border-color: var(--color-gray200);
+}
+
+.gray900 {
+  background-color: var(--color-primary50);
+  color: var(--color-gray900);
+  border-color: var(--color-primary500);
+}
+
+.outline {
+  background-color: transparent;
+}
+
+.outline-primary500 {
+  border: 1px solid var(--color-primary500);
+  color: var(--color-primary500);
+}
+
+.outline-green500 {
+  border: 1px solid var(--color-green500);
+  color: var(--color-green500);
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 50%;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.full-width svg image {
+  float: none;
+}
