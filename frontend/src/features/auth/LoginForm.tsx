@@ -30,7 +30,7 @@ export const LoginForm = () => {
 
   return (
     <main className={Style['login-form']}>      
-      <Card className="align-xy">
+      <Card className={`${Style['content-container']} align-xy`}>
         <div className={Style['logo-container']}>
           <Logo />
         </div>

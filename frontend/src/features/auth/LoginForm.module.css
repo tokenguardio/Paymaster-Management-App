@@ -9,3 +9,7 @@
   text-align: center;
   margin: 2.4rem 0;
 }
+
+.content-container {
+  max-width: 22rem;
+}
