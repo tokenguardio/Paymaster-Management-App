@@ -1,6 +1,6 @@
 Welcome to the 1st milestone of the Patterns Paymaster Management App! 
 
-In order to test the frontend, run the following commands:
+In order to test the frontend, firstly set up .env files in frontend and backend directories (just copy from example.env) and run the following commands:
 
     docker compose build
     docker compose up
