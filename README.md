@@ -7,7 +7,7 @@ In order to test the frontend, run the following commands:
 
 You should now be able to access the frontend on
 
-    localhost:5137/
+    localhost:5173/
 
 We have implemented SIWE authentication so you'll need a supported wallet to login :) Please note that this is just a frontend preview so the application is not functional. All data is mocked up and most buttons will not work as they require fully operational backend. 
 
