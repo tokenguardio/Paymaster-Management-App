@@ -301,6 +301,8 @@ docker compose up --build
 - [Vite Documentation](https://vitejs.dev/)
 - [Prisma Documentation](https://www.prisma.io/docs)
 
+## Milestones
+
 Welcome to the 1st milestone of the Patterns Paymaster Management App!
 
 We have implemented SIWE authentication so you'll need a supported wallet to login :) Please note
