@@ -1,0 +1,55 @@
+# Git and development
+.git
+.github
+.gitignore
+
+# Dependencies
+**/node_modules
+
+# Build artifacts and caches
+**/dist
+**/build
+**/.turbo
+**/coverage
+**/generated
+
+# Environment files
+.env*
+*.local
+
+# Logs and debug files
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary folders
+.tmp
+.temp
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker files
+.dockerignore
+docker-compose.yaml
+**/Dockerfile
+
+README.md
+**/*.md

@@ -1,0 +1,17 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../generated/client"
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Policy {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  @@map("policies")
+}

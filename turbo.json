@@ -1,0 +1,43 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build", "clean:dist"],
+      "outputs": ["dist/**"],
+      "outputLogs": "new-only"
+    },
+    "clean:dist": {
+      "cache": false,
+      "outputLogs": "hash-only"
+    },
+    "clean:turbo": {
+      "cache": false,
+      "outputLogs": "hash-only"
+    },
+    "clean:coverage": {
+      "cache": false,
+      "outputLogs": "hash-only"
+    },
+    "clean:node-modules": {
+      "cache": false,
+      "outputLogs": "hash-only"
+    },
+    "lint": {
+      "outputLogs": "new-only",
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/packages/eslint-config/**/*"]
+    },
+    "lint:fix": {
+      "outputLogs": "new-only",
+      "cache": false
+    },
+    "test": {
+      "dependsOn": ["build"],
+      "outputLogs": "new-only"
+    },
+    "start:dev": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

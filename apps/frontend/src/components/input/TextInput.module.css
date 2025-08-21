@@ -1,0 +1,38 @@
+.input {
+  position: relative;
+  margin: 0;
+  padding: 0 0.5rem;
+  border-radius: 0.6rem;
+  height: 4rem;
+
+  border: 1px solid var(--color-gray200);
+  -webkit-appearance: none;
+  -webkit-border-radius: 0.6rem;
+
+  &:focus {
+    outline: none;
+    border: 1.2px solid var(--color-green500);
+    box-shadow: 0px 2px 3px 0px #1018200d;
+  }
+}
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.error-text {
+  position: absolute;
+  bottom: -1.4rem;
+  left: 0.4rem;
+  color: var(--color-red500);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.full-width svg image {
+  float: none;
+}

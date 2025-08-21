@@ -1,0 +1,37 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build", "clean:dist", "prisma:generate"]
+    },
+    "prisma:generate": {
+      "cache": true,
+      "outputs": ["generated/client"],
+      "inputs": ["prisma/schema.prisma"],
+      "outputLogs": "new-only"
+    },
+    "prisma:migrate:dev": {
+      "cache": false,
+      "persistent": true,
+      "interactive": true
+    },
+    "prisma:migrate:deploy": {
+      "cache": false,
+      "env": ["DATABASE_URL"]
+    },
+    "prisma:migrate:reset": {
+      "cache": false,
+      "env": ["DATABASE_URL"]
+    },
+    "prisma:studio": {
+      "cache": false,
+      "persistent": false
+    },
+    "prisma:seed": {
+      "cache": false,
+      "outputLogs": "new-only",
+      "env": ["DATABASE_URL"]
+    }
+  }
+}
