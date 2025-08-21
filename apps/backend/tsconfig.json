@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "paths": {
+      "@repo/prisma": ["../../packages/prisma/src"],
+      "@repo/prisma/*": ["../../packages/prisma/src/*"]
+    }
+  },
+  "include": ["src", "global.d.ts"]
+}
