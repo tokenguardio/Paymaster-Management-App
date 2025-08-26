@@ -12,7 +12,7 @@ This is a **monorepo** built with **Turborepo** and **pnpm** workspaces for effi
 orchestration and caching:
 
 ```
-Paymaster-Management-App-frontend/
+Paymaster-Management-App/
 ├── apps/
 │   ├── frontend/           # React + Vite application
 │   └── backend/            # NestJS REST API
@@ -43,7 +43,7 @@ Paymaster-Management-App-frontend/
 
    ```bash
    git clone <repository-url>
-   cd Paymaster-Management-App-frontend
+   cd Paymaster-Management-App
    ```
 
 2. **Set up Node.js version:**
@@ -78,8 +78,8 @@ Paymaster-Management-App-frontend/
    ```
 
 > **⚠️ Important:** Always run `pnpm` commands from the **root directory**
-> (`Paymaster-Management-App-frontend/`). The monorepo structure handles all workspaces
-> automatically - never run `pnpm install` inside individual `apps/` folders.
+> (`Paymaster-Management-App/`). The monorepo structure handles all workspaces automatically - never
+> run `pnpm install` inside individual `apps/` folders.
 
 ### Available Scripts
 
