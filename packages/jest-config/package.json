@@ -1,0 +1,11 @@
+{
+  "name": "@repo/jest-config",
+  "scripts": {
+    "clean:node-modules": "rimraf node_modules"
+  },
+  "devDependencies": {
+    "@types/jest": "30.0.0",
+    "jest": "30.0.5",
+    "ts-jest": "29.4.0"
+  }
+}
