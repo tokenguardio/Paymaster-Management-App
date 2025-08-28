@@ -2,16 +2,180 @@ generator client {
   provider      = "prisma-client-js"
   output        = "../generated/client"
   binaryTargets = ["native"]
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["core"]
 }
 
 model Policy {
-  id   Int    @id @default(autoincrement())
-  name String
+  id BigInt @id @default(autoincrement())
+  paymaster_address String @db.VarChar(42)
+  chain_id BigInt
+  status_id String @db.VarChar(40)
+  max_budget_wei Decimal
+  is_public Boolean
+  whitelisted_addresses String[] @db.Text
+  valid_from DateTime @default(now()) @db.Timestamptz(6)
+  valid_to DateTime? @db.Timestamptz(6)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
 
+  chain Chain @relation(fields: [chain_id], references: [id])
+  status PolicyStatus @relation(fields: [status_id], references: [id])
+  logs PolicyLog[]
+  rules PolicyRule[]
+  user_operations UserOperation[]
+
+  @@schema("core")
   @@map("policies")
+}
+
+model PolicyRule {
+  id BigInt @id @default(autoincrement())
+  policy_id BigInt
+  metric_id String @db.VarChar(40)
+  comparator_id String @db.VarChar(40)
+  interval_id String @db.VarChar(40)
+  scope_id String @db.VarChar(40)
+  value Decimal
+  token_address String? @db.VarChar(42)
+  valid_from DateTime @default(now()) @db.Timestamptz(6)
+  valid_to DateTime? @db.Timestamptz(6)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
+  
+  policy Policy @relation(fields: [policy_id], references: [id])
+  metric PolicyRuleMetric @relation(fields: [metric_id], references: [id])
+  comparator PolicyRuleComparator @relation(fields: [comparator_id], references: [id])
+  interval PolicyRuleInterval @relation(fields: [interval_id], references: [id])
+  scope PolicyRuleScope @relation(fields: [scope_id], references: [id])
+
+  @@schema("core")
+  @@map("policy_rules")
+}
+
+model UserOperation {
+  id BigInt @id @default(autoincrement())
+  policy_id BigInt
+  hash String @unique @db.VarChar(66)
+  sender_address String @db.VarChar(42)
+  status_id String @db.VarChar(40)
+  status_note String? @db.Text
+  payload Json @db.JsonB
+  signature String? @db.Text
+  actual_gas_cost_wei Decimal?
+  max_gas_cost_wei Decimal
+  transaction_hash String? @db.VarChar(66)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
+
+  policy Policy @relation(fields: [policy_id], references: [id])
+  status UserOperationStatus @relation(fields: [status_id], references: [id])
+  logs UserOperationsLog[]
+
+  @@schema("core")
+  @@map("user_operations")
+}
+
+model Chain {
+  id BigInt @id
+  name String @unique @db.VarChar(50)
+  policies Policy[]
+
+  @@schema("core")
+  @@map("chains")
+}
+
+model PolicyStatus {
+  id String @id @db.VarChar(40)
+  name String @unique @db.VarChar(80)
+  description String? @db.Text
+  policies Policy[]
+
+  @@schema("core")
+  @@map("policy_statuses")
+}
+
+model UserOperationStatus {
+  id String @id @db.VarChar(40)
+  name String @unique @db.VarChar(80)
+  description String? @db.Text
+  user_operations UserOperation[]
+
+  @@schema("core")
+  @@map("user_operation_statuses")
+}
+
+model PolicyRuleMetric {
+  id String @id @db.VarChar(40)
+  name String @unique @db.VarChar(80)
+  description String? @db.Text
+  rules PolicyRule[]
+
+  @@schema("core")
+  @@map("policy_rule_metrics")
+}
+
+model PolicyRuleComparator {
+  id String @id @db.VarChar(40)
+  name String @unique @db.VarChar(80)
+  description String? @db.Text
+  rules PolicyRule[]
+
+  @@schema("core")
+  @@map("policy_rule_comparators")
+}
+
+model PolicyRuleScope {
+  id String @id @db.VarChar(40)
+  name String @unique @db.VarChar(80)
+  description String? @db.Text
+  rules PolicyRule[]
+
+  @@schema("core")
+  @@map("policy_rule_scopes")
+}
+
+model PolicyRuleInterval {
+  id String @id @db.VarChar(40)
+  name String @unique @db.VarChar(80)
+  description String? @db.Text
+  rules PolicyRule[]
+
+  @@schema("core")
+  @@map("policy_rule_intervals")
+}
+
+model PolicyLog {
+  id BigInt @id @default(autoincrement())
+  policy_id BigInt
+  field_changed String @db.VarChar(40)
+  old_value String? @db.Text
+  new_value String @db.Text
+  notes String? @db.Text
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  
+  policy Policy @relation(fields: [policy_id], references: [id])
+
+  @@schema("core")
+  @@map("policies_log")
+}
+
+model UserOperationsLog {
+  id BigInt @id @default(autoincrement())
+  user_operation_id BigInt
+  field_changed String @db.VarChar(40)
+  old_value String? @db.Text
+  new_value String @db.Text
+  notes String? @db.Text
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  user_operation UserOperation @relation(fields: [user_operation_id], references: [id])
+
+  @@schema("core")
+  @@map("user_operations_log")
 }
