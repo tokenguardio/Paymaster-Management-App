@@ -4,11 +4,10 @@
  *
  **********/
 
-import React, { useState, ReactNode } from 'react';
-
-import { Icon, Typography } from '@/components';
+import React, { ReactNode, useState } from 'react';
 
 import Style from './Accordion.module.css';
+import { Icon, Typography } from '@/components';
 
 interface IAccordionProps {
   title: string;

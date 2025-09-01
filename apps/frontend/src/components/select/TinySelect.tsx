@@ -1,23 +1,23 @@
+import { clsx } from 'clsx';
 import React, { ReactNode } from 'react';
 import ReactSelect, {
   components,
-  PlaceholderProps,
   ControlProps,
-  OptionsOrGroups,
   GroupBase,
+  PlaceholderProps,
   SingleValueProps,
+  OptionProps,
+  DropdownIndicatorProps,
+  ActionMeta,
 } from 'react-select';
-import clsx from 'clsx';
-
-import { Label, Icon, Typography } from '@/components';
 
 import Style from './Select.module.css';
+import { Icon, Label, Typography } from '@/components';
 import { TDropdownOption } from '@/types/dropdownOption';
 
 type TSelectProps = {
-  // options: OptionsOrGroups<string | number, GroupBase<string | number>>;
   options: Array<TDropdownOption>;
-  change: any;
+  change: (newValue: TDropdownOption | null, actionMeta: ActionMeta<TDropdownOption>) => void;
   name: string;
   label: string;
   size: string;
@@ -26,8 +26,8 @@ type TSelectProps = {
   color?: string;
   disabled?: boolean;
   withArrow?: boolean;
-  value?: string | number;
-  defaultValue?: any;
+  value?: TDropdownOption | null;
+  defaultValue?: TDropdownOption;
   prefix?: string;
   isSearchable?: boolean;
   isFocusable?: boolean;
@@ -52,66 +52,56 @@ export const TinySelect = ({
 }: TSelectProps) => {
   const { Control, Option, Placeholder, SingleValue } = components;
 
-  const IconControl = ({ children, ...props }: ControlProps<any, boolean, GroupBase<any>>) => (
+  const IconControl = (props: ControlProps<TDropdownOption, false>) => (
     <Control {...props}>
-      <>
-        {prefixIcon && prefixIcon}
-        {prefix && (
-          <Typography
-            tag="p"
-            text={prefix}
-            size="s"
-            weight="medium"
-            color="gray900"
-            className="ml6"
-          />
-        )}
-        {children}
-      </>
+      {prefixIcon}
+      {prefix && (
+        <Typography
+          tag="p"
+          text={prefix}
+          size="s"
+          weight="medium"
+          color="gray900"
+          className="ml6"
+        />
+      )}
+      {props.children}
     </Control>
   );
 
-  const IconOption = (props) => (
+  const IconOption = (props: OptionProps<TDropdownOption, false>) => (
     <Option {...props}>
       {props.data.icon && <img src={props.data.icon} alt={props.data.label} />}
       {props.data.label}
     </Option>
   );
 
-  const CustomSingleValue = ({
-    children,
-    ...props
-  }: SingleValueProps<unknown, boolean, GroupBase<unknown>>) => (
+  const CustomSingleValue = (props: SingleValueProps<TDropdownOption, false>) => (
     <SingleValue {...props}>
-      {props.selectProps?.value?.icon && (
-        <img src={props.selectProps.value.icon} alt={props.selectProps.value.value} />
-      )}
-      {children}
+      {props.data?.icon && <img src={props.data.icon} alt={props.data.label} />}
+      {props.children}
     </SingleValue>
   );
 
-  const CustomDropdownIndicator = () => (
-    <Icon width="16" height="16" name="arrowHeadBottom" color="primary500" />
+  const CustomDropdownIndicator = (props: DropdownIndicatorProps<TDropdownOption, false>) => (
+    <components.DropdownIndicator {...props}>
+      <Icon width="16" height="16" name="arrowHeadBottom" color="primary500" />
+    </components.DropdownIndicator>
   );
 
-  const IconValuePlaceholder = ({
-    children,
-    ...props
-  }: PlaceholderProps<any, boolean, GroupBase<any>>) => {
-    const selectedOption = props.selectProps.options.find(
-      (option) => option.value === props.selectProps.placeholder,
-    );
+  const IconValuePlaceholder = (props: PlaceholderProps<TDropdownOption, false>) => {
+    const selectedOption = options.find((option) => option.value === props.selectProps.placeholder);
 
     return (
       <Placeholder {...props}>
-        {selectedOption?.icon && selectedOption?.label && (
+        {selectedOption?.icon && (
           <img
             src={selectedOption.icon}
             alt={selectedOption.label}
             className={Style['select-icon']}
           />
         )}
-        {children}
+        {props.children}
       </Placeholder>
     );
   };
@@ -120,8 +110,8 @@ export const TinySelect = ({
     <div className={Style['react-select-container']}>
       {label && <Label text={label} forInput={name} />}
 
-      <ReactSelect
-        value={value}
+      <ReactSelect<TDropdownOption, false>
+        value={value || null}
         options={options}
         onChange={change}
         id={name}
@@ -153,14 +143,14 @@ export const TinySelect = ({
           singleValue: () => clsx(Style['single-value']),
           valueContainer: () => clsx(Style['value-container']),
           dropdownIndicator: () => clsx(Style['dropdown-indicator']),
-          indicatorsContainer: withArrow ? () => clsx(Style['indicators-container']) : null,
+          indicatorsContainer: withArrow ? () => clsx(Style['indicators-container']) : undefined,
         }}
         components={{
           Option: IconOption,
           Control: IconControl,
           SingleValue: CustomSingleValue,
           Placeholder: IconValuePlaceholder,
-          DropdownIndicator: withArrow ? CustomDropdownIndicator : null,
+          DropdownIndicator: withArrow ? CustomDropdownIndicator : undefined,
         }}
       />
     </div>

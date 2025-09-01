@@ -6,14 +6,12 @@
  **********/
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-
-import { Loader } from '@/components';
 
 import { usePaymasters } from '../hooks/usePaymasters';
+import Style from './PaymasterGrid.module.css';
 import { PaymasterSlide } from './PaymasterSlide';
 
-import Style from './PaymasterGrid.module.css';
+import { Loader } from '@/components';
 
 export const PaymasterGrid = ({ setDeleteModalOpen, setSelectedPaymasterId }) => {
   const userId = '24';

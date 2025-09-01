@@ -1,25 +1,23 @@
-import React, { useState } from 'react';
-import { useForm, Controller, useFieldArray } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-
-import {
-  Button,
-  Line,
-  Icon,
-  Accordion,
-  Typography,
-  IconButton,
-  TinySelect,
-  DynamicInput,
-} from '@/components';
-import ethereumLogo from '@/assets/images/ethereum.svg';
+import React, { useState } from 'react';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import { GeneralAccordion } from './GeneralAccordion';
-import { WhitelistedAddressesAccordion } from './WhitelistedAddressesAccordion';
-import { PaymasterTitle } from './PaymasterTitle';
-
 import Style from './PaymasterSettings.module.css';
+import { PaymasterTitle } from './PaymasterTitle';
+import { WhitelistedAddressesAccordion } from './WhitelistedAddressesAccordion';
+import ethereumLogo from '@/assets/images/ethereum.svg';
+import {
+  Accordion,
+  Button,
+  DynamicInput,
+  Icon,
+  IconButton,
+  Line,
+  TinySelect,
+  Typography,
+} from '@/components';
 
 const blockchainsOptions = [
   {
@@ -91,7 +89,7 @@ const formSchema = z.object({
   userRules: z.array(userRulesSchema),
 });
 
-type FormData = z.infer<typeof formSchema>;
+type TFormData = z.infer<typeof formSchema>;
 
 export const PaymasterSettings = () => {
   const [entries, setEntries] = useState<string[]>([]);
@@ -103,7 +101,7 @@ export const PaymasterSettings = () => {
     register,
     watch,
     formState: { errors },
-  } = useForm<FormData>({
+  } = useForm<TFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       max_budget: 0,

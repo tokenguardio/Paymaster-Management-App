@@ -3,36 +3,48 @@ export const getValidationErrorMessage = (data: string) => {
     please contact our support team for further assistance. Thank you for your patience!`;
 };
 
-export const determineChartDataFormat = (data: any) => {
+type TChartData = {
+  dimension: string;
+  [key: string]: number | string;
+};
+
+type TChartResult = Array<Record<string, string | number | undefined>>;
+
+export const determineChartDataFormat = (data: TChartData[]): TChartResult | null => {
+  if (!data.length) return null;
+
   const keys = Object.keys(data[0]);
+
   if (keys.includes('differential')) {
-    const mainMeasure = keys.filter((item) => item !== 'dimension' && item !== 'differential')[0];
+    const mainMeasure = keys.find(
+      (item) => item !== 'dimension' && item !== 'differential',
+    ) as string;
 
-    const prepareData = (arr: Array<any>, property: string) => {
-      let uniqueKeys = new Set();
-
+    const prepareData = <K extends keyof TChartData>(
+      arr: TChartData[],
+      property: K,
+    ): Array<TChartData[K]> => {
+      const uniqueKeys = new Set<TChartData[K]>();
       arr.forEach((obj) => {
         if (property in obj) {
           uniqueKeys.add(obj[property]);
         }
       });
-
       return Array.from(uniqueKeys);
     };
 
-    const preparedDimension = prepareData(data, 'dimension').sort();
-    const preparedDifferential = prepareData(data, 'differential');
-    let result = [];
+    const preparedDimension = prepareData(data, 'dimension').sort() as string[];
+    const preparedDifferential = prepareData(data, 'differential') as string[];
+
+    const result: TChartResult = [];
 
     preparedDimension.forEach((dimension) => {
-      let point = {
-        dimension: dimension,
-      };
+      const point: Record<string, string | number | undefined> = { dimension };
 
-      preparedDifferential.forEach((measure: any) => {
-        point[measure] = data.filter(
-          (item: any) => item.dimension === dimension && item.differential === measure,
-        )[0]?.[mainMeasure];
+      preparedDifferential.forEach((measure) => {
+        point[measure] = data.find(
+          (item) => item.dimension === dimension && item.differential === measure,
+        )?.[mainMeasure] as number | undefined;
       });
 
       result.push(point);
@@ -40,22 +52,19 @@ export const determineChartDataFormat = (data: any) => {
 
     return result;
   } else {
-    const mainMeasure = keys.filter((item) => item !== 'dimension')[0];
+    const mainMeasure = keys.find((item) => item !== 'dimension') as string;
     return convertDataToSingleLineFormat(data, mainMeasure);
   }
 };
 
-export const convertDataToSingleLineFormat = (data: any, metric: string) => {
-  if (!metric) {
-    return null;
-  }
+export const convertDataToSingleLineFormat = (
+  data: TChartData[],
+  metric: string,
+): TChartResult | null => {
+  if (!metric) return null;
 
-  const chartData = data.map((item) => {
-    return {
-      dimension: item.dimension,
-      [metric]: item[metric],
-    };
-  });
-
-  return chartData;
+  return data.map((item) => ({
+    dimension: String(item.dimension),
+    [metric]: Number(item[metric]) ?? 0,
+  }));
 };

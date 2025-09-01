@@ -4,12 +4,11 @@
  *
  **********/
 
+import { clsx } from 'clsx';
 import React, { type SVGProps } from 'react';
-import clsx from 'clsx';
-
-import spriteHref from '@/assets/icons/sprite.svg';
 
 import Style from './Icon.module.css';
+import spriteHref from '@/assets/icons/sprite.svg';
 
 export function Icon({
   name,

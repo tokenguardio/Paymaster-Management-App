@@ -1,4 +1,4 @@
-export const generateLegendsData = (data: Array<any>): Array<string> => {
+export const generateLegendsData = (data: Array<object>): Array<string> => {
   const uniqueKeys = new Set<string>();
 
   data.forEach((point) => {

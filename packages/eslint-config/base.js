@@ -15,7 +15,7 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:import/recommended',
+    // 'plugin:import/recommended',
     'plugin:import/typescript',
     'turbo',
     'prettier',
@@ -48,9 +48,9 @@ module.exports = {
     'import/order': [
       'error',
       {
-        named: {
-          enabled: true,
-        },
+        // named: {
+        //   enabled: true,
+        // },
         alphabetize: {
           order: 'asc',
           caseInsensitive: true,

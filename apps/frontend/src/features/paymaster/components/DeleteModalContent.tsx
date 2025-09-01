@@ -1,14 +1,14 @@
 import React from 'react';
-import { Button, Typography } from '@/components';
 import Style from './DeleteModalContent.module.css';
+import { Button, Typography } from '@/components';
 
-interface DeleteModalContentProps {
+interface IDeleteModalContentProps {
   closeFn: (open: boolean) => void;
   handleFn: () => void;
   paymasterId: string | null;
 }
 
-export const DeleteModalContent: React.FC<DeleteModalContentProps> = ({
+export const DeleteModalContent: React.FC<IDeleteModalContentProps> = ({
   closeFn,
   handleFn,
   paymasterId,

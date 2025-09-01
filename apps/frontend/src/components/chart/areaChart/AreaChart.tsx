@@ -1,34 +1,32 @@
-import React, { useEffect, useRef, useState } from 'react';
-import ReactEChartsCore from 'echarts-for-react/lib/core';
-import * as echarts from 'echarts/core';
 import { LineChart } from 'echarts/charts';
 import {
-  GridComponent,
-  ToolboxComponent,
-  TooltipComponent,
-  TitleComponent,
   DataZoomInsideComponent,
   DataZoomSliderComponent,
+  GridComponent,
   LegendComponent,
+  TitleComponent,
+  ToolboxComponent,
+  TooltipComponent,
 } from 'echarts/components';
+import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
+import ReactEChartsCore from 'echarts-for-react/lib/core';
+import React, { useEffect, useRef, useState } from 'react';
 
+import {
+  calcWidthOfLegend,
+  generateLegendsData,
+  getTopNamesSelected,
+  getTopSeriesData,
+} from '../helpers';
 import tokenguard from '../tokenguard';
 
-import zoom from '@/assets/icons/zoom.svg';
-import reset from '@/assets/icons/reset.svg';
-import { palette } from '@/utils/constans';
-import { TTheme } from '@/types/theme';
-import { useContainerDimensions } from '@/hooks/useContainerDimensions';
-import { determineChartDataFormat } from '@/utils/helpers';
-
 import { Watermark } from '../Watermark';
-import {
-  generateLegendsData,
-  calcWidthOfLegend,
-  getTopSeriesData,
-  getTopNamesSelected,
-} from '../helpers';
+import reset from '@/assets/icons/reset.svg';
+import zoom from '@/assets/icons/zoom.svg';
+import { useContainerDimensions } from '@/hooks/useContainerDimensions';
+import { palette } from '@/utils/constans';
+import { determineChartDataFormat } from '@/utils/helpers';
 
 echarts.use([
   TitleComponent,
@@ -44,8 +42,7 @@ echarts.use([
 
 type TAreaChartProps = {
   data: Array<any>;
-  theme: TTheme;
-  height?: string;
+  height?: number;
   locked?: boolean;
   minValue?: number;
   maxValue?: number;
@@ -73,7 +70,6 @@ export const AreaChart = ({
   data,
   height,
   locked,
-  theme,
   minValue,
   maxValue,
   round,
@@ -100,39 +96,39 @@ export const AreaChart = ({
   }, [width]);
 
   // legend
-  let selectorLabelColor = palette.gray700;
-  let itemLegendTextColor = palette.gray700;
+  const selectorLabelColor = palette.gray700;
+  const itemLegendTextColor = palette.gray700;
 
   // datazoom variables
-  let dataZoomBorderColor = palette.gray200;
-  let dataZoomBgColor = '#f6f6f6';
-  let dataZoomFillerColor = '#093cc80a';
-  let dataZoomSelectedLineColor = '#0a425e';
-  let dataZoomSelectedAreaColor = '#dbe7ed';
+  const dataZoomBorderColor = palette.gray200;
+  const dataZoomBgColor = '#f6f6f6';
+  const dataZoomFillerColor = '#093cc80a';
+  const dataZoomSelectedLineColor = '#0a425e';
+  const dataZoomSelectedAreaColor = '#dbe7ed';
 
   // xAxis variables
-  let xAxisLabelColor = palette.gray700;
-  let xAxisLineColor = palette.gray100;
-  let xAxisSplitLineColor = palette.gray100;
-  let xAxisLabelFont = 'sans-serif';
+  const xAxisLabelColor = palette.gray700;
+  const xAxisLineColor = palette.gray100;
+  const xAxisSplitLineColor = palette.gray100;
+  const _xAxisLabelFont = 'sans-serif';
 
   // yAxis variables
-  let yAxisLabelColor = palette.gray700;
-  let yAxisLineColor = palette.gray100;
-  let yAxisSplitLineColor = palette.gray100;
-  let yAxisLabelFont = 'sans-serif';
+  const yAxisLabelColor = palette.gray700;
+  const yAxisLineColor = palette.gray100;
+  const yAxisSplitLineColor = palette.gray100;
+  const _yAxisLabelFont = 'sans-serif';
 
   // toolbox
-  let toolboxZoomIcon = zoom;
-  let toolboxResetIcon = reset;
-  let toolboxTextFillColor = '#072f43';
+  const toolboxZoomIcon = zoom;
+  const toolboxResetIcon = reset;
+  const toolboxTextFillColor = '#072f43';
 
   // tooltip
-  let tooltipCrossColor = palette.gray700;
-  let tooltipLineColor = palette.gray700;
+  const _tooltipCrossColor = palette.gray700;
+  const tooltipLineColor = palette.gray700;
 
   const generatedSeries = legendsData.map((legendItem) => {
-    let result = [];
+    const result = [];
 
     (preparedData as any[]).forEach((row) => {
       let fixedValue = row[legendItem];
@@ -165,7 +161,7 @@ export const AreaChart = ({
 
   const seriesData = generatedSeries;
 
-  let legendSelector = [
+  const legendSelector = [
     {
       type: 'all',
       title: 'All',
@@ -177,9 +173,9 @@ export const AreaChart = ({
   ];
 
   // series
-  let firstItemColor = palette.green500;
-  let secondItemColor = palette.dark500;
-  let tooltipObj: TTooltipObj = {
+  const firstItemColor = palette.green500;
+  const secondItemColor = palette.dark500;
+  const tooltipObj: TTooltipObj = {
     trigger: 'axis',
     axisPointer: {
       lineStyle: {
@@ -189,7 +185,7 @@ export const AreaChart = ({
       },
     },
   };
-  let areaStyleFirstObj = {
+  const areaStyleFirstObj = {
     opacity: 0.6,
     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
       {
@@ -202,7 +198,7 @@ export const AreaChart = ({
       },
     ]),
   };
-  let areaStyleSecondObj = {
+  const areaStyleSecondObj = {
     opacity: 0.6,
     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
       {
@@ -215,7 +211,7 @@ export const AreaChart = ({
       },
     ]),
   };
-  let areaStyleObj = {
+  const _areaStyleObj = {
     opacity: 0.6,
     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
       {
@@ -228,10 +224,10 @@ export const AreaChart = ({
       },
     ]),
   };
-  let firstItemStyle = {
+  const firstItemStyle = {
     color: firstItemColor,
   };
-  let secondItemStyle = {
+  const secondItemStyle = {
     color: secondItemColor,
   };
 
@@ -244,7 +240,7 @@ export const AreaChart = ({
     }
   }
 
-  let toolboxObj = {
+  const toolboxObj = {
     show: true,
     top: 0,
     right: '4%',
@@ -308,10 +304,10 @@ export const AreaChart = ({
       },
     },
     selected: {},
-    selector: [],
+    selector: {},
   };
 
-  let dataZoomObj = [
+  const dataZoomObj = [
     {
       type: 'slider',
       xAxisIndex: 0,
@@ -364,29 +360,6 @@ export const AreaChart = ({
     },
   ];
 
-  if (theme) {
-    toolboxTextFillColor = theme.font;
-    yAxisLabelColor = theme.textColor;
-    xAxisLabelColor = theme.textColor;
-    yAxisLabelFont = theme.font;
-    xAxisLabelFont = theme.font;
-    // @ts-ignore
-    areaStyleObj.color = theme.chartGradient
-      ? (new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          {
-            offset: 1,
-            color: '#FFFFFF',
-          },
-          {
-            offset: 0,
-            color: theme.primaryColor,
-          },
-        ]) as echarts.graphic.LinearGradient)
-      : theme.primaryColor;
-    dataZoomObj = theme.bottomTimeline ? dataZoomObj : [];
-    legendObj.textStyle.color = theme.textColor;
-  }
-
   if (legendsData.length > 10) {
     topSeriesData = getTopSeriesData(labelsData.length, seriesData);
     legendObj.selected = getTopNamesSelected(topSeriesData) as Record<string, boolean>;
@@ -403,21 +376,21 @@ export const AreaChart = ({
   }
 
   if (legendsData.length > 0 && legendsData.length < 2) {
-    // @ts-ignore
+    // @ts-expect-error to fix
     seriesData[0].areaStyle = areaStyleFirstObj;
-    // @ts-ignore
+    // @ts-expect-error to fix
     seriesData[0].itemStyle = firstItemStyle;
   }
 
   if (legendsData.length > 1 && legendsData.length < 3) {
-    // @ts-ignore
+    // @ts-expect-error to fix
     seriesData[0].areaStyle = areaStyleFirstObj;
-    // @ts-ignore
+    // @ts-expect-error to fix
     seriesData[0].itemStyle = firstItemStyle;
     if (seriesData[1]) {
-      // @ts-ignore
+      // @ts-expect-error to fix
       seriesData[1].areaStyle = areaStyleSecondObj;
-      // @ts-ignore
+      // @ts-expect-error to fix
       seriesData[1].itemStyle = secondItemStyle;
     }
   }
@@ -425,7 +398,7 @@ export const AreaChart = ({
   const style = {
     height: height ? height : '300px',
     margin: 'auto',
-    pointerEvents: undefined,
+    pointerEvents: '',
     zIndex: 1,
   };
 

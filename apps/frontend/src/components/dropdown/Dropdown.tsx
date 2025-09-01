@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { clsx } from 'clsx';
+import React, { useEffect, useRef, useState } from 'react';
 
-import { Icon } from '@/components/icon/Icon';
-import clsx from 'clsx';
 import Style from './Dropdown.module.css';
+import { Icon } from '@/components/icon/Icon';
 
 export const Dropdown = ({ options, id, children, title, position }) => {
   const [_clickedOutside, setClickedOutside] = useState(false);
