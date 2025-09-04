@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect, forwardRef } from 'react';
-import clsx from 'clsx';
-import { Label } from '@/components';
+import { clsx } from 'clsx';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import Style from './DynamicInput.module.css';
+import { Label } from '@/components';
 
 interface INumberInputProps {
   type: 'number' | 'text';

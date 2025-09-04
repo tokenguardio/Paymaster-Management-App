@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Button, Icon, Typography, Card, Logo } from '@/components';
+import Style from './LoginForm.module.css';
+import { Button, Card, Icon, Logo, Typography } from '@/components';
 
 import { signInWithEthereum } from '@/features/auth/signInWithEthereum';
-import Style from './LoginForm.module.css';
 
 export const LoginForm = () => {
-  const [address, setAddress] = useState<string | null>(null);
+  const [_address, setAddress] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -17,8 +17,11 @@ export const LoginForm = () => {
       setAddress(addr);
       setError(null);
       navigate('/paymaster');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      }
+      setError(String(err));
     }
   };
 

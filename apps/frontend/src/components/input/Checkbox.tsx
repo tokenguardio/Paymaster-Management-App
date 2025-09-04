@@ -1,15 +1,15 @@
+import { clsx } from 'clsx';
 import React from 'react';
-import clsx from 'clsx';
 
 import Style from './Checkbox.module.css';
 
-type CheckboxSize = 'sm' | 'md' | 'lg';
+type TCheckboxSize = 'sm' | 'md' | 'lg';
 
 type TCheckboxProps = {
   label: string;
   value: boolean;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  size?: CheckboxSize;
+  size?: TCheckboxSize;
   fullWidth?: boolean;
 };
 

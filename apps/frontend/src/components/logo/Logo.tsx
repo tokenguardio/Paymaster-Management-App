@@ -8,9 +8,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import brandLogo from '@/assets/images/logo-patterns.svg';
-
 import Style from './Logo.module.css';
+import brandLogo from '@/assets/images/logo-patterns.svg';
 
 export const Logo = () => (
   <NavLink to="/" className={Style.logo}>

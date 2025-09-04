@@ -1,9 +1,8 @@
-import React, { useState, forwardRef, Ref } from 'react';
-import clsx from 'clsx';
-
-import { Label } from '@/components';
+import { clsx } from 'clsx';
+import React, { forwardRef, Ref, useState } from 'react';
 
 import Style from './NumberInput.module.css';
+import { Label } from '@/components';
 
 interface INumberInputProps {
   value: number;
@@ -17,7 +16,8 @@ interface INumberInputProps {
   disabled?: boolean;
   prefix?: string;
   fullWidth?: boolean;
-  error?: string;
+  error?: string | unknown;
+  className?: string;
 }
 
 export const NumberInput = forwardRef<HTMLInputElement, INumberInputProps>(

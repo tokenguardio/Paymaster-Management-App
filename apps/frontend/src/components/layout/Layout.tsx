@@ -1,9 +1,8 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 
-import { Sidebar } from '@/components';
-
 import Style from './Layout.module.css';
+import { Sidebar } from '@/components';
 
 export const Layout = () => {
   return (

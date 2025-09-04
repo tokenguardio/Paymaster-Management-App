@@ -4,30 +4,29 @@
  *
  **********/
 
+import { clsx } from 'clsx';
 import React, { useState } from 'react';
-import clsx from 'clsx';
-
-import { Logo, Line, Menu, Typography, Button } from '@/components';
-import { useMobile } from '@/hooks/useMobile';
 
 import Style from './Sidebar.module.css';
+import { Line, Logo, Menu, Typography } from '@/components';
+import { useMobile } from '@/hooks/useMobile';
 
 export function Sidebar() {
-  const isMobile = useMobile();
-  const [open, setOpen] = useState(false); // mobile is open
-  const [fade, _setFade] = useState('');
+  const _isMobile = useMobile();
+  const [open, _setOpen] = useState(false); // mobile is open
+  const [_fade, _setFade] = useState('');
 
   return (
     <aside
       className={clsx(Style.sidebar, Style['sidebar-mobile'], open ? Style.open : Style.close)}
     >
       <div className={Style['bar-wrapper']}>
-        <Logo dark />
+        <Logo />
       </div>
 
       <section className={Style.menu}>
         <div>
-          <Line color="gray200" />
+          <Line />
           <Typography tag="p" size="m" weight="medium" text="Creator Tools" />
           <Menu />
         </div>

@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 
-import { useOutsideClick } from '@/hooks/useOutsideClick';
-import { IconButton, TextInput, Icon } from '@/components';
-
 import Style from './PaymasterTitle.module.css';
+import { Icon, IconButton, TextInput } from '@/components';
+import { useOutsideClick } from '@/hooks/useOutsideClick';
 
 export const PaymasterTitle = ({ maxLength = 32 }) => {
   const [paymasterTitle, setPaymasterTitle] = useState('Spending Policy');
