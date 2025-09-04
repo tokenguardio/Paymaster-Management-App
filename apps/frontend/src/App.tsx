@@ -31,8 +31,7 @@ export default function App() {
             <Route
               key={slug}
               path={path}
-              // element={<RestrictedRoute>{component}</RestrictedRoute>}
-              element={component}
+              element={<RestrictedRoute>{component}</RestrictedRoute>}
             />
           ))}
         </Route>
