@@ -37,8 +37,8 @@ const formatArgs = <T>(args: T[]): string =>
 const logMessage = (level: string, args: unknown[]) => {
   const message = formatArgs(args);
   let formattedMessage = `[${level}] [${new Date().toISOString()}] ${message}`;
-  // @ ts-expect-error
-  if (process.env.REACT_APP_DEPLOY_ENV !== 'production') {
+
+  if (import.meta.env.REACT_APP_DEPLOY_ENV !== 'production') {
     const { filePath, func } = getCallerInfo();
     formattedMessage = `[${level}] [${new Date().toISOString()}] [${filePath}, ${func}] ${message}`;
   }

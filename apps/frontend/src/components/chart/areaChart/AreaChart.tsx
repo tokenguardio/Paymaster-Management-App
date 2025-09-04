@@ -11,7 +11,14 @@ import {
 import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, CSSProperties } from 'react';
+
+import reset from '@/assets/icons/reset.svg';
+import zoom from '@/assets/icons/zoom.svg';
+import { useContainerDimensions } from '@/hooks/useContainerDimensions';
+import { palette } from '@/utils/constans';
+import { determineChartDataFormat } from '@/utils/helpers';
+import { TChartDataPoint, TChartResult } from '@/types/chart';
 
 import {
   calcWidthOfLegend,
@@ -20,13 +27,7 @@ import {
   getTopSeriesData,
 } from '../helpers';
 import tokenguard from '../tokenguard';
-
 import { Watermark } from '../Watermark';
-import reset from '@/assets/icons/reset.svg';
-import zoom from '@/assets/icons/zoom.svg';
-import { useContainerDimensions } from '@/hooks/useContainerDimensions';
-import { palette } from '@/utils/constans';
-import { determineChartDataFormat } from '@/utils/helpers';
 
 echarts.use([
   TitleComponent,
@@ -41,7 +42,7 @@ echarts.use([
 ]);
 
 type TAreaChartProps = {
-  data: Array<any>;
+  data: Array<TChartDataPoint>;
   height?: number;
   locked?: boolean;
   minValue?: number;
@@ -80,20 +81,21 @@ export const AreaChart = ({
   dataZoom = true,
 }: TAreaChartProps) => {
   const [legendWidth, setLegendWidth] = useState<string | undefined>(undefined);
-  const componentRef = useRef();
+  const componentRef = useRef<HTMLDivElement>(null);
   const { width } = useContainerDimensions(componentRef);
   let topSeriesData;
   const preparedData = determineChartDataFormat(data);
   const legendsData = generateLegendsData(preparedData);
-  const labelsData = (preparedData as any[]).map((point) => point.dimension);
+  const labelsData = (preparedData as TChartResult).map((point) => point.dimension);
   const formatter = Intl.NumberFormat('en', { notation: 'compact' });
+
   useEffect(() => {
     if (legendsData.length > 10) {
       setLegendWidth(calcWidthOfLegend(Number(width), 3));
     } else {
       setLegendWidth(calcWidthOfLegend(Number(width), 2));
     }
-  }, [width]);
+  }, [width, legendsData.length]);
 
   // legend
   const selectorLabelColor = palette.gray700;
@@ -128,9 +130,9 @@ export const AreaChart = ({
   const tooltipLineColor = palette.gray700;
 
   const generatedSeries = legendsData.map((legendItem) => {
-    const result = [];
+    const result: TChartResult = [];
 
-    (preparedData as any[]).forEach((row) => {
+    (preparedData as TChartResult).forEach((row) => {
       let fixedValue = row[legendItem];
       if (typeof round === 'number') {
         fixedValue = fixedValue?.toFixed(round);
@@ -174,7 +176,7 @@ export const AreaChart = ({
 
   // series
   const firstItemColor = palette.green500;
-  const secondItemColor = palette.dark500;
+
   const tooltipObj: TTooltipObj = {
     trigger: 'axis',
     axisPointer: {
@@ -198,37 +200,9 @@ export const AreaChart = ({
       },
     ]),
   };
-  const areaStyleSecondObj = {
-    opacity: 0.6,
-    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-      {
-        offset: 0,
-        color: '#45677c',
-      },
-      {
-        offset: 1,
-        color: '#ffffff',
-      },
-    ]),
-  };
-  const _areaStyleObj = {
-    opacity: 0.6,
-    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-      {
-        offset: 1,
-        color: '#FFFFFF',
-      },
-      {
-        offset: 0,
-        color: '#84D3BA',
-      },
-    ]),
-  };
+
   const firstItemStyle = {
     color: firstItemColor,
-  };
-  const secondItemStyle = {
-    color: secondItemColor,
   };
 
   if (formatValue) {
@@ -387,18 +361,12 @@ export const AreaChart = ({
     seriesData[0].areaStyle = areaStyleFirstObj;
     // @ts-expect-error to fix
     seriesData[0].itemStyle = firstItemStyle;
-    if (seriesData[1]) {
-      // @ts-expect-error to fix
-      seriesData[1].areaStyle = areaStyleSecondObj;
-      // @ts-expect-error to fix
-      seriesData[1].itemStyle = secondItemStyle;
-    }
   }
 
-  const style = {
+  const style: CSSProperties = {
     height: height ? height : '300px',
     margin: 'auto',
-    pointerEvents: '',
+    pointerEvents: undefined,
     zIndex: 1,
   };
 

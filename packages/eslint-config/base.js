@@ -15,7 +15,6 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    // 'plugin:import/recommended',
     'plugin:import/typescript',
     'turbo',
     'prettier',
@@ -45,18 +44,6 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'error',
     '@typescript-eslint/no-explicit-any': 'error',
     'import/no-absolute-path': 'error',
-    'import/order': [
-      'error',
-      {
-        // named: {
-        //   enabled: true,
-        // },
-        alphabetize: {
-          order: 'asc',
-          caseInsensitive: true,
-        },
-      },
-    ],
     '@typescript-eslint/no-unused-vars': [
       'error',
       {

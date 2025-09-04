@@ -1,13 +1,6 @@
 import { ethers } from 'ethers';
 import { generateNonce, SiweMessage } from 'siwe';
 
-interface IWindow {
-  ethereum?: {
-    isMetaMask?: boolean;
-    request: (...args: any[]) => Promise<any>;
-  };
-}
-
 export async function signInWithEthereum() {
   try {
     if (!window.ethereum) {

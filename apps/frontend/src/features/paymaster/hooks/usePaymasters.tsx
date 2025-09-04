@@ -82,7 +82,7 @@ export const usePaymasters = (_param: string) => {
         setIsLoadingPaymasters(false);
       } catch (err: unknown) {
         setIsLoadingPaymasters(false);
-        toast.error(err.toString());
+        toast.error(err?.toString());
       }
     };
 

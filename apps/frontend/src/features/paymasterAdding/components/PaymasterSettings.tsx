@@ -121,9 +121,9 @@ export const PaymasterSettings = () => {
     name: 'userRules',
   });
   const manualAddress = watch('manualAddress');
-  let isValidAddress;
+  let _isValidAddress;
   if (manualAddress) {
-    isValidAddress = /^0x[a-fA-F0-9]{40}$/.test(manualAddress);
+    _isValidAddress = /^0x[a-fA-F0-9]{40}$/.test(manualAddress);
   }
 
   const handleAddAddress = () => {

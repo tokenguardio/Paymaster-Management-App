@@ -1,16 +1,11 @@
+import { TChartDataPoint, TChartResult } from '@/types/chart';
+
 export const getValidationErrorMessage = (data: string) => {
   return `We apologize, but we're having trouble displaying ${data} data right now. If the problem persists,
     please contact our support team for further assistance. Thank you for your patience!`;
 };
 
-type TChartData = {
-  dimension: string;
-  [key: string]: number | string;
-};
-
-type TChartResult = Array<Record<string, string | number | undefined>>;
-
-export const determineChartDataFormat = (data: TChartData[]): TChartResult | null => {
+export const determineChartDataFormat = (data: TChartDataPoint[]): TChartResult | null => {
   if (!data.length) return null;
 
   const keys = Object.keys(data[0]);
@@ -20,11 +15,11 @@ export const determineChartDataFormat = (data: TChartData[]): TChartResult | nul
       (item) => item !== 'dimension' && item !== 'differential',
     ) as string;
 
-    const prepareData = <K extends keyof TChartData>(
-      arr: TChartData[],
+    const prepareData = <K extends keyof TChartDataPoint>(
+      arr: TChartDataPoint[],
       property: K,
-    ): Array<TChartData[K]> => {
-      const uniqueKeys = new Set<TChartData[K]>();
+    ): Array<TChartDataPoint[K]> => {
+      const uniqueKeys = new Set<TChartDataPoint[K]>();
       arr.forEach((obj) => {
         if (property in obj) {
           uniqueKeys.add(obj[property]);
@@ -58,7 +53,7 @@ export const determineChartDataFormat = (data: TChartData[]): TChartResult | nul
 };
 
 export const convertDataToSingleLineFormat = (
-  data: TChartData[],
+  data: TChartDataPoint[],
   metric: string,
 ): TChartResult | null => {
   if (!metric) return null;
