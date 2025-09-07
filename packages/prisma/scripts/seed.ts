@@ -6,7 +6,7 @@ import {
   POLICY_RULE_SCOPE,
   POLICY_STATUS,
   USER_OPERATION_STATUS,
-} from '../../../apps/backend/src/config/constants';
+} from '@repo/constants';
 
 import { PrismaClient } from '../generated/client';
 
