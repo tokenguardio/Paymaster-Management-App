@@ -7,8 +7,9 @@
 import React from 'react';
 import { matchPath, NavLink, useLocation } from 'react-router-dom';
 
-import Style from './Menu.module.css';
 import { Icon } from '@/components';
+
+import Style from './Menu.module.css';
 
 type TNavItem = {
   link: string;

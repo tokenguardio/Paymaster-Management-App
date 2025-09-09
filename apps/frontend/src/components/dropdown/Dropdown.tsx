@@ -1,8 +1,9 @@
 import { clsx } from 'clsx';
 import React, { useEffect, useRef, useState } from 'react';
 
-import Style from './Dropdown.module.css';
 import { Icon } from '@/components/icon/Icon';
+
+import Style from './Dropdown.module.css';
 
 export const Dropdown = ({ options, id, children, title, position }) => {
   const [_clickedOutside, setClickedOutside] = useState(false);

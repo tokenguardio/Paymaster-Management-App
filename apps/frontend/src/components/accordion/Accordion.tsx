@@ -6,8 +6,9 @@
 
 import React, { ReactNode, useState } from 'react';
 
-import Style from './Accordion.module.css';
 import { Icon, Typography } from '@/components';
+
+import Style from './Accordion.module.css';
 
 interface IAccordionProps {
   title: string;

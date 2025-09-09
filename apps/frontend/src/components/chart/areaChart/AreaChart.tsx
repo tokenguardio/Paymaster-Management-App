@@ -16,9 +16,9 @@ import React, { useEffect, useRef, useState, CSSProperties } from 'react';
 import reset from '@/assets/icons/reset.svg';
 import zoom from '@/assets/icons/zoom.svg';
 import { useContainerDimensions } from '@/hooks/useContainerDimensions';
+import { TChartDataPoint, TChartResult } from '@/types/chart';
 import { palette } from '@/utils/constans';
 import { determineChartDataFormat } from '@/utils/helpers';
-import { TChartDataPoint, TChartResult } from '@/types/chart';
 
 import {
   calcWidthOfLegend,

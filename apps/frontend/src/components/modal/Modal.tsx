@@ -1,7 +1,8 @@
 import React, { ReactNode } from 'react';
 
-import Style from './Modal.module.css';
 import { Icon, IconButton, Typography } from '@/components';
+
+import Style from './Modal.module.css';
 
 interface IModalProps {
   children: ReactNode;

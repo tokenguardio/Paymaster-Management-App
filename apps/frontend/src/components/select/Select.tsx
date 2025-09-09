@@ -11,10 +11,10 @@ import ReactSelect, {
   ActionMeta,
 } from 'react-select';
 
-import Style from './Select.module.css';
 import { Icon, Label, Typography } from '@/components';
-
 import { TDropdownOption } from '@/types/dropdownOption';
+
+import Style from './Select.module.css';
 
 type TSelectProps = {
   options: Array<TDropdownOption>;

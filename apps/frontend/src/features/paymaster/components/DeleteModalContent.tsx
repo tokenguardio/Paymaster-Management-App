@@ -1,6 +1,8 @@
 import React from 'react';
-import Style from './DeleteModalContent.module.css';
+
 import { Button, Typography } from '@/components';
+
+import Style from './DeleteModalContent.module.css';
 
 interface IDeleteModalContentProps {
   closeFn: (open: boolean) => void;

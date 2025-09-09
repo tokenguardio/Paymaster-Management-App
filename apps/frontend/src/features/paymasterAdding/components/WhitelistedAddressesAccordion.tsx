@@ -8,7 +8,6 @@ import {
   UseFormSetValue,
 } from 'react-hook-form';
 
-import Style from './WhitelistedAddressesAccordion.module.css';
 import {
   Accordion,
   Button,
@@ -19,6 +18,8 @@ import {
   TextInput,
   Typography,
 } from '@/components';
+
+import Style from './WhitelistedAddressesAccordion.module.css';
 
 interface IWhitelistFormValues {
   whitelistAllAddresses: boolean;

@@ -7,9 +7,10 @@
 import { clsx } from 'clsx';
 import React, { useState } from 'react';
 
-import Style from './Sidebar.module.css';
 import { Line, Logo, Menu, Typography } from '@/components';
 import { useMobile } from '@/hooks/useMobile';
+
+import Style from './Sidebar.module.css';
 
 export function Sidebar() {
   const _isMobile = useMobile();

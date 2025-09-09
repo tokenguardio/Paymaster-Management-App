@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
+import { Breadcrumbs, Button, Icon, Modal, Typography } from '@/components';
+
 import { DeleteModalContent } from './components/DeleteModalContent';
 import { PaymasterGrid } from './components/PaymasterGrid';
-
 import Style from './Paymaster.module.css';
-import { Breadcrumbs, Button, Icon, Modal, Typography } from '@/components';
 
 export const Paymaster = () => {
   const breadcrumbsItems = [

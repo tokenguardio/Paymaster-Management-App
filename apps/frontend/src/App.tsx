@@ -3,15 +3,15 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Flip, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import Style from './App.module.css';
-import { PaymasterPage } from './pages/PaymasterPage';
 import { Layout } from '@/components/layout/Layout';
 import { useMobile } from '@/hooks/useMobile';
-
 import { NotFoundPage } from '@/pages/404';
 import { LoginPage } from '@/pages/LoginPage';
 import { RestrictedRoute } from '@/routes/RestrictedRoute';
 import { routes } from '@/routes/routesMap';
+
+import Style from './App.module.css';
+import { PaymasterPage } from './pages/PaymasterPage';
 
 export default function App() {
   const isMobile = useMobile();

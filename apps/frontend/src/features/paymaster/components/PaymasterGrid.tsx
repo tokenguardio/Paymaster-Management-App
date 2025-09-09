@@ -7,11 +7,11 @@
 
 import React from 'react';
 
-import { usePaymasters } from '../hooks/usePaymasters';
+import { Loader } from '@/components';
+
 import Style from './PaymasterGrid.module.css';
 import { PaymasterSlide } from './PaymasterSlide';
-
-import { Loader } from '@/components';
+import { usePaymasters } from '../hooks/usePaymasters';
 
 export const PaymasterGrid = ({ setDeleteModalOpen, setSelectedPaymasterId }) => {
   const userId = '24';

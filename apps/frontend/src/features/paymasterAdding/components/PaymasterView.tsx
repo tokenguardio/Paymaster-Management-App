@@ -1,8 +1,9 @@
 import React from 'react';
 
+import { AreaChart, Typography } from '@/components';
+
 import Style from './PaymasterView.module.css';
 import { ResultingTable } from './ResultingTable';
-import { AreaChart, Typography } from '@/components';
 
 const data = [
   {

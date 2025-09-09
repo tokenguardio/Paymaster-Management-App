@@ -3,10 +3,6 @@ import React, { useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { GeneralAccordion } from './GeneralAccordion';
-import Style from './PaymasterSettings.module.css';
-import { PaymasterTitle } from './PaymasterTitle';
-import { WhitelistedAddressesAccordion } from './WhitelistedAddressesAccordion';
 import ethereumLogo from '@/assets/images/ethereum.svg';
 import {
   Accordion,
@@ -18,6 +14,11 @@ import {
   TinySelect,
   Typography,
 } from '@/components';
+
+import { GeneralAccordion } from './GeneralAccordion';
+import Style from './PaymasterSettings.module.css';
+import { PaymasterTitle } from './PaymasterTitle';
+import { WhitelistedAddressesAccordion } from './WhitelistedAddressesAccordion';
 
 const blockchainsOptions = [
   {

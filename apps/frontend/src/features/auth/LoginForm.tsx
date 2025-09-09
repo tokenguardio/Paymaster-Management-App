@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import Style from './LoginForm.module.css';
 import { Button, Card, Icon, Logo, Typography } from '@/components';
-
 import { signInWithEthereum } from '@/features/auth/signInWithEthereum';
+
+import Style from './LoginForm.module.css';
 
 export const LoginForm = () => {
   const [_address, setAddress] = useState<string | null>(null);

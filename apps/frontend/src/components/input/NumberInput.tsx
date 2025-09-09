@@ -1,8 +1,9 @@
 import { clsx } from 'clsx';
 import React, { forwardRef, Ref, useState } from 'react';
 
-import Style from './NumberInput.module.css';
 import { Label } from '@/components';
+
+import Style from './NumberInput.module.css';
 
 interface INumberInputProps {
   value: number;
