@@ -1,0 +1,16 @@
+{
+  "name": "@repo/constants",
+  "main": "./dist/main.js",
+  "types": "./dist/main.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "clean:dist": "rimraf dist",
+    "clean:node-modules": "rimraf node_modules",
+    "clean:turbo": "rimraf .turbo",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
+  }
+}
