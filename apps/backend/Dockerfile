@@ -1,5 +1,5 @@
 # Use the official Node.js image
-FROM node:22-alpine AS base
+FROM node:22-alpine@sha256:d2166de198f26e17e5a442f537754dd616ab069c47cc57b889310a717e0abbf9 AS base
 
 # Enable corepack for package manager management
 RUN corepack enable
@@ -18,6 +18,9 @@ COPY packages/ ./packages/
 # Copy only backend app (not other apps)
 COPY apps/backend/ ./apps/backend/
 
+# Set Docker env to skip husky
+ENV DOCKER=1
+
 # Install dependencies for entire monorepo
 RUN pnpm install --frozen-lockfile
 
@@ -29,7 +32,7 @@ RUN pnpm build --filter=@repo/prisma && \
     pnpm build --filter=backend
 
 # Production stage
-FROM node:22-alpine AS production
+FROM node:22-alpine@sha256:d2166de198f26e17e5a442f537754dd616ab069c47cc57b889310a717e0abbf9 AS production
 
 # Enable corepack
 RUN corepack enable
@@ -51,6 +54,9 @@ COPY --from=builder /app/packages/prisma/generated ./packages/prisma/generated
 
 # Copy built backend from builder stage
 COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
+
+# Set Docker env to skip husky
+ENV DOCKER=1
 
 # Install only production dependencies
 RUN pnpm install --frozen-lockfile --prod
