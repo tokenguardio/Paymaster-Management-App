@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { SiweMessage, generateNonce } from 'siwe';
+import { generateNonce, SiweMessage } from 'siwe';
 
 export async function signInWithEthereum() {
   try {
@@ -44,7 +44,7 @@ export async function signInWithEthereum() {
     const { address: loggedAddress } = await res.json();
     console.log('Login as:', loggedAddress);
     return loggedAddress;
-  } catch (err: any) {
+  } catch (err) {
     console.error('Logged error:', err);
     throw err;
   }

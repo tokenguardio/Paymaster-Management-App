@@ -1,8 +1,6 @@
 import React from 'react';
-
-import { Card, Icon, Dropdown, Badge, Typography, AreaChart } from '@/components';
+import { AreaChart, Badge, Card, Dropdown, Icon, Typography } from '@/components';
 import { TDropdownOption } from '@/types/dropdownOption';
-
 import Style from './PaymasterSlide.module.css';
 
 type TChartPoint = {

@@ -1,43 +1,50 @@
 import React from 'react';
-import { Controller, useWatch } from 'react-hook-form';
-
+import {
+  Controller,
+  useWatch,
+  Control,
+  FieldErrors,
+  UseFormRegister,
+  UseFormSetValue,
+} from 'react-hook-form';
 import {
   Accordion,
-  Checkbox,
-  TextInput,
   Button,
-  Label,
+  Checkbox,
   Icon,
   IconButton,
+  Label,
+  TextInput,
   Typography,
 } from '@/components';
-
 import Style from './WhitelistedAddressesAccordion.module.css';
 
-interface Props {
-  entries: string[];
-  setEntries: React.Dispatch<React.SetStateAction<string[]>>;
-  control: any;
-  register: any;
-  errors: any;
-  setValue: (name: string, value: any) => void;
-  handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  removeEntry: (index: number) => void;
-  manualAddress: string | undefined;
-  isValidAddress: boolean;
+interface IWhitelistFormValues {
+  whitelistAllAddresses: boolean;
+  manualAddress: string;
 }
 
-export const WhitelistedAddressesAccordion = ({
+interface IWhitelistedAddressesAccordionProps {
+  entries: string[];
+  setEntries: React.Dispatch<React.SetStateAction<string[]>>;
+  control: Control<IWhitelistFormValues>;
+  register: UseFormRegister<IWhitelistFormValues>;
+  errors: FieldErrors<IWhitelistFormValues>;
+  setValue: UseFormSetValue<IWhitelistFormValues>;
+  handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  removeEntry: (index: number) => void;
+  handleAddAddress: () => void;
+}
+
+export const WhitelistedAddressesAccordion: React.FC<IWhitelistedAddressesAccordionProps> = ({
   entries,
-  setEntries,
   control,
   register,
   errors,
-  setValue,
   handleFileUpload,
   removeEntry,
   handleAddAddress,
-}: Props) => {
+}) => {
   const manualAddress = useWatch({ control, name: 'manualAddress' });
   const isValidAddress = manualAddress && /^0x[a-fA-F0-9]{40}$/.test(manualAddress);
 
@@ -45,7 +52,7 @@ export const WhitelistedAddressesAccordion = ({
     <Accordion title="Whitelisted addresses">
       <div className={Style['whitelisted-addresses']}>
         <div className={Style['whitelisted-checkbox-container']}>
-          <Label text="Whitelist smart contracts" />
+          <Label forInput="whitelistAllAddresses" text="Whitelist smart contracts" />
           <Controller
             name="whitelistAllAddresses"
             control={control}

@@ -4,18 +4,17 @@
  *
  **********/
 
+import { clsx } from 'clsx';
 import React, { ReactNode } from 'react';
-import clsx from 'clsx';
-
 import Style from './Card.module.css';
 
-interface CardProps {
+interface ICardProps {
   title?: string;
   children: ReactNode;
   className?: string;
 }
 
-export const Card: React.FC<CardProps> = ({ title, children, className }) => (
+export const Card: React.FC<ICardProps> = ({ title, children, className }) => (
   <div className={clsx(Style.card, className)}>
     {title && (
       <header className={Style.header}>

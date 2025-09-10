@@ -1,6 +1,5 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-
 import { useSession } from '@/features/auth/hooks/useSession';
 
 export const RestrictedRoute = ({ children }: { children: JSX.Element }) => {

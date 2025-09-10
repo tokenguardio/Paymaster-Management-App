@@ -5,12 +5,11 @@
  *
  **********/
 import React from 'react';
-import { NavLink, matchPath, useLocation } from 'react-router-dom';
-
+import { matchPath, NavLink, useLocation } from 'react-router-dom';
 import { Icon } from '@/components';
 import Style from './Menu.module.css';
 
-type NavItem = {
+type TNavItem = {
   link: string;
   icon: string;
   name: string;
@@ -19,7 +18,7 @@ type NavItem = {
   disabled: boolean;
 };
 
-const navItems: Array<NavItem> = [
+const navItems: Array<TNavItem> = [
   {
     link: '/paymaster',
     icon: 'star',

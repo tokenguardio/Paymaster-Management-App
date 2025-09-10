@@ -1,6 +1,5 @@
+import { clsx } from 'clsx';
 import React from 'react';
-import clsx from 'clsx';
-
 import Style from './Typography.module.css';
 
 type TTypographySize = 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl';

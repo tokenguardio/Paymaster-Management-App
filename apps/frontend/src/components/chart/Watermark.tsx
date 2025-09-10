@@ -5,10 +5,8 @@
  **********/
 
 import React from 'react';
-
-import { BRAND_NAME } from '@/utils/constans';
-
 import watermark from '@/assets/images/watermark-patterns.png';
+import { BRAND_NAME } from '@/utils/constans';
 import Style from './Watermark.module.css';
 
 export const Watermark = () => (

@@ -1,5 +1,11 @@
-export const generateLegendsData = (data: Array<any>): Array<string> => {
+import { TChartResult } from '@/types/chart';
+
+export const generateLegendsData = (data: TChartResult | null): Array<string> => {
   const uniqueKeys = new Set<string>();
+
+  if (!data) {
+    return [];
+  }
 
   data.forEach((point) => {
     Object.keys(point).forEach((key) => {

@@ -1,9 +1,7 @@
 import React from 'react';
-import { Controller } from 'react-hook-form';
-
-import { NumberInput, Checkbox, Select, Icon, DatePicker, Accordion } from '@/components';
+import { Controller, Control, FieldErrors } from 'react-hook-form';
 import ethereumLogo from '@/assets/images/ethereum.svg';
-
+import { Accordion, Checkbox, DatePicker, Icon, NumberInput, Select } from '@/components';
 import Style from './GeneralAccordion.module.css';
 
 const blockchainsOptions = [
@@ -14,7 +12,22 @@ const blockchainsOptions = [
   },
 ];
 
-export const GeneralAccordion = ({ control, errors }: any) => (
+type TFormValues = {
+  max_budget?: number;
+  blockchain?: string;
+  payInERC20?: boolean;
+  sponsorTransactions?: boolean;
+  startDate?: Date | null;
+  endDate?: Date | null;
+  policyDoesNotExpire?: boolean;
+};
+
+type TGeneralAccordionProps = {
+  control: Control<TFormValues>;
+  errors: FieldErrors<TFormValues>;
+};
+
+export const GeneralAccordion = ({ control, errors }: TGeneralAccordionProps) => (
   <Accordion title="General">
     <div className={Style['general-container']}>
       <Controller

@@ -1,10 +1,9 @@
+import { clsx } from 'clsx';
 import React, { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
-import clsx from 'clsx';
-
 import Style from './Button.module.css';
 
-interface ButtonProps {
+interface IButtonProps {
   onClick?: () => void;
   children?: ReactNode;
   size?: 'xxsmall' | 'xsmall' | 'small' | 'medium' | 'large';
@@ -19,7 +18,7 @@ interface ButtonProps {
   moveTo?: string;
 }
 
-export const Button: React.FC<ButtonProps> = ({
+export const Button: React.FC<IButtonProps> = ({
   onClick,
   children,
   size,

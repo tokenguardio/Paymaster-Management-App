@@ -1,13 +1,12 @@
 import React from 'react';
-
 import Style from './Label.module.css';
 
-interface LabelProps {
+interface ILabelProps {
   text: string;
   forInput: string;
 }
 
-export const Label: React.FC<LabelProps> = ({ text, forInput }) => {
+export const Label: React.FC<ILabelProps> = ({ text, forInput }) => {
   return (
     <label className={Style['label']} htmlFor={forInput}>
       {text}

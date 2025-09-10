@@ -1,18 +1,17 @@
 import React from 'react';
-
-import { PaymasterPage } from '@/pages/PaymasterPage';
 import { PaymasterAddingPage } from '@/pages/PaymasterAddingPage';
+import { PaymasterPage } from '@/pages/PaymasterPage';
 
-export type AppRoute = '' | 'paymaster' | 'paymaster-add';
+export type TAppRoute = '' | 'paymaster' | 'paymaster-add';
 
-export type RouteConfig = {
-  slug: AppRoute;
+export type TRouteConfig = {
+  slug: TAppRoute;
   path: string;
   label: string;
   component: JSX.Element;
 };
 
-export const routes: RouteConfig[] = [
+export const routes: TRouteConfig[] = [
   {
     slug: 'paymaster',
     path: '/paymaster',

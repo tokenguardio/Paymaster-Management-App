@@ -1,12 +1,11 @@
+import { clsx } from 'clsx';
 import React from 'react';
-import DatePicker from 'react-date-picker';
-import clsx from 'clsx';
-
-import { Label, Icon } from '@/components';
+import { DatePicker } from 'react-date-picker';
+import { Icon, Label } from '@/components';
+import Style from './DatePicker.module.css';
 
 import './reactDatePicker.css';
 import './reactCalendar.css';
-import Style from './DatePicker.module.css';
 
 type TDatePickerProps = {
   label?: string;

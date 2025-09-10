@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect, forwardRef } from 'react';
-import clsx from 'clsx';
+import { clsx } from 'clsx';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import { Label } from '@/components';
 import Style from './DynamicInput.module.css';
 

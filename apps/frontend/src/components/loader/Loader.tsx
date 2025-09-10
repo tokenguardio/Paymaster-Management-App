@@ -4,7 +4,6 @@
  *
  **********/
 import React from 'react';
-
 import ThreeDots from './images/three-dots.svg';
 import Style from './Loader.module.css';
 

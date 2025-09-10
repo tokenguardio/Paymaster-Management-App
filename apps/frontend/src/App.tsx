@@ -1,16 +1,15 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Flip, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-import { routes } from '@/routes/routesMap';
-import { RestrictedRoute } from '@/routes/RestrictedRoute';
-import { LoginPage } from '@/pages/LoginPage';
-import { NotFoundPage } from '@/pages/404';
 import { Layout } from '@/components/layout/Layout';
 import { useMobile } from '@/hooks/useMobile';
-
+import { NotFoundPage } from '@/pages/404';
+import { LoginPage } from '@/pages/LoginPage';
+import { RestrictedRoute } from '@/routes/RestrictedRoute';
+import { routes } from '@/routes/routesMap';
 import Style from './App.module.css';
+import { PaymasterPage } from './pages/PaymasterPage';
 
 export default function App() {
   const isMobile = useMobile();
@@ -24,7 +23,7 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<LoginPage />} />
-
+        <Route path="/paymaster" element={<PaymasterPage />} />
         <Route element={<Layout />}>
           {routes.map(({ path, component, slug }) => (
             <Route

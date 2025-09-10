@@ -1,8 +1,6 @@
 import React from 'react';
-
 import { Icon } from '@/components';
 import { determineChartDataFormat } from '@/utils/helpers';
-
 import Style from './ResultingTable.module.css';
 
 const TableHeaderCell = ({ label }) => (

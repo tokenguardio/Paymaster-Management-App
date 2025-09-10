@@ -5,16 +5,15 @@
  *
  **********/
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-
-import { logger } from '@/utils/logger';
+// USE WHEN BK WILL BE READY
+// import { fetchPaymasters } from '../utils/fetches';
 import { getValidationErrorMessage } from '@/utils/helpers';
-
+import { logger } from '@/utils/logger';
 import { PaymastersSchema } from '../types/paymaster';
-import { fetchPaymasters } from '../utils/fetches';
 
-export const usePaymasters = (param: string) => {
+export const usePaymasters = (_param: string) => {
   const [paymasters, setPaymasters] = useState();
   const [isLoadingPaymasters, setIsLoadingPaymasters] = useState(false);
 
@@ -80,9 +79,9 @@ export const usePaymasters = (param: string) => {
         }
         setPaymasters(validatedPaymasters.data);
         setIsLoadingPaymasters(false);
-      } catch (err) {
+      } catch (err: unknown) {
         setIsLoadingPaymasters(false);
-        toast.error(err.toString());
+        toast.error(err?.toString());
       }
     };
 

@@ -48,9 +48,16 @@ module.exports = {
     'import/order': [
       'error',
       {
-        named: {
-          enabled: true,
-        },
+        groups: [
+          'builtin',
+          'external',
+          'internal',
+          ['parent', 'sibling'],
+          'index',
+          'object',
+          'type',
+        ],
+        'newlines-between': 'never',
         alphabetize: {
           order: 'asc',
           caseInsensitive: true,
