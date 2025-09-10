@@ -22,8 +22,6 @@ export default function App() {
     <>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-
-        
         <Route path="/" element={<LoginPage />} />
         <Route path="/paymaster" element={<PaymasterPage />} />
         <Route element={<Layout />}>
