@@ -122,7 +122,13 @@ This repository uses **Prettier** for code formatting and **ESLint** for TypeScr
 
 Both tools are configured to work together seamlessly across the entire monorepo.
 
-### IDE Integration
+#### Pre-commit hooks
+
+While committing code, the pre-commit hook executes both Prettier and ESLint on files being
+committed. All fixable issues are fixed, and then code is committed. After detecting any non-fixable
+issue, the commit is rejected.
+
+#### IDE Integration
 
 The Prettier and ESLint setup is designed to work well with modern IDEs. It's recommended to enable
 IDE integration to get instant feedback while writing code and have files formatted automatically on
