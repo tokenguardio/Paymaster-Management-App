@@ -17,16 +17,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache-dependency-path: ''
+          cache: 'pnpm'
 
       - name: Enable corepack
         run: corepack enable
-
-      - name: Setup pnpm cache
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
 
       - name: Setup Turborepo cache
         uses: actions/cache@v4
