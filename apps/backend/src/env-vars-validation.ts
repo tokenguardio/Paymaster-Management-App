@@ -19,8 +19,6 @@ export const validateEnvVars = (vars: Record<string, unknown>): Record<string, u
   });
 
   if (error) {
-    console.log('DEBUG: Validation error details:', error.details);
-    console.log('DEBUG: Full error object:', JSON.stringify(error, null, 2));
     throw new Error(`config validation error: ${error.message}`);
   }
 
