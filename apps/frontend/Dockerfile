@@ -1,5 +1,5 @@
 # Build stage
-FROM node:22-alpine AS build
+FROM node:22-alpine@sha256:d2166de198f26e17e5a442f537754dd616ab069c47cc57b889310a717e0abbf9 AS build
 
 # Enable corepack for package manager management
 RUN corepack enable
@@ -33,7 +33,7 @@ ENV VITE_MODE=${MODE}
 RUN pnpm build --filter=frontend -- --mode ${MODE}
 
 # Production stage
-FROM nginx:1.28.0-alpine
+FROM nginx:1.29.1-alpine@sha256:42a516af16b852e33b7682d5ef8acbd5d13fe08fecadc7ed98605ba5e3b26ab8
 
 # Copy built app to nginx
 COPY --from=build /app/apps/frontend/dist /usr/share/nginx/html

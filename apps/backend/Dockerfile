@@ -1,5 +1,5 @@
 # Use the official Node.js image
-FROM node:22-alpine AS base
+FROM node:22-alpine@sha256:d2166de198f26e17e5a442f537754dd616ab069c47cc57b889310a717e0abbf9 AS base
 
 # Enable corepack for package manager management
 RUN corepack enable
@@ -29,7 +29,7 @@ RUN pnpm build --filter=@repo/prisma && \
     pnpm build --filter=backend
 
 # Production stage
-FROM node:22-alpine AS production
+FROM node:22-alpine@sha256:d2166de198f26e17e5a442f537754dd616ab069c47cc57b889310a717e0abbf9 AS production
 
 # Enable corepack
 RUN corepack enable
