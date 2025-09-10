@@ -18,6 +18,9 @@ COPY packages/ ./packages/
 # Copy only backend app (not other apps)
 COPY apps/backend/ ./apps/backend/
 
+# Set Docker env to skip husky
+ENV DOCKER=1
+
 # Install dependencies for entire monorepo
 RUN pnpm install --frozen-lockfile
 
@@ -51,6 +54,9 @@ COPY --from=builder /app/packages/prisma/generated ./packages/prisma/generated
 
 # Copy built backend from builder stage
 COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
+
+# Set Docker env to skip husky
+ENV DOCKER=1
 
 # Install only production dependencies
 RUN pnpm install --frozen-lockfile --prod

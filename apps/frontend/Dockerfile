@@ -18,6 +18,9 @@ COPY packages/ ./packages/
 # Copy only frontend app (not other apps)
 COPY apps/frontend/ ./apps/frontend/
 
+# Set Docker env to skip husky
+ENV DOCKER=1
+
 # Install dependencies for entire monorepo
 RUN pnpm install --frozen-lockfile
 
