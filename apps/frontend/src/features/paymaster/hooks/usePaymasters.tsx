@@ -7,12 +7,10 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-
 // USE WHEN BK WILL BE READY
 // import { fetchPaymasters } from '../utils/fetches';
 import { getValidationErrorMessage } from '@/utils/helpers';
 import { logger } from '@/utils/logger';
-
 import { PaymastersSchema } from '../types/paymaster';
 
 export const usePaymasters = (_param: string) => {

@@ -6,7 +6,6 @@
 
 import { clsx } from 'clsx';
 import React, { ReactNode } from 'react';
-
 import Style from './Card.module.css';
 
 interface ICardProps {

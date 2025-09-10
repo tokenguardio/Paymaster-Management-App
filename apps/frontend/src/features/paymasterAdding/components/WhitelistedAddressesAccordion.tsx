@@ -7,7 +7,6 @@ import {
   UseFormRegister,
   UseFormSetValue,
 } from 'react-hook-form';
-
 import {
   Accordion,
   Button,
@@ -18,7 +17,6 @@ import {
   TextInput,
   Typography,
 } from '@/components';
-
 import Style from './WhitelistedAddressesAccordion.module.css';
 
 interface IWhitelistFormValues {

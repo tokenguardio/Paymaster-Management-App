@@ -1,5 +1,4 @@
 import React from 'react';
-
 import Style from './Subtitle.module.css';
 
 type TSubtitlePropsType = {

@@ -1,9 +1,7 @@
 import React from 'react';
 import { Controller, Control, FieldErrors } from 'react-hook-form';
-
 import ethereumLogo from '@/assets/images/ethereum.svg';
 import { Accordion, Checkbox, DatePicker, Icon, NumberInput, Select } from '@/components';
-
 import Style from './GeneralAccordion.module.css';
 
 const blockchainsOptions = [

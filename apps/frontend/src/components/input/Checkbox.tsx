@@ -1,6 +1,5 @@
 import { clsx } from 'clsx';
 import React from 'react';
-
 import Style from './Checkbox.module.css';
 
 type TCheckboxSize = 'sm' | 'md' | 'lg';

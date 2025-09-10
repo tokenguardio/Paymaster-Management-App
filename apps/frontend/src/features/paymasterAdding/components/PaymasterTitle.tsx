@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-
 import { Icon, IconButton, TextInput } from '@/components';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
-
 import Style from './PaymasterTitle.module.css';
 
 export const PaymasterTitle = ({ maxLength = 32 }) => {

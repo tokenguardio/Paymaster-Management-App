@@ -1,7 +1,5 @@
 import React, { ReactNode } from 'react';
-
 import { Icon, IconButton, Typography } from '@/components';
-
 import Style from './Modal.module.css';
 
 interface IModalProps {

@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { Button, Card, Icon, Logo, Typography } from '@/components';
 import { signInWithEthereum } from '@/features/auth/signInWithEthereum';
-
 import Style from './LoginForm.module.css';
 
 export const LoginForm = () => {

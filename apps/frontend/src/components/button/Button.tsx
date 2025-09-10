@@ -1,7 +1,6 @@
 import { clsx } from 'clsx';
 import React, { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
-
 import Style from './Button.module.css';
 
 interface IButtonProps {

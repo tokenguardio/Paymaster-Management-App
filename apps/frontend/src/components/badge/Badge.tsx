@@ -1,6 +1,5 @@
 import { clsx } from 'clsx';
 import React from 'react';
-
 import Style from './Badge.module.css';
 
 type TBadgeProps = {

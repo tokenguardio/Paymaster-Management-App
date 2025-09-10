@@ -1,5 +1,4 @@
 import React, { ReactNode } from 'react';
-
 import Style from './IconButton.module.css';
 
 interface IIconButtonProps {

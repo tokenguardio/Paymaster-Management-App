@@ -1,8 +1,6 @@
 import { clsx } from 'clsx';
 import { forwardRef, InputHTMLAttributes } from 'react';
-
 import { Label } from '@/components/label/Label';
-
 import Style from './TextInput.module.css';
 
 interface ITextInputProps extends InputHTMLAttributes<HTMLInputElement> {

@@ -6,10 +6,8 @@
 
 import { clsx } from 'clsx';
 import React, { useState } from 'react';
-
 import { Line, Logo, Menu, Typography } from '@/components';
 import { useMobile } from '@/hooks/useMobile';
-
 import Style from './Sidebar.module.css';
 
 export function Sidebar() {

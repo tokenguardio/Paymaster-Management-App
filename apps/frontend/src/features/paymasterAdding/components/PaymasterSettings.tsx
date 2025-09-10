@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-
 import ethereumLogo from '@/assets/images/ethereum.svg';
 import {
   Accordion,
@@ -14,7 +13,6 @@ import {
   TinySelect,
   Typography,
 } from '@/components';
-
 import { GeneralAccordion } from './GeneralAccordion';
 import Style from './PaymasterSettings.module.css';
 import { PaymasterTitle } from './PaymasterTitle';

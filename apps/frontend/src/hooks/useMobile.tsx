@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-
 import { breakpoints } from '@/utils/constans';
 
 export const useMobile = () => {

@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '@repo/prisma';
 import * as request from 'supertest';
 import { App } from 'supertest/types';
-
 import { AppModule } from './../src/app.module';
 
 describe('AppController (e2e)', () => {

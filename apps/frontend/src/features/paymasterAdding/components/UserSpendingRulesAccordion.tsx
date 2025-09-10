@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { Accordion, Button } from '@/components';
 
 export const UserSpendingRulesAccordion = () => (

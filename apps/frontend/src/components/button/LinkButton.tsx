@@ -1,5 +1,4 @@
 import React, { ReactNode } from 'react';
-
 import Style from './LinkButton.module.css';
 
 interface IButtonProps {

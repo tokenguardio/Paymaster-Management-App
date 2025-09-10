@@ -1,7 +1,5 @@
 import React from 'react';
-
 import { Button, Typography } from '@/components';
-
 import Style from './DeleteModalContent.module.css';
 
 interface IDeleteModalContentProps {

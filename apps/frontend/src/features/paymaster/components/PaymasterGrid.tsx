@@ -6,9 +6,7 @@
  **********/
 
 import React from 'react';
-
 import { Loader } from '@/components';
-
 import Style from './PaymasterGrid.module.css';
 import { PaymasterSlide } from './PaymasterSlide';
 import { usePaymasters } from '../hooks/usePaymasters';

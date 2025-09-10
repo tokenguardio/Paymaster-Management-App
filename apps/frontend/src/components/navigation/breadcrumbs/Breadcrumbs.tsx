@@ -10,7 +10,6 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-
 import Style from './Breadcrumbs.module.css';
 
 type TSingleBreadcrumb = {

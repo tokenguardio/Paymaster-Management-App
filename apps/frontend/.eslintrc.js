@@ -1,3 +1,5 @@
+const path = require('path');
+
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   extends: ['@repo/eslint-config/base.js'],
@@ -16,11 +18,24 @@ module.exports = {
     },
   },
 
+  settings: {
+    'import/resolver': {
+      typescript: {
+        project: path.resolve(__dirname, 'tsconfig.json'),
+        alwaysTryTypes: true,
+      },
+    },
+    react: {
+      version: 'detect',
+    },
+  },
+
   // Add React-specific plugins
   plugins: ['react-hooks', 'react-refresh'],
 
   // Add React-specific rules
   rules: {
+    'import/default': 'off',
     // React Hooks rules
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',

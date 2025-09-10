@@ -12,14 +12,12 @@ import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import React, { useEffect, useRef, useState, CSSProperties } from 'react';
-
 import reset from '@/assets/icons/reset.svg';
 import zoom from '@/assets/icons/zoom.svg';
 import { useContainerDimensions } from '@/hooks/useContainerDimensions';
 import { TChartDataPoint, TChartResult } from '@/types/chart';
 import { palette } from '@/utils/constans';
 import { determineChartDataFormat } from '@/utils/helpers';
-
 import {
   calcWidthOfLegend,
   generateLegendsData,
