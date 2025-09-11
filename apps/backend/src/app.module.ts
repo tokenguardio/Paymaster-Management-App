@@ -4,6 +4,7 @@ import { PrismaModule } from '@repo/prisma';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { validateEnvVars } from './env-vars-validation';
+import { PolicyModule } from './policy/policy.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { validateEnvVars } from './env-vars-validation';
       isGlobal: true,
     }),
     PrismaModule,
+    PolicyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
