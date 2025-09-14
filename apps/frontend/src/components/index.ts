@@ -6,7 +6,7 @@ export { Menu } from './navigation/menu/Menu';
 export { Breadcrumbs } from './navigation/breadcrumbs/Breadcrumbs';
 
 // & charts
-export { AreaChart } from './chart/areaChart/AreaChart';
+export { EChart } from './chart/EChart';
 
 // form
 export { TextInput } from './input/TextInput';
