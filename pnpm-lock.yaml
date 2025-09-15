@@ -59,6 +59,9 @@ importers:
       '@repo/prisma':
         specifier: workspace:*
         version: link:../../packages/prisma
+      ethers:
+        specifier: 5.8.0
+        version: 5.8.0
       joi:
         specifier: 18.0.1
         version: 18.0.1
