@@ -5,13 +5,13 @@ import Style from './DeleteModalContent.module.css';
 interface IDeleteModalContentProps {
   closeFn: (open: boolean) => void;
   handleFn: () => void;
-  paymasterId: string | null;
+  policyId: string | null;
 }
 
 export const DeleteModalContent: React.FC<IDeleteModalContentProps> = ({
   closeFn,
   handleFn,
-  paymasterId,
+  policyId,
 }) => {
   return (
     <div>
@@ -19,7 +19,7 @@ export const DeleteModalContent: React.FC<IDeleteModalContentProps> = ({
         tag="p"
         size="s"
         weight="regular"
-        text={`Are you sure you want to delete paymaster with ID ${paymasterId}?`}
+        text={`Are you sure you want to delete policy with ID ${policyId}?`}
       />
       <div className={Style['action-bar']}>
         <Button size="large" onClick={handleFn} color="red500">
