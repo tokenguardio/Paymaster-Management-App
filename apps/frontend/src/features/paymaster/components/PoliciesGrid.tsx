@@ -1,6 +1,6 @@
 /***
  *
- *   POLICIES RGRID
+ *   POLICIES GRID
  *   Page with grid of all user policies
  *
  **********/
