@@ -8,3 +8,8 @@ export const fetchPolicies = async () => {
 
   return response.data;
 };
+
+export const deletePolicy = async (policyId: string): Promise<void> => {
+  const response = await axios.delete(`/api/policies/${policyId}`);
+  return response.data;
+};
