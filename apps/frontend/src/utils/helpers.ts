@@ -1,4 +1,17 @@
+import { EChartsOption } from 'echarts';
 import { TChartDataPoint, TChartResult } from '@/types/chart';
+
+type TSeriesData = {
+  [metric: string]: string | number;
+  dimension: string;
+};
+
+interface IAreaChartOptionsParams {
+  data: Array<TSeriesData>;
+  toolbox?: boolean;
+  dataZoom?: boolean;
+  legend?: boolean;
+}
 
 export const getValidationErrorMessage = (data: string) => {
   return `We apologize, but we're having trouble displaying ${data} data right now. If the problem persists,
@@ -62,4 +75,38 @@ export const convertDataToSingleLineFormat = (
     dimension: String(item.dimension),
     [metric]: Number(item[metric]) ?? 0,
   }));
+};
+
+export const getAreaChartOption = ({
+  data,
+  toolbox = true,
+  dataZoom = true,
+  legend = true,
+}: IAreaChartOptionsParams): EChartsOption => {
+  if (!data?.length) return {};
+
+  const metricKey = Object.keys(data[0]).find((k) => k !== 'dimension');
+  if (!metricKey) return {};
+
+  return {
+    tooltip: { trigger: 'axis' },
+    legend: legend ? {} : undefined,
+    toolbox: toolbox ? { feature: { saveAsImage: {} } } : undefined,
+    dataZoom: dataZoom ? [{ type: 'slider' }] : undefined,
+    xAxis: {
+      type: 'category',
+      data: data.map((d) => d.dimension),
+    },
+    yAxis: {
+      type: 'value',
+    },
+    series: [
+      {
+        name: metricKey,
+        type: 'line',
+        areaStyle: {},
+        data: data.map((d) => d[metricKey]),
+      },
+    ],
+  };
 };
