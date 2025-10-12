@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { Breadcrumbs, Button, Icon, Modal, Typography } from '@/components';
 import { DeleteModalContent } from './components/DeleteModalContent';
-import { PaymasterGrid } from './components/PaymasterGrid';
+import { PoliciesGrid } from './components/PoliciesGrid';
 import Style from './Paymaster.module.css';
 
 export const Paymaster = () => {
   const breadcrumbsItems = [
-    '/',
+    {
+      key: '/',
+      url: '/',
+      name: '',
+    },
     {
       key: 'paymaster',
       url: '/paymaster',
@@ -14,7 +18,7 @@ export const Paymaster = () => {
     },
   ];
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedPaymasterId, setSelectedPaymasterId] = useState<string | null>(null);
+  const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
 
   return (
     <>
@@ -45,16 +49,16 @@ export const Paymaster = () => {
             weight="regular"
           />
         </div>
-        <PaymasterGrid
+        <PoliciesGrid
           setDeleteModalOpen={setDeleteModalOpen}
-          setSelectedPaymasterId={setSelectedPaymasterId}
+          setSelectedPolicyId={setSelectedPolicyId}
         />
         {isDeleteModalOpen && (
           <Modal title="Confirm Deletion" hasCloseButton={true} isOpen={setDeleteModalOpen}>
             <DeleteModalContent
               closeFn={setDeleteModalOpen}
               handleFn={() => console.log('add fn to handle req')}
-              paymasterId={selectedPaymasterId}
+              policyId={selectedPolicyId}
             />
           </Modal>
         )}
