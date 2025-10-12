@@ -1,6 +1,7 @@
 import React from 'react';
-import { AreaChart, Badge, Card, Dropdown, Icon, Typography } from '@/components';
+import { EChart, Badge, Card, Dropdown, Icon, Typography } from '@/components';
 import { TDropdownOption } from '@/types/dropdownOption';
+import { getAreaChartOption } from '@/utils/helpers';
 import Style from './PaymasterSlide.module.css';
 
 type TChartPoint = {
@@ -15,21 +16,38 @@ interface IPaymasterSlideProps {
   data: Array<TChartPoint>;
 }
 
-export const PaymasterSlide: React.FC<IPaymasterSlideProps> = ({ id, title, data, options }) => (
-  <section className={Style['paymaster-slide']}>
-    <Card key={id}>
-      <div className={Style['settings-bar']}>
-        <Typography size="m" weight="medium" text={title} tag="p" color="primary500" align="left" />
-        <Badge text="Active" status="active"></Badge>
-        {options && options.length > 0 ? (
-          <div className="relative">
-            <Dropdown options={options} id={id} position="bottom">
-              <Icon name="more" width={16} height={16} />
-            </Dropdown>
-          </div>
-        ) : null}
-      </div>
-      {data ? <AreaChart toolbox={false} data={data} /> : null}
-    </Card>
-  </section>
-);
+export const PaymasterSlide: React.FC<IPaymasterSlideProps> = ({ id, title, data, options }) => {
+  const option = getAreaChartOption({
+    data: data,
+    toolbox: false,
+    dataZoom: false,
+    legend: false,
+  });
+
+  return (
+    <section className={Style['paymaster-slide']}>
+      <Card key={id}>
+        <div className={Style['settings-bar']}>
+          <Typography
+            size="m"
+            weight="medium"
+            text={title}
+            tag="p"
+            color="primary500"
+            align="left"
+          />
+          <Badge text="Active" status="active"></Badge>
+          {options && options.length > 0 ? (
+            <div className="relative">
+              <Dropdown options={options} id={id} position="bottom">
+                <Icon name="more" width={16} height={16} />
+              </Dropdown>
+            </div>
+          ) : null}
+        </div>
+        {/* {data ? <AreaChart toolbox={false} data={data} /> : null} */}
+        {data ? <EChart option={option} /> : null}
+      </Card>
+    </section>
+  );
+};
