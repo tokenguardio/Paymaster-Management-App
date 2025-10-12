@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { BrowserProvider } from 'ethers';
 import { generateNonce, SiweMessage } from 'siwe';
 
 export async function signInWithEthereum() {
@@ -7,12 +7,11 @@ export async function signInWithEthereum() {
       throw new Error('No Ethereum wallet – install MetaMask.');
     }
 
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
     const nonce = generateNonce();
+    const provider = new BrowserProvider(window.ethereum);
 
-    await provider.send('eth_requestAccounts', []);
+    const signer = await provider.getSigner();
 
-    const signer = provider.getSigner();
     const address = await signer.getAddress();
 
     const chainId = (await provider.getNetwork()).chainId;
