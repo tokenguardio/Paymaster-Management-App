@@ -6,21 +6,26 @@
  **********/
 
 import React, { Dispatch } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Loader } from '@/components';
 import { PaymasterSlide } from './PaymasterSlide';
 import Style from './PoliciesGrid.module.css';
-import { usePolicies } from '../hooks/usePolicies';
+import { TPolicies } from '../types/policy';
 
 type TPoliciesGridProps = {
+  policies?: TPolicies;
+  isLoadingPolicies: boolean;
   setDeleteModalOpen: Dispatch<React.SetStateAction<boolean>>;
   setSelectedPolicyId: Dispatch<React.SetStateAction<string | null>>;
 };
 
 export const PoliciesGrid: React.FC<TPoliciesGridProps> = ({
+  policies,
+  isLoadingPolicies,
   setDeleteModalOpen,
   setSelectedPolicyId,
 }) => {
-  const { policies, isLoadingPolicies } = usePolicies();
+  const navigate = useNavigate();
 
   const handleDeleteClick = (id: string) => {
     setSelectedPolicyId(id);
@@ -32,16 +37,13 @@ export const PoliciesGrid: React.FC<TPoliciesGridProps> = ({
       label: 'Preview',
       value: 'preview',
       icon: 'preview',
+      action: (id: string) => navigate(`/paymaster/${id}`),
     },
     {
       label: 'Modify',
       value: 'modify',
       icon: 'edit',
-    },
-    {
-      label: 'Pause',
-      value: 'pause',
-      icon: 'pause',
+      action: (id: string) => navigate(`/paymaster/${id}/edit`),
     },
     {
       label: 'Delete',
@@ -57,12 +59,12 @@ export const PoliciesGrid: React.FC<TPoliciesGridProps> = ({
       {isLoadingPolicies && <Loader />}
       <div className={Style['grid']}>
         {policies && policies.length > 0
-          ? policies.map(({ name, id, data }) => {
-              return <PaymasterSlide id={id} title={name} key={id} options={options} data={data} />;
+          ? policies.map(({ name, id }) => {
+              return <PaymasterSlide id={id} title={name} key={id} options={options} />;
             })
           : null}
       </div>
-      {policies && policies.length === 0 ? <>no data</> : null}
+      {policies && policies.length === 0 ? <>No data</> : null}
     </div>
   );
 };

@@ -21,6 +21,7 @@ export class PolicyService {
       data: {
         paymaster_address: createPolicyDto.paymaster_address,
         chain_id: BigInt(createPolicyDto.chain_id),
+        name: 'test',
         status_id: createPolicyDto.status_id,
         max_budget_wei: createPolicyDto.max_budget_wei,
         is_public: createPolicyDto.is_public,
@@ -37,8 +38,11 @@ export class PolicyService {
     return this.transformPolicyResponse(policy);
   }
 
-  public async findAll(): Promise<PolicyResponseDto[]> {
+  public async findAll(status?: string): Promise<PolicyResponseDto[]> {
+    const whereClause = status ? { status_id: status.toUpperCase() } : {};
+
     const policies = await this.prisma.policy.findMany({
+      where: whereClause,
       include: {
         chain: true,
         status: true,

@@ -1,6 +1,5 @@
 import React from 'react';
-import { EChart, Typography } from '@/components';
-import { getAreaChartOption } from '@/utils/helpers';
+import { AreaChart, Typography } from '@/components';
 import Style from './PaymasterView.module.css';
 import { ResultingTable } from './ResultingTable';
 
@@ -120,18 +119,15 @@ const data = [
 ];
 
 export const PaymasterView = () => {
-  const option = getAreaChartOption({
-    data: data,
-    toolbox: false,
-    dataZoom: false,
-    legend: false,
-  });
-
   return (
     <section className={Style['preview-container']}>
       <Typography tag="h2" text="Paymaster Policies" color="primary500" size="l" weight="medium" />
-      {data ? <EChart option={option} /> : null}
+      {data ? (
+        <AreaChart toolbox={false} data={data} dataZoom={false} legend={false} height={500} />
+      ) : null}
+      {/* <div className={Style['table-container']}> */}
       <ResultingTable data={data} />
+      {/* </div> */}
     </section>
   );
 };

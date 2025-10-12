@@ -1,9 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { z } from 'zod';
+import ethereumLogo from '@/assets/images/ethereum.svg';
 import {
   Accordion,
   Button,
@@ -24,8 +23,14 @@ import {
   POLICY_RULE_SCOPE,
   POLICY_RULE_INTERVAL,
 } from '../../../../../../packages/constants/src/policy-rule';
-import { blockchainsOptions } from '../utils/constans';
-import { createPolicy } from '../utils/fetches';
+
+const blockchainsOptions = [
+  {
+    value: 'ethereum',
+    label: 'Ethereum',
+    icon: ethereumLogo,
+  },
+];
 
 const comparatorOptions = Object.values(POLICY_RULE_COMPARATOR).map((comparator) => {
   let symbol = '';
@@ -76,7 +81,7 @@ const metricOptions = Object.values(POLICY_RULE_METRIC).map((metric) => ({
 
 const frequencyOptions = ['of', 'per'];
 
-const _userRulesSchema = z.object({
+const userRulesSchema = z.object({
   type: z.object({
     value: z.enum(['max', 'min']),
     label: z.string(),
@@ -94,41 +99,35 @@ const _userRulesSchema = z.object({
 });
 
 const formSchema = z.object({
-  max_budget_wei: z.coerce
+  max_budget: z.coerce
     .number()
     .min(1, 'Must be greater than 0')
     .refine((val) => !isNaN(val), { message: 'This field is required' }),
-  chain_id: z.number(),
-  is_public: z.boolean(),
-  status_id: z.string(),
-  // payInERC20: z.boolean(),
-  // sponsorTransactions: z.boolean(),
-  valid_from: z.date(),
-  valid_to: z.date(),
-  // policyDoesNotExpire: z.boolean(),
-  whitelisted_addresses: z.boolean(),
-  paymaster_address: z
+  blockchain: z.object({
+    value: z.string(),
+    label: z.string(),
+    icon: z.string().optional(),
+  }),
+  payInERC20: z.boolean(),
+  sponsorTransactions: z.boolean(),
+  startDate: z.date(),
+  endDate: z.date(),
+  policyDoesNotExpire: z.boolean(),
+  whitelistAllAddresses: z.boolean(),
+  manualAddress: z
     .string()
     .trim()
     .optional()
     .refine((val) => !val || /^0x[a-fA-F0-9]{40}$/.test(val), {
       message: 'Invalid Ethereum address',
     }),
-  // manualAddress: z
-  //   .string()
-  //   .trim()
-  //   .optional()
-  //   .refine((val) => !val || /^0x[a-fA-F0-9]{40}$/.test(val), {
-  //     message: 'Invalid Ethereum address',
-  //   }),
-  // userRules: z.array(userRulesSchema),
+  userRules: z.array(userRulesSchema),
 });
 
 type TFormData = z.infer<typeof formSchema>;
 
 export const PaymasterSettings = () => {
   const [entries, setEntries] = useState<string[]>([]);
-  const navigate = useNavigate();
 
   const {
     handleSubmit,
@@ -140,19 +139,16 @@ export const PaymasterSettings = () => {
   } = useForm<TFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      max_budget_wei: 0,
-      chain_id: blockchainsOptions[0].value,
-      is_public: true,
-      status_id: 'ACTIVE',
-      // payInERC20: true,
-      // sponsorTransactions: true,
-      // policyDoesNotExpire: true,
-      paymaster_address: '0x1234567890123456789012345678901234567890',
-      valid_from: new Date(),
-      valid_to: new Date(),
-      whitelisted_addresses: true,
-      // manualAddress: '',
-      // userRules: [],
+      max_budget: 0,
+      blockchain: blockchainsOptions[0],
+      payInERC20: true,
+      sponsorTransactions: true,
+      startDate: new Date(),
+      endDate: new Date(),
+      policyDoesNotExpire: true,
+      whitelistAllAddresses: true,
+      manualAddress: '',
+      userRules: [],
     },
   });
   const { fields, append, remove } = useFieldArray({
@@ -190,19 +186,12 @@ export const PaymasterSettings = () => {
   };
 
   const onSubmit = (data: FormData) => {
-    console.log('errors', errors);
     const payload = {
       ...data,
-      whitelisted_addresses: [...entries],
+      whitelistedAddresses: [...entries],
     };
     console.log('Submitting form:', payload);
-    try {
-      const _response = createPolicy(payload);
-      toast.success('Policy added successfully');
-      navigate('/paymaster');
-    } catch (err: unknown) {
-      toast.error(err?.toString());
-    }
+    // TODO: send this payload to API
   };
 
   return (

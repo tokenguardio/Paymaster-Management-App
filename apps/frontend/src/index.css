@@ -65,8 +65,8 @@ html {
   --color-gray25: #fcfcfd;
   --color-white: #ffffff;
 
-  --toastify-color-success: var(--color-green50);
-  --toastify-text-color-success: var(--color-primary500);
+  --toastify-color-success: var(--color-green500);
+  --toastify-text-color-success: var(--color-white);
   --toastify-toast-width: 55rem;
   --toastify-toast-height: 7.4rem;
 }

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-export const PolicySchema = z.object({
+//TODO define proper object, set with bk
+export const PolicyDataSchema = z.object({
   name: z.string().max(32),
   id: z.string(),
   paymaster_address: z.string().max(42),
@@ -24,7 +25,4 @@ export const PolicySchema = z.object({
   }),
 });
 
-export const PoliciesSchema = z.array(PolicySchema);
-
-export type TPolicies = z.infer<typeof PoliciesSchema>;
-export type TPolicy = z.infer<typeof PolicySchema>;
+export type TPolicyData = z.infer<typeof PolicyDataSchema>;
