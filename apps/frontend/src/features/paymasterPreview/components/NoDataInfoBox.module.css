@@ -1,8 +1,7 @@
 .infobox-container {
   display: flex;
-  justify-content: flex-start;
+  flex-direction: column;
+  gap: 1.6rem;
+  justify-content: center;
   align-items: center;
-  gap: 0.8rem;
-  width: 100%;
-  position: relative;
 }

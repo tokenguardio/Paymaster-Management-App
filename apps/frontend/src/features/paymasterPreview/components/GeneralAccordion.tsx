@@ -1,6 +1,16 @@
 import React from 'react';
 import { Controller, Control, FieldErrors } from 'react-hook-form';
-import { Accordion, Checkbox, DatePicker, Icon, NumberInput, Select } from '@/components';
+import {
+  Accordion,
+  Checkbox,
+  DatePicker,
+  Icon,
+  NumberInput,
+  Select,
+  TextInput,
+} from '@/components';
+import { TPolicy } from '@/types/policy';
+import { blockchainsOptions } from '@/utils/constans';
 import Style from './GeneralAccordion.module.css';
 
 type TFormValues = {
@@ -14,45 +24,33 @@ type TFormValues = {
 };
 
 type TGeneralAccordionProps = {
-  control: Control<TFormValues>;
-  errors: FieldErrors<TFormValues>;
+  policy: TPolicy;
 };
 
-export const GeneralAccordion = ({ control, errors }: TGeneralAccordionProps) => (
+export const GeneralAccordion = ({ policy }: TGeneralAccordionProps) => (
   <Accordion title="General">
     <div className={Style['general-container']}>
-      <Controller
-        name="max_budget"
-        control={control}
-        render={({ field }) => (
-          <NumberInput
-            {...field}
-            label="Maximum budget in USD"
-            prefix="$"
-            className="mt8"
-            fullWidth
-            error={errors.max_budget?.message}
-          />
-        )}
+      <NumberInput
+        label="Maximum budget in USD"
+        prefix="$"
+        className="mt8"
+        fullWidth
+        value={policy?.max_budget_wei}
+        disabled
       />
-      <Controller
+      <Select
+        id="Blockchain"
         name="blockchain"
-        control={control}
-        render={({ field }) => (
-          <Select
-            {...field}
-            id="Blockchain"
-            name="blockchain"
-            label="Network of choice"
-            withArrow
-            size="large"
-            options={blockchainsOptions}
-            change={field.onChange}
-            value={field.value}
-          />
-        )}
+        label="Network of choice"
+        // withArrow
+        size="large"
+        options={blockchainsOptions}
+        // value={policy?.chain_id}
+        // value={blockchainsOptions[0]}
+        value={blockchainsOptions.filter((item) => item.value === policy?.chain_id)[0]}
+        disabled
       />
-      <Controller
+      {/* <Controller
         name="payInERC20"
         control={control}
         render={({ field }) => (
@@ -65,43 +63,22 @@ export const GeneralAccordion = ({ control, errors }: TGeneralAccordionProps) =>
         render={({ field }) => (
           <Checkbox {...field} checked={field.value} label="Sponsor Transactions for Users" />
         )}
-      />
+      /> */}
       <div className={Style['date-inputs-row']}>
-        <Controller
-          name="startDate"
-          control={control}
-          render={({ field }) => (
-            <DatePicker
-              {...field}
-              label="Start Date"
-              value={field.value}
-              onChange={field.onChange}
-              fullWidth
-              calendarIcon={<Icon width="14" height="16" name="calendar" color="gray900" />}
-            />
-          )}
+        <DatePicker
+          label="Start Date"
+          value={policy?.valid_from}
+          fullWidth
+          disabled
+          calendarIcon={<Icon width="14" height="16" name="calendar" color="gray900" />}
         />
-        <Controller
-          name="endDate"
-          control={control}
-          render={({ field }) => (
-            <DatePicker
-              {...field}
-              label="End Date"
-              value={field.value}
-              onChange={field.onChange}
-              fullWidth
-            />
-          )}
-        />
+        <DatePicker label="End Date" value={policy?.valid_to} disabled fullWidth />
       </div>
-      <Controller
-        name="policyDoesNotExpire"
-        control={control}
-        render={({ field }) => (
-          <Checkbox {...field} checked={field.value} label="Policy doesn’t expire" />
-        )}
-      />
+      {/* <Checkbox
+        checked={true}
+        label="Policy doesn’t expire"
+        disabled
+      /> */}
     </div>
   </Accordion>
 );

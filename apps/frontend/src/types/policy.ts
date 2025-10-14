@@ -6,7 +6,7 @@ export const PolicySchema = z.object({
   paymaster_address: z.string().max(42),
   chain_id: z.string(),
   status_id: z.string().max(40),
-  max_budget_wei: z.string(),
+  max_budget_wei: z.number(),
   is_public: z.boolean(),
   whitelisted_addresses: z.array(z.string()).nullable(),
   valid_from: z.string().datetime(),

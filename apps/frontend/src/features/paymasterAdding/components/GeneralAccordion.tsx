@@ -1,14 +1,12 @@
 import React from 'react';
 import { Controller, Control, FieldErrors } from 'react-hook-form';
 import { Accordion, Checkbox, DatePicker, Icon, NumberInput, Select } from '@/components';
+import { blockchainsOptions } from '@/utils/constans';
 import Style from './GeneralAccordion.module.css';
-import { blockchainsOptions } from '../utils/constans';
 
 type TFormValues = {
   max_budget_wei?: number;
   blockchain?: number;
-  // payInERC20?: boolean;
-  // sponsorTransactions?: boolean;
   valid_from?: Date | null;
   valid_to?: Date | null;
   // policyDoesNotExpire?: boolean;

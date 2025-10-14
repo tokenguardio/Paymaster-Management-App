@@ -14,6 +14,7 @@ import {
   TinySelect,
   Typography,
 } from '@/components';
+import { blockchainsOptions } from '@/utils/constans';
 import { GeneralAccordion } from './GeneralAccordion';
 import Style from './PaymasterSettings.module.css';
 import { PaymasterTitle } from './PaymasterTitle';
@@ -24,7 +25,6 @@ import {
   POLICY_RULE_SCOPE,
   POLICY_RULE_INTERVAL,
 } from '../../../../../../packages/constants/src/policy-rule';
-import { blockchainsOptions } from '../utils/constans';
 import { createPolicy } from '../utils/fetches';
 
 const comparatorOptions = Object.values(POLICY_RULE_COMPARATOR).map((comparator) => {
@@ -52,57 +52,44 @@ const comparatorOptions = Object.values(POLICY_RULE_COMPARATOR).map((comparator)
   };
 });
 
-// const typeOptions = [
-//   { value: 'max', label: 'Max' },
-//   { value: 'min', label: 'Min' },
-// ];
-
-const targetOptions = [
-  { value: 'budget', label: 'Budget' },
-  { value: 'value', label: 'Value' },
-  { value: 'number', label: 'Number' },
-];
-
-const subjectOptions = [
-  { value: 'UserOp', label: 'UserOp' },
-  { value: 'Sender', label: 'Sender' },
-  { value: 'Receiver', label: 'Receiver' },
-];
-
 const metricOptions = Object.values(POLICY_RULE_METRIC).map((metric) => ({
   label: metric.name,
   value: metric.id,
 }));
 
-const frequencyOptions = ['of', 'per'];
+const intervalOptions = Object.values(POLICY_RULE_INTERVAL).map((interval) => ({
+  label: interval.name,
+  value: interval.id,
+}));
 
-const _userRulesSchema = z.object({
-  type: z.object({
-    value: z.enum(['max', 'min']),
-    label: z.string(),
-  }),
-  target: z.object({
-    value: z.enum(['budget', 'value', 'number']),
-    label: z.string(),
-  }),
-  frequency: z.enum(['of', 'per']),
-  metric: z.object({
-    value: z.enum(['UserOp', 'Sender', 'Receiver']),
-    label: z.string(),
-  }),
-  amount: z.coerce.number().min(0.00000001, 'Must be greater than 0'),
-});
+const scopeOptions = Object.values(POLICY_RULE_SCOPE).map((scope) => ({
+  label: scope.name,
+  value: scope.id,
+}));
+
+const metricValues = Object.values(POLICY_RULE_METRIC).map((m) => m.id);
+const scopeValues = Object.values(POLICY_RULE_SCOPE).map((m) => m.id);
+const intervalValues = Object.values(POLICY_RULE_INTERVAL).map((m) => m.id);
+const comparatorValues = Object.values(POLICY_RULE_COMPARATOR).map((m) => m.id);
+
+const ruleSchema = z
+  .object({
+    comparator: z.enum(comparatorValues as [string, ...string[]]),
+    interval: z.enum(intervalValues as [string, ...string[]]),
+    scope: z.enum(scopeValues as [string, ...string[]]),
+    metric: z.enum(metricValues as [string, ...string[]]),
+    amount: z.coerce.number().min(0.00000001, 'Must be greater than 0'),
+  })
+  .optional();
 
 const formSchema = z.object({
   max_budget_wei: z.coerce
     .number()
     .min(1, 'Must be greater than 0')
     .refine((val) => !isNaN(val), { message: 'This field is required' }),
-  chain_id: z.number(),
+  chain_id: z.string(),
   is_public: z.boolean(),
   status_id: z.string(),
-  // payInERC20: z.boolean(),
-  // sponsorTransactions: z.boolean(),
   valid_from: z.date(),
   valid_to: z.date(),
   // policyDoesNotExpire: z.boolean(),
@@ -121,7 +108,7 @@ const formSchema = z.object({
   //   .refine((val) => !val || /^0x[a-fA-F0-9]{40}$/.test(val), {
   //     message: 'Invalid Ethereum address',
   //   }),
-  // userRules: z.array(userRulesSchema),
+  rules: z.array(ruleSchema),
 });
 
 type TFormData = z.infer<typeof formSchema>;
@@ -144,20 +131,26 @@ export const PaymasterSettings = () => {
       chain_id: blockchainsOptions[0].value,
       is_public: true,
       status_id: 'ACTIVE',
-      // payInERC20: true,
-      // sponsorTransactions: true,
       // policyDoesNotExpire: true,
       paymaster_address: '0x1234567890123456789012345678901234567890',
       valid_from: new Date(),
       valid_to: new Date(),
       whitelisted_addresses: true,
       // manualAddress: '',
-      // userRules: [],
+      rules: [
+        {
+          comparator: undefined,
+          interval: undefined,
+          scope: undefined,
+          metric: undefined,
+          amount: 0,
+        },
+      ],
     },
   });
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'userRules',
+    name: 'rules',
   });
   const manualAddress = watch('manualAddress');
   let _isValidAddress;
@@ -168,7 +161,7 @@ export const PaymasterSettings = () => {
   const handleAddAddress = () => {
     if (/^0x[a-fA-F0-9]{40}$/.test(manualAddress)) {
       setEntries((prev) => [...prev, manualAddress]);
-      setValue('manualAddress', ''); // czyści input po dodaniu
+      setValue('manualAddress', '');
     }
   };
 
@@ -190,12 +183,11 @@ export const PaymasterSettings = () => {
   };
 
   const onSubmit = (data: FormData) => {
-    console.log('errors', errors);
     const payload = {
       ...data,
       whitelisted_addresses: [...entries],
     };
-    console.log('Submitting form:', payload);
+
     try {
       const _response = createPolicy(payload);
       toast.success('Policy added successfully');
@@ -229,62 +221,65 @@ export const PaymasterSettings = () => {
         <Accordion title="User Spending Rules">
           {fields.map((field, index) => (
             <div key={field.id} className={Style['user-rule-row']}>
-              {/* <Controller
-                name={`userRules.${index}.type`}
-                control={control}
-                render={({ field }) => (
-                  <TinySelect
-                    {...field}
-                    options={typeOptions}
-                    value={field.value}
-                    change={(val) => field.onChange(val)}
-                    withArrow
-                  />
-                )}
-              /> */}
               <Controller
-                name={`userRules.${index}.target`}
-                control={control}
-                render={({ field }) => (
-                  <TinySelect
-                    {...field}
-                    options={targetOptions}
-                    value={field.value}
-                    change={(val) => field.onChange(val)}
-                    withArrow
-                  />
-                )}
-              />
-              <Typography text="per" tag="p" size="xs" weight="regular" />
-              <Controller
-                name={`userRules.${index}.metric`}
+                name={`rules.${index}.metric`}
                 control={control}
                 render={({ field }) => (
                   <TinySelect
                     {...field}
                     options={metricOptions}
-                    value={field.value}
-                    change={(val) => field.onChange(val)}
+                    value={metricOptions.find((o) => o.value === field.value)}
+                    change={field.onChange}
                     withArrow
+                    error={errors.rules?.[index]?.metric?.message}
                   />
                 )}
               />
               <Controller
-                name={`userRules.${index}.type`}
+                name={`rules.${index}.scope`}
                 control={control}
                 render={({ field }) => (
                   <TinySelect
                     {...field}
-                    options={comparatorOptions} // używamy nowo utworzonych opcji
-                    value={field.value}
-                    change={(val) => field.onChange(val)}
+                    options={scopeOptions}
+                    value={scopeOptions.find((o) => o.value === field.value)}
+                    change={field.onChange}
                     withArrow
+                    error={errors.rules?.[index]?.scope?.message}
                   />
                 )}
               />
-              {/* <Typography text="=" tag="p" size="xs" weight="regular" /> */}
+              <Typography text="per" tag="p" size="xs" weight="regular" />
               <Controller
-                name={`userRules.${index}.amount`}
+                name={`rules.${index}.interval`}
+                control={control}
+                render={({ field }) => (
+                  <TinySelect
+                    {...field}
+                    options={intervalOptions}
+                    value={intervalOptions.find((o) => o.value === field.value)}
+                    change={field.onChange}
+                    withArrow
+                    error={errors.rules?.[index]?.interval?.message}
+                  />
+                )}
+              />
+              <Controller
+                name={`rules.${index}.comparator`}
+                control={control}
+                render={({ field }) => (
+                  <TinySelect
+                    {...field}
+                    options={comparatorOptions}
+                    value={comparatorOptions.find((o) => o.value === field.value)}
+                    change={field.onChange}
+                    withArrow
+                    error={errors.rules?.[index]?.comparator?.message}
+                  />
+                )}
+              />
+              <Controller
+                name={`rules.${index}.amount`}
                 control={control}
                 render={({ field }) => (
                   <DynamicInput
@@ -296,7 +291,7 @@ export const PaymasterSettings = () => {
                     className={Style['amount-input']}
                     prefix="$"
                     size="small"
-                    // error={errors.userRules?.[index]?.amount?.message}
+                    error={errors.rules?.[index]?.amount?.message}
                   />
                 )}
               />

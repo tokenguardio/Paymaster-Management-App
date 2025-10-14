@@ -1,3 +1,5 @@
+import ethereumLogo from '@/assets/images/ethereum.svg';
+
 export const breakpoints = {
   mobile: 1024,
 };
@@ -51,3 +53,11 @@ export const palette = {
   gray25: '#fcfcfd',
   white: '#ffffff',
 };
+
+export const blockchainsOptions = [
+  {
+    value: '1',
+    label: 'Ethereum',
+    icon: ethereumLogo,
+  },
+];

@@ -8,3 +8,9 @@ export const fetchPolicyData = async (id: string) => {
 
   return response.data;
 };
+
+export const fetchPolicy = async (id: string) => {
+  const response = await axios.get(`${serverURL}/policies/${id}`);
+
+  return response.data;
+};

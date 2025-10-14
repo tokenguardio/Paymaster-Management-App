@@ -1,48 +1,48 @@
 /***
  *
- *   usePolicies hook
- *   fetch, format and return policies
+ *   usePolicy hook
+ *   fetch, format and return policy
  *
  **********/
 
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { _PolicySchema } from '@/types/policy';
+import { fetchPolicy } from '@/utils/fetches';
 import { _getValidationErrorMessage } from '@/utils/helpers';
 import { _logger } from '@/utils/logger';
-import { fetchPolicies } from '../utils/fetches';
 
-export const usePolicies = () => {
-  const [policies, setPolicies] = useState();
-  const [isLoadingPolicies, setIsLoadingPolicies] = useState(false);
+export const usePolicy = (id: string) => {
+  const [policy, setPolicy] = useState();
+  const [isLoadingPolicy, setIsLoadingPolicy] = useState(false);
 
   const fetchData = async () => {
     try {
-      setIsLoadingPolicies(true);
+      setIsLoadingPolicy(true);
 
-      const fetchedPolicies = await fetchPolicies('?status=ACTIVE');
-      // const validatedPolicies = PolicySchema.safeParse(fetchedPolicies);
+      const fetchedPolicy = await fetchPolicy(id);
+      // const validatedPolicy = PolicySchema.safeParse(fetchedPolicy);
       //TODO inprogress
       // if (!validatedPolicies.success) {
       //   logger.error(validatedPolicies.error);
       //   throw Error(getValidationErrorMessage('Policies'));
       // }
       // setPolicies(validatedPolicies.data);
-      setPolicies(fetchedPolicies);
-      setIsLoadingPolicies(false);
+      setPolicy(fetchedPolicy);
+      setIsLoadingPolicy(false);
     } catch (err: unknown) {
-      setIsLoadingPolicies(false);
+      setIsLoadingPolicy(false);
       toast.error(err?.toString());
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   return {
-    policies,
-    isLoadingPolicies,
+    policy,
+    isLoadingPolicy,
     refreshData: fetchData,
   };
 };
