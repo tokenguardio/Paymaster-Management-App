@@ -23,7 +23,7 @@
     "prisma:migrate:reset": "turbo prisma:migrate:reset",
     "prisma:seed": "turbo prisma:seed",
     "prisma:studio": "turbo prisma:studio",
-    "start:dev": "turbo start:dev --ui=tui",
+    "start:dev": "turbo start:dev",
     "test": "turbo test --continue"
   },
   "devDependencies": {

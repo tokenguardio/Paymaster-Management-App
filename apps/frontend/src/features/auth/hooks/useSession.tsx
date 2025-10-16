@@ -5,7 +5,7 @@ export function useSession() {
   const [address, setAddress] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:3001/me', {
+    fetch('http://localhost:3001/siwe/me', {
       credentials: 'include',
     })
       .then(async (res) => {
