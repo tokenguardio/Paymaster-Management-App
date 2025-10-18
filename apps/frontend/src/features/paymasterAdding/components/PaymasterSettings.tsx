@@ -83,6 +83,7 @@ const ruleSchema = z
   .optional();
 
 const formSchema = z.object({
+  name: z.string(),
   max_budget_wei: z.coerce
     .number()
     .min(1, 'Must be greater than 0')
@@ -127,6 +128,7 @@ export const PaymasterSettings = () => {
   } = useForm<TFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: 'Spending Policy',
       max_budget_wei: 0,
       chain_id: blockchainsOptions[0].value,
       is_public: true,
@@ -199,9 +201,13 @@ export const PaymasterSettings = () => {
 
   return (
     <section className={Style['settings-panel']}>
-      <PaymasterTitle />
-      <Line />
       <form onSubmit={handleSubmit(onSubmit)}>
+        <Controller
+          name="name"
+          control={control}
+          render={({ field }) => <PaymasterTitle value={field.value} onChange={field.onChange} />}
+        />
+        <Line />
         <GeneralAccordion control={control} errors={errors} />
         <Line />
         <WhitelistedAddressesAccordion

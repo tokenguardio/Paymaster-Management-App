@@ -12,6 +12,12 @@ export class PolicyResponseDto {
   public id!: string;
 
   @ApiProperty({
+    description: 'Policy name',
+    example: 'My First Policy',
+  })
+  public name!: string;
+
+  @ApiProperty({
     description: 'Paymaster Ethereum address',
     example: '0x1234567890123456789012345678901234567890',
   })

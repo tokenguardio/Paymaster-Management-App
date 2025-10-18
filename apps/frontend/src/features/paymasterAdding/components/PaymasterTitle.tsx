@@ -3,43 +3,45 @@ import { Icon, IconButton, TextInput } from '@/components';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import Style from './PaymasterTitle.module.css';
 
-export const PaymasterTitle = ({ maxLength = 32 }) => {
-  const [paymasterTitle, setPaymasterTitle] = useState('Spending Policy');
+interface IPaymasterTitleProps {
+  value: string;
+  onChange: (value: string) => void;
+  maxLength?: number;
+}
+
+export const PaymasterTitle: React.FC<IPaymasterTitleProps> = ({
+  value,
+  onChange,
+  maxLength = 32,
+}) => {
   const [editing, setEditing] = useState<boolean>(false);
+  const ref = useOutsideClick(() => setEditing(false));
 
-  const ref = useOutsideClick(() => {
-    setEditing(false);
-  });
-
-  const handleClick = () => {
-    setEditing(true);
-  };
+  const handleClick = () => setEditing(true);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPaymasterTitle(e.target.value);
+    onChange(e.target.value);
   };
 
-  const handleBlur = () => {
-    setEditing(false);
-  };
+  const handleBlur = () => setEditing(false);
 
   return (
     <div className={Style['paymaster-title-container']} ref={ref}>
       {editing ? (
         <div className={Style['input-container']}>
           <TextInput
-            name="dashboard-title"
-            value={paymasterTitle}
+            name="name"
+            value={value}
             onChange={handleChange}
             onBlur={handleBlur}
             maxLength={maxLength}
           />
           <span className={Style['char-count']}>
-            {paymasterTitle.length} / {maxLength}
+            {value.length} / {maxLength}
           </span>
         </div>
       ) : (
-        <p className={Style['title']}>{paymasterTitle}</p>
+        <p className={Style['title']}>{value}</p>
       )}
       <IconButton
         onClick={handleClick}

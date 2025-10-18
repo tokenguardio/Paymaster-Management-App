@@ -19,6 +19,7 @@ export class PolicyService {
   public async create(createPolicyDto: CreatePolicyDto): Promise<PolicyResponseDto> {
     const policy = await this.prisma.policy.create({
       data: {
+        name: createPolicyDto.name,
         paymaster_address: createPolicyDto.paymaster_address,
         chain_id: BigInt(createPolicyDto.chain_id),
         status_id: createPolicyDto.status_id,
@@ -126,6 +127,7 @@ export class PolicyService {
 
   private transformPolicyResponse(policy: TPolicyWithRelations): PolicyResponseDto {
     return {
+      name: policy.name.toString(),
       id: policy.id.toString(),
       paymaster_address: policy.paymaster_address,
       chain_id: policy.chain_id.toString(),
