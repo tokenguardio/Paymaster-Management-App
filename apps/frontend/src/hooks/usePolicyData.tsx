@@ -39,7 +39,7 @@ export const usePolicyData = (id: string) => {
     };
 
     fetchData();
-  }, []);
+  }, [id]);
 
   return {
     policyData,

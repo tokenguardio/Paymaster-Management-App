@@ -14,3 +14,9 @@ export const fetchPolicy = async (id: string) => {
 
   return response.data;
 };
+
+export const fetchPolicyRules = async (id: string) => {
+  const response = await axios.get(`${serverURL}/policy-rules/${id}`);
+
+  return response.data;
+};

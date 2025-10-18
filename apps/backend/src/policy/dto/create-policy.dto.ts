@@ -10,11 +10,42 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  ValidateNested,
   IsString,
 } from 'class-validator';
 
 const VALID_CHAIN_IDS = Object.values(CHAINS).map((chain) => chain.id);
 const VALID_POLICY_STATUS_IDS = Object.values(POLICY_STATUS).map((status) => status.id);
+
+export class CreatePolicyRuleDto {
+  @ApiPropertyOptional({ example: 'EQ' })
+  @IsString()
+  public comparator!: string;
+
+  @ApiPropertyOptional({ example: 'NOW' })
+  @IsString()
+  public interval!: string;
+
+  @ApiPropertyOptional({ example: 'WALLET' })
+  @IsString()
+  public scope!: string;
+
+  @ApiPropertyOptional({ example: 'TOKEN_BALANCE' })
+  @IsString()
+  public metric!: string;
+
+  @ApiPropertyOptional({ example: 25 })
+  @IsNumber()
+  public amount!: number;
+
+  @ApiPropertyOptional({
+    description: 'Token address for balance-based rules',
+    example: '0x0000000000000000000000000000000000000000',
+  })
+  @IsOptional()
+  @IsString()
+  public token_address?: string;
+}
 
 export class CreatePolicyDto {
   @ApiProperty({
@@ -70,9 +101,10 @@ export class CreatePolicyDto {
   })
   @IsArray()
   @IsString({ each: true })
-  @IsEthereumAddress({
-    each: true,
-  })
+  // TODO fix eth validation
+  // @IsEthereumAddress({
+  //   each: true,
+  // })
   public whitelisted_addresses!: string[];
 
   @ApiPropertyOptional({
@@ -90,4 +122,14 @@ export class CreatePolicyDto {
   @IsOptional()
   @IsDateString()
   public valid_to?: string;
+
+  @ApiPropertyOptional({
+    description: 'Policy rules definitions',
+    type: [CreatePolicyRuleDto],
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreatePolicyRuleDto)
+  public rules?: CreatePolicyRuleDto[];
 }

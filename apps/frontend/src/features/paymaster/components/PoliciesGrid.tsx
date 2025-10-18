@@ -8,9 +8,9 @@
 import React, { Dispatch } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader } from '@/components';
+import { TPolicies } from '@/types/policy';
 import { PaymasterSlide } from './PaymasterSlide';
 import Style from './PoliciesGrid.module.css';
-import { TPolicies } from '../types/policy';
 
 type TPoliciesGridProps = {
   policies?: TPolicies;

@@ -7,14 +7,14 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { _PolicySchema } from '@/types/policy';
+import { _PolicySchema, TPolicy } from '@/types/policy';
 import { fetchPolicy } from '@/utils/fetches';
 import { _getValidationErrorMessage } from '@/utils/helpers';
 import { _logger } from '@/utils/logger';
 
 export const usePolicy = (id: string) => {
-  const [policy, setPolicy] = useState();
-  const [isLoadingPolicy, setIsLoadingPolicy] = useState(false);
+  const [policy, setPolicy] = useState<TPolicy>();
+  const [isLoadingPolicy, setIsLoadingPolicy] = useState<boolean>(false);
 
   const fetchData = async () => {
     try {
@@ -38,7 +38,7 @@ export const usePolicy = (id: string) => {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, []);
 
   return {
     policy,

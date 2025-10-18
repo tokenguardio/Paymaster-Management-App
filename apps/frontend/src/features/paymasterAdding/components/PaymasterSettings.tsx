@@ -87,7 +87,7 @@ const formSchema = z.object({
     .number()
     .min(1, 'Must be greater than 0')
     .refine((val) => !isNaN(val), { message: 'This field is required' }),
-  chain_id: z.string(),
+  chain_id: z.number(),
   is_public: z.boolean(),
   status_id: z.string(),
   valid_from: z.date(),
@@ -219,8 +219,9 @@ export const PaymasterSettings = () => {
         />
         <Line />
         <Accordion title="User Spending Rules">
-          {fields.map((field, index) => (
-            <div key={field.id} className={Style['user-rule-row']}>
+          {/* {fields.map((field, index) => (
+            <div key={field.id}>
+            <div  className={Style['user-rule-row']}>
               <Controller
                 name={`rules.${index}.metric`}
                 control={control}
@@ -300,14 +301,149 @@ export const PaymasterSettings = () => {
                 onClick={() => remove(index)}
               />
             </div>
+            </div>
+          ))} */}
+          {fields.map((field, index) => (
+            <div key={field.id}>
+              <div className={Style['user-rule-row']}>
+                <Controller
+                  name={`rules.${index}.metric`}
+                  control={control}
+                  render={({ field }) => (
+                    <TinySelect
+                      {...field}
+                      options={metricOptions}
+                      value={metricOptions.find((o) => o.value === field.value)}
+                      change={field.onChange}
+                      withArrow
+                    />
+                  )}
+                />
+                <Controller
+                  name={`rules.${index}.scope`}
+                  control={control}
+                  render={({ field }) => (
+                    <TinySelect
+                      {...field}
+                      options={scopeOptions}
+                      value={scopeOptions.find((o) => o.value === field.value)}
+                      change={field.onChange}
+                      withArrow
+                    />
+                  )}
+                />
+                <Typography text="per" tag="p" size="xs" weight="regular" />
+                <Controller
+                  name={`rules.${index}.interval`}
+                  control={control}
+                  render={({ field }) => (
+                    <TinySelect
+                      {...field}
+                      options={intervalOptions}
+                      value={intervalOptions.find((o) => o.value === field.value)}
+                      change={field.onChange}
+                      withArrow
+                    />
+                  )}
+                />
+                <Controller
+                  name={`rules.${index}.comparator`}
+                  control={control}
+                  render={({ field }) => (
+                    <TinySelect
+                      {...field}
+                      options={comparatorOptions}
+                      value={comparatorOptions.find((o) => o.value === field.value)}
+                      change={field.onChange}
+                      withArrow
+                    />
+                  )}
+                />
+                <Controller
+                  name={`rules.${index}.amount`}
+                  control={control}
+                  render={({ field }) => (
+                    <DynamicInput
+                      {...field}
+                      placeholder="0"
+                      min={0}
+                      step={1}
+                      maxLength={9}
+                      className={Style['amount-input']}
+                      prefix="$"
+                      size="small"
+                    />
+                  )}
+                />
+                <IconButton
+                  icon={<Icon name="exit" width="16" height="16" color="gray400" />}
+                  onClick={() => remove(index)}
+                />
+              </div>
+              {errors.rules?.[index] && (
+                <div className="mb24">
+                  {errors.rules[index].metric && (
+                    <Typography
+                      tag="p"
+                      color="red500"
+                      weight="regular"
+                      style="italic"
+                      text="Metric - this field is required"
+                      size="xs"
+                    />
+                  )}
+                  {errors.rules[index].scope && (
+                    <Typography
+                      tag="p"
+                      color="red500"
+                      weight="regular"
+                      style="italic"
+                      text="Scope - this field is required"
+                      size="xs"
+                    />
+                  )}
+                  {errors.rules[index].interval && (
+                    <Typography
+                      tag="p"
+                      color="red500"
+                      weight="regular"
+                      style="italic"
+                      text="Interval - this field is required"
+                      size="xs"
+                    />
+                  )}
+                  {errors.rules[index].comparator && (
+                    <Typography
+                      tag="p"
+                      color="red500"
+                      weight="regular"
+                      style="italic"
+                      text="Comparator - this field is required"
+                      size="xs"
+                    />
+                  )}
+                  {errors.rules[index].amount && (
+                    <Typography
+                      tag="p"
+                      color="red500"
+                      weight="regular"
+                      style="italic"
+                      text={errors.rules[index].amount.message || `Amount - this field is required`}
+                      size="xs"
+                    />
+                  )}
+                </div>
+              )}
+            </div>
           ))}
+
           <Button
             onClick={() =>
               append({
                 comparator: comparatorOptions[0],
-                target: targetOptions[0],
-                frequency: frequencyOptions[0],
-                subject: subjectOptions[0],
+                interval: intervalOptions[0],
+                scope: scopeOptions[0],
+                metric: metricOptions[0],
                 amount: 0,
               })
             }
