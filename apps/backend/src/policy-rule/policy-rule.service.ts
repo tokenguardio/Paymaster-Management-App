@@ -1,26 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@repo/prisma';
+import { PolicyRuleResponseDto } from './dto/policy-rule-response.dto';
 
 @Injectable()
 export class PolicyRuleService {
   public constructor(private readonly prisma: PrismaService) {}
 
-  public async findByPolicyId(policyId: number): Promise<
-    {
-      id: string;
-      policy_id: string;
-      metric: { id: string; name: string; description: string | null };
-      comparator: { id: string; name: string; description: string | null };
-      interval: { id: string; name: string; description: string | null };
-      scope: { id: string; name: string; description: string | null };
-      value: string;
-      token_address: string | null;
-      valid_from: string;
-      valid_to: string | null;
-      created_at: string;
-      updated_at: string;
-    }[]
-  > {
+  public async findByPolicyId(policyId: number): Promise<PolicyRuleResponseDto[]> {
     const rules = await this.prisma.policyRule.findMany({
       where: { policy_id: BigInt(policyId) },
       include: {
@@ -39,26 +25,10 @@ export class PolicyRuleService {
     return rules.map((r) => ({
       id: r.id.toString(),
       policy_id: r.policy_id.toString(),
-      metric: {
-        id: r.metric.id,
-        name: r.metric.name,
-        description: r.metric.description,
-      },
-      comparator: {
-        id: r.comparator.id,
-        name: r.comparator.name,
-        description: r.comparator.description,
-      },
-      interval: {
-        id: r.interval.id,
-        name: r.interval.name,
-        description: r.interval.description,
-      },
-      scope: {
-        id: r.scope.id,
-        name: r.scope.name,
-        description: r.scope.description,
-      },
+      metric: r.metric,
+      comparator: r.comparator,
+      interval: r.interval,
+      scope: r.scope,
       value: r.value.toString(),
       token_address: r.token_address,
       valid_from: r.valid_from.toISOString(),

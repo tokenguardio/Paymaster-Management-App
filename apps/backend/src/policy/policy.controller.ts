@@ -8,6 +8,7 @@ import {
   Delete,
   HttpStatus,
   ParseIntPipe,
+  UseGuards,
   Query,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
@@ -15,8 +16,10 @@ import { CreatePolicyDto } from './dto/create-policy.dto';
 import { PolicyResponseDto } from './dto/policy-response.dto';
 import { UpdatePolicyDto } from './dto/update-policy.dto';
 import { PolicyService } from './policy.service';
+import { SiweAuthGuard } from '../auth/auth.guard';
 
 @ApiTags('Policies')
+@UseGuards(SiweAuthGuard)
 @Controller('policies')
 export class PolicyController {
   public constructor(private readonly policyService: PolicyService) {}

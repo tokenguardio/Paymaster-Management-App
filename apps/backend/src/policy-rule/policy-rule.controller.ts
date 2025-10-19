@@ -1,9 +1,11 @@
-import { Controller, Get, Param, ParseIntPipe, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, HttpStatus, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { PolicyRuleResponseDto } from './dto/policy-rule-response.dto';
 import { PolicyRuleService } from './policy-rule.service';
+import { SiweAuthGuard } from '../auth/auth.guard';
 
 @ApiTags('Policy Rules')
+@UseGuards(SiweAuthGuard)
 @Controller('policy-rules')
 export class PolicyRuleController {
   public constructor(private readonly policyRuleService: PolicyRuleService) {}

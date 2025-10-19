@@ -2,12 +2,14 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as session from 'express-session';
 import { AppModule } from './app.module';
+import { getLogLevels } from './shared/util/logging.util';
 
 async function bootstrap(): Promise<void> {
   const loggerContext = 'bootstrap';
-
   Logger.log('bootstrapping...', loggerContext);
+
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(
@@ -26,18 +28,61 @@ async function bootstrap(): Promise<void> {
   const BIND_ADDRESS = configService.getOrThrow('BIND_ADDRESS');
   const SWAGGER_UI_PATH = configService.getOrThrow('SWAGGER_UI_PATH');
   const NODE_ENV = configService.get('NODE_ENV');
+  const SESSION_SECRET = configService.get('SESSION_SECRET', 'siwe-secret');
+  const FRONTEND_URL = configService.get('FRONTEND_URL', 'http://localhost:3001');
+  const LOG_LEVEL = configService.get('LOG_LEVEL', 'debug');
 
-  // Enable CORS for development
+  app.useLogger(getLogLevels(LOG_LEVEL));
+
+  Logger.log(`Log level: ${LOG_LEVEL}`, loggerContext);
+
+  // Configure session middleware for SIWE
+  app.use(
+    session({
+      name: 'siwe-session',
+      secret: SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: NODE_ENV === 'production', // Use secure cookies in production
+        httpOnly: true,
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      },
+    }),
+  );
+  Logger.log('Session middleware configured', loggerContext);
+
+  // Configure CORS
   if (NODE_ENV === 'development') {
-    app.enableCors();
-    Logger.log('CORS enabled for development', loggerContext);
+    app.enableCors({
+      origin: FRONTEND_URL,
+      credentials: true, // Important for cookies/sessions
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    });
+    Logger.log(`CORS enabled for development (origin: ${FRONTEND_URL})`, loggerContext);
+  } else {
+    // Production CORS configuration
+    app.enableCors({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      origin: (origin: any, callback: any) => {
+        // Configure allowed origins for production
+        const allowedOrigins = [FRONTEND_URL];
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+      credentials: true,
+    });
   }
 
   const openAPIDocument = SwaggerModule.createDocument(
     app,
     new DocumentBuilder().setTitle('Paymaster Management API Service').setVersion('').build(),
   );
-
   SwaggerModule.setup(SWAGGER_UI_PATH, app, openAPIDocument);
 
   Logger.log(`binding to ${BIND_ADDRESS}:${PORT}...`, loggerContext);

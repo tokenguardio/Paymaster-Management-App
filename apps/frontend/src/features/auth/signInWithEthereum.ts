@@ -1,5 +1,5 @@
 import { BrowserProvider } from 'ethers';
-import { generateNonce, SiweMessage } from 'siwe';
+import { SiweMessage } from 'siwe';
 
 export async function signInWithEthereum() {
   try {
@@ -7,14 +7,21 @@ export async function signInWithEthereum() {
       throw new Error('No Ethereum wallet – install MetaMask.');
     }
 
-    const nonce = generateNonce();
+    // First, get nonce from backend
+    const nonceRes = await fetch('http://localhost:3000/siwe/nonce', {
+      credentials: 'include',
+    });
+
+    if (!nonceRes.ok) {
+      throw new Error('Failed to get nonce');
+    }
+
+    const nonce = await nonceRes.text();
+
     const provider = new BrowserProvider(window.ethereum);
-
     const signer = await provider.getSigner();
-
     const address = await signer.getAddress();
-
-    const chainId = (await provider.getNetwork()).chainId;
+    const chainId = Number((await provider.getNetwork()).chainId);
 
     const message = new SiweMessage({
       domain: window.location.host,
@@ -24,15 +31,19 @@ export async function signInWithEthereum() {
       version: '1',
       chainId,
       nonce: nonce,
+      issuedAt: new Date().toISOString(),
     });
 
     const signature = await signer.signMessage(message.prepareMessage());
 
-    const res = await fetch('http://localhost:3001/siwe/verify', {
+    const res = await fetch('http://localhost:3000/siwe/verify', {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: message.toMessage(), signature }),
+      body: JSON.stringify({
+        message: message.toMessage(),
+        signature,
+      }),
     });
 
     if (!res.ok) {
@@ -41,10 +52,10 @@ export async function signInWithEthereum() {
     }
 
     const { address: loggedAddress } = await res.json();
-    console.log('Login as:', loggedAddress);
+    console.log('Logged in as:', loggedAddress);
     return loggedAddress;
   } catch (err) {
-    console.error('Logged error:', err);
+    console.error('Login error:', err);
     throw err;
   }
 }
