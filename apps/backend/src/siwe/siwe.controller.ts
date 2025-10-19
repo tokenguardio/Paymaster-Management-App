@@ -7,6 +7,7 @@ import {
   UnauthorizedException,
   BadRequestException,
   HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { MeResponseDto, VerifyDto, VerifyResponseDto } from './dto/verify.dto';
@@ -36,6 +37,7 @@ export class SiweController {
   }
 
   @Post('verify')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Verify SIWE signature',
     description:
