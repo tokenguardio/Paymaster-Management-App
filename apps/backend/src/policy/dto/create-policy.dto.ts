@@ -130,12 +130,13 @@ export class CreatePolicyDto {
   @IsDateString()
   public valid_to?: string;
 
-  @ApiProperty({
-    description: 'Array of rules for the policy',
+  @ApiPropertyOptional({
+    description: 'Policy rules definitions',
     type: [CreatePolicyRuleDto],
   })
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreatePolicyRuleDto)
-  public rules!: CreatePolicyRuleDto[];
+  public rules?: CreatePolicyRuleDto[];
 }

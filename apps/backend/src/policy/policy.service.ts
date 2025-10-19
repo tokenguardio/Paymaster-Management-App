@@ -17,29 +17,57 @@ export class PolicyService {
   public constructor(private readonly prisma: PrismaService) {}
 
   public async create(createPolicyDto: CreatePolicyDto): Promise<PolicyResponseDto> {
-    const policy = await this.prisma.policy.create({
-      data: {
-        name: createPolicyDto.name,
-        paymaster_address: createPolicyDto.paymaster_address,
-        chain_id: BigInt(createPolicyDto.chain_id),
-        status_id: createPolicyDto.status_id,
-        max_budget_wei: createPolicyDto.max_budget_wei,
-        is_public: createPolicyDto.is_public,
-        whitelisted_addresses: createPolicyDto.whitelisted_addresses,
-        valid_from: createPolicyDto.valid_from ? new Date(createPolicyDto.valid_from) : undefined,
-        valid_to: createPolicyDto.valid_to ? new Date(createPolicyDto.valid_to) : undefined,
-      },
-      include: {
-        chain: true,
-        status: true,
-      },
-    });
+    return this.prisma.$transaction(async (tx) => {
+      const policy = await tx.policy.create({
+        data: {
+          paymaster_address: createPolicyDto.paymaster_address,
+          chain_id: BigInt(createPolicyDto.chain_id),
+          name: createPolicyDto.name,
+          status_id: createPolicyDto.status_id,
+          max_budget_wei: createPolicyDto.max_budget_wei,
+          is_public: createPolicyDto.is_public,
+          whitelisted_addresses: createPolicyDto.whitelisted_addresses,
+          valid_from: createPolicyDto.valid_from ? new Date(createPolicyDto.valid_from) : undefined,
+          valid_to: createPolicyDto.valid_to ? new Date(createPolicyDto.valid_to) : undefined,
+        },
+        include: {
+          chain: true,
+          status: true,
+        },
+      });
 
-    return this.transformPolicyResponse(policy);
+      if (createPolicyDto.rules && createPolicyDto.rules.length > 0) {
+        console.log(`🟠 Creating ${createPolicyDto.rules.length} rule...`);
+
+        for (const rule of createPolicyDto.rules) {
+          await tx.policyRule.create({
+            data: {
+              policy: { connect: { id: policy.id } },
+              value: rule.amount,
+              token_address: rule.token_address ?? null,
+              valid_from: createPolicyDto.valid_from
+                ? new Date(createPolicyDto.valid_from)
+                : undefined,
+              valid_to: createPolicyDto.valid_to ? new Date(createPolicyDto.valid_to) : undefined,
+
+              metric: { connect: { id: rule.metric } },
+              comparator: { connect: { id: rule.comparator } },
+              interval: { connect: { id: rule.interval } },
+              scope: { connect: { id: rule.scope } },
+            },
+          });
+        }
+      }
+
+      return this.transformPolicyResponse(policy);
+    });
   }
 
-  public async findAll(): Promise<PolicyResponseDto[]> {
+  public async findAll(status?: string): Promise<PolicyResponseDto[]> {
+    const whereClause = status ? { status_id: status.toUpperCase() } : {};
+
     const policies = await this.prisma.policy.findMany({
+      where: whereClause,
       include: {
         chain: true,
         status: true,
@@ -127,8 +155,8 @@ export class PolicyService {
 
   private transformPolicyResponse(policy: TPolicyWithRelations): PolicyResponseDto {
     return {
-      name: policy.name.toString(),
       id: policy.id.toString(),
+      name: policy.name,
       paymaster_address: policy.paymaster_address,
       chain_id: policy.chain_id.toString(),
       status_id: policy.status_id,
