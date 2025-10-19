@@ -30,6 +30,7 @@ type TSelectProps = {
   prefix?: string;
   isSearchable?: boolean;
   isFocusable?: boolean;
+  error?: string;
 };
 
 export const Select = ({
@@ -48,6 +49,7 @@ export const Select = ({
   defaultValue,
   isSearchable,
   isFocusable = true,
+  error,
 }: TSelectProps) => {
   const { Control, Option, Placeholder, SingleValue } = components;
 
@@ -124,7 +126,7 @@ export const Select = ({
             clsx(
               Style['control'],
               Style[size],
-              Style[color],
+              color && Style[color],
               isFocused && isFocusable && `${Style['green500']} ${Style['control-active']}`,
               isDisabled && `${Style['disabled']}`,
             ),
@@ -152,6 +154,7 @@ export const Select = ({
           DropdownIndicator: withArrow ? CustomDropdownIndicator : undefined,
         }}
       />
+      {error && <span className={Style['error-text']}>{error}</span>}
     </div>
   );
 };

@@ -16,7 +16,7 @@ import Style from './Select.module.css';
 
 type TSelectProps = {
   options: Array<TDropdownOption>;
-  change: (newValue: TDropdownOption | null, actionMeta: ActionMeta<TDropdownOption>) => void;
+  change: (newValue: string | null, actionMeta?: ActionMeta<TDropdownOption>) => void;
   name: string;
   label: string;
   size: string;
@@ -112,7 +112,8 @@ export const TinySelect = ({
       <ReactSelect<TDropdownOption, false>
         value={value || null}
         options={options}
-        onChange={change}
+        // onChange={change}
+        onChange={(option, actionMeta) => change(option ? option.value : null, actionMeta)}
         id={name}
         name={name}
         defaultValue={defaultValue}

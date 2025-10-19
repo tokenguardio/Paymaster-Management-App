@@ -14,6 +14,7 @@ type TDatePickerProps = {
   onChange: (date: Date | Date[] | null) => void;
   clearIcon?: boolean;
   fullWidth?: boolean;
+  disabled?: boolean;
 };
 
 const CustomDatePicker = (props: TDatePickerProps) => {
@@ -29,6 +30,7 @@ const CustomDatePicker = (props: TDatePickerProps) => {
         locale="en-EN"
         showLeadingZeros
         format={props.format}
+        disabled={props.disabled}
         calendarIcon={<Icon width="14" height="16" name="calendar" color="gray900" />}
       />
     </div>

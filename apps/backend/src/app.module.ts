@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { validateEnvVars } from './env-vars-validation';
 import { PolicyModule } from './policy/policy.module';
+import { PolicyRuleModule } from './policy-rule/policy-rule.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { PolicyModule } from './policy/policy.module';
     }),
     PrismaModule,
     PolicyModule,
+    PolicyRuleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

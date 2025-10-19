@@ -1,9 +1,18 @@
 import { clsx } from 'clsx';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, ReactNode } from 'react';
 import { Icon } from '@/components/icon/Icon';
+import { TDropdownOption } from '@/types/dropdownOption';
 import Style from './Dropdown.module.css';
 
-export const Dropdown = ({ options, id, children, title, position }) => {
+type TDropdownProps = {
+  options: TDropdownOption[];
+  id: string;
+  children: ReactNode;
+  title?: string;
+  position?: 'left' | 'right' | 'bottom';
+};
+
+export const Dropdown = ({ options, id, children, title, position }: TDropdownProps) => {
   const [_clickedOutside, setClickedOutside] = useState(false);
   const [isOpenDropDown, setOpenDropDown] = useState(false);
   const myRef = useRef(null);
@@ -44,7 +53,7 @@ export const Dropdown = ({ options, id, children, title, position }) => {
         <div className={dropDownStyle}>
           {title && <p className={Style['title']}>{title}</p>}
           <ul>
-            {options.map(({ label, type, action, logo, icon }) => {
+            {options.map(({ label, type, action, logo, icon }: TDropdownOption) => {
               return (
                 <li
                   onClick={() => handleOptionClick(action)}

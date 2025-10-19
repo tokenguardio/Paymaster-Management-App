@@ -9,7 +9,6 @@ import { LoginPage } from '@/pages/LoginPage';
 import { RestrictedRoute } from '@/routes/RestrictedRoute';
 import { routes } from '@/routes/routesMap';
 import Style from './App.module.css';
-import { PaymasterPage } from './pages/PaymasterPage';
 
 export default function App() {
   const isMobile = useMobile();
@@ -23,7 +22,6 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<LoginPage />} />
-        <Route path="/paymaster" element={<PaymasterPage />} />
         <Route element={<Layout />}>
           {routes.map(({ path, component, slug }) => (
             <Route

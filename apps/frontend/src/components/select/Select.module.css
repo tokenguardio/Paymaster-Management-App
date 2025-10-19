@@ -83,6 +83,13 @@
   height: 1.6rem !important;
 }
 
+.error-text {
+  position: absolute;
+  bottom: -1.4rem;
+  left: 0.4rem;
+  color: var(--color-red500);
+}
+
 .disabled {
   background-color: var(--color-gray50) !important;
   color: var(--color-gray100) !important;
