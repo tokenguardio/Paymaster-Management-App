@@ -10,6 +10,7 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { SiweMessage } from 'siwe';
 import { MeResponseDto, VerifyDto, VerifyResponseDto } from './dto/verify.dto';
 import { SiweService } from './siwe.service';
 import { ISessionData } from '../shared/interfaces/session.interface';
@@ -146,8 +147,7 @@ export class SiweController {
       chainId: 1,
       nonce: 'dev-nonce',
       issuedAt: new Date().toISOString(),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any;
+    } as SiweMessage;
 
     return { message: 'Logged in for testing' };
   }
