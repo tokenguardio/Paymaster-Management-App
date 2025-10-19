@@ -25,7 +25,7 @@ export class SiweController {
       "Generates a unique nonce for the Sign-In with Ethereum flow. This nonce must be included in the message signed by the user's wallet.",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Returns a unique nonce string',
     type: String,
   })
@@ -42,12 +42,12 @@ export class SiweController {
       "Verifies the signed message from the user's Ethereum wallet and establishes an authenticated session.",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Successfully verified signature and authenticated user',
     type: VerifyResponseDto,
   })
   @ApiResponse({
-    status: 400,
+    status: HttpStatus.BAD_REQUEST,
     description:
       'Verification failed - invalid signature, expired message, missing nonce, or other validation error',
   })
@@ -94,7 +94,7 @@ export class SiweController {
     type: MeResponseDto,
   })
   @ApiResponse({
-    status: 401,
+    status: HttpStatus.UNAUTHORIZED,
     description: 'Not authenticated or invalid session',
   })
   public async getMe(@Session() session: ISessionData): Promise<MeResponseDto> {
@@ -129,7 +129,7 @@ export class SiweController {
       required: ['address'],
     },
   })
-  @ApiResponse({ status: 200, description: 'Logged in for testing' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Logged in for testing' })
   public async devLogin(
     @Body() body: { address: string },
     @Session() session: ISessionData,
