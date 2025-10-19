@@ -10,18 +10,10 @@ describe('PolicyService', () => {
   let service: PolicyService;
   let prismaService: PrismaService;
 
-  const mockPrismaService = {
-    policy: {
-      create: jest.fn(),
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      update: jest.fn(),
-    },
-  };
-
   const mockPolicyData = {
     id: BigInt(1),
     paymaster_address: '0x1234567890123456789012345678901234567890',
+    name: 'Test Policy',
     chain_id: BigInt(1),
     status_id: 'ACTIVE',
     max_budget_wei: BigInt('1000000000000000000'),
@@ -46,6 +38,16 @@ describe('PolicyService', () => {
       created_at: new Date(),
       updated_at: new Date(),
     },
+  };
+
+  const mockPrismaService = {
+    policy: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+    },
+    $transaction: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -73,6 +75,7 @@ describe('PolicyService', () => {
     it('should create a new policy', async () => {
       const createDto: CreatePolicyDto = {
         paymaster_address: '0x1234567890123456789012345678901234567890',
+        name: 'Test Policy',
         chain_id: 1,
         status_id: 'ACTIVE',
         max_budget_wei: '1000000000000000000',
@@ -81,13 +84,22 @@ describe('PolicyService', () => {
         valid_from: '2025-01-01T00:00:00Z',
       };
 
-      mockPrismaService.policy.create.mockResolvedValue(mockPolicyData);
+      // Mock the transaction callback
+      mockPrismaService.$transaction.mockImplementation(async (callback) => {
+        const mockTx = {
+          policy: {
+            create: jest.fn().mockResolvedValue(mockPolicyData),
+          },
+        };
+        return callback(mockTx);
+      });
 
       const result = await service.create(createDto);
 
       expect(result).toEqual({
         id: '1',
         paymaster_address: '0x1234567890123456789012345678901234567890',
+        name: 'Test Policy',
         chain_id: '1',
         status_id: 'ACTIVE',
         max_budget_wei: '1000000000000000000',
@@ -108,22 +120,7 @@ describe('PolicyService', () => {
         },
       });
 
-      expect(prismaService.policy.create).toHaveBeenCalledWith({
-        data: {
-          paymaster_address: createDto.paymaster_address,
-          chain_id: BigInt(createDto.chain_id),
-          status_id: createDto.status_id,
-          max_budget_wei: createDto.max_budget_wei,
-          is_public: createDto.is_public,
-          whitelisted_addresses: createDto.whitelisted_addresses,
-          valid_from: expect.any(Date),
-          valid_to: undefined,
-        },
-        include: {
-          chain: true,
-          status: true,
-        },
-      });
+      expect(prismaService.$transaction).toHaveBeenCalled();
     });
   });
 
@@ -137,6 +134,7 @@ describe('PolicyService', () => {
       expect(result[0].id).toBe('1');
       expect(result[0].paymaster_address).toBe('0x1234567890123456789012345678901234567890');
       expect(prismaService.policy.findMany).toHaveBeenCalledWith({
+        where: {},
         include: {
           chain: true,
           status: true,

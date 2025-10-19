@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { z } from 'zod';
-import ethereumLogo from '@/assets/images/ethereum.svg';
 import {
   Accordion,
   Button,
@@ -13,85 +14,109 @@ import {
   TinySelect,
   Typography,
 } from '@/components';
+import { blockchainsOptions } from '@/utils/constans';
 import { GeneralAccordion } from './GeneralAccordion';
 import Style from './PaymasterSettings.module.css';
 import { PaymasterTitle } from './PaymasterTitle';
 import { WhitelistedAddressesAccordion } from './WhitelistedAddressesAccordion';
+import {
+  POLICY_RULE_METRIC,
+  POLICY_RULE_COMPARATOR,
+  POLICY_RULE_SCOPE,
+  POLICY_RULE_INTERVAL,
+} from '../../../../../../packages/constants/src/policy-rule';
+import { createPolicy } from '../utils/fetches';
 
-const blockchainsOptions = [
-  {
-    value: 'ethereum',
-    label: 'Ethereum',
-    icon: ethereumLogo,
-  },
-];
-
-const typeOptions = [
-  { value: 'max', label: 'Max' },
-  { value: 'min', label: 'Min' },
-];
-
-const targetOptions = [
-  { value: 'budget', label: 'Budget' },
-  { value: 'value', label: 'Value' },
-  { value: 'number', label: 'Number' },
-];
-
-const subjectOptions = [
-  { value: 'UserOp', label: 'UserOp' },
-  { value: 'Sender', label: 'Sender' },
-  { value: 'Receiver', label: 'Receiver' },
-];
-
-const frequencyOptions = ['of', 'per'];
-
-const userRulesSchema = z.object({
-  type: z.object({
-    value: z.enum(['max', 'min']),
-    label: z.string(),
-  }),
-  target: z.object({
-    value: z.enum(['budget', 'value', 'number']),
-    label: z.string(),
-  }),
-  frequency: z.enum(['of', 'per']),
-  subject: z.object({
-    value: z.enum(['UserOp', 'Sender', 'Receiver']),
-    label: z.string(),
-  }),
-  amount: z.coerce.number().min(0.00000001, 'Must be greater than 0'),
+const comparatorOptions = Object.values(POLICY_RULE_COMPARATOR).map((comparator) => {
+  let symbol = '';
+  switch (comparator.id) {
+    case 'LTE':
+      symbol = '<=';
+      break;
+    case 'GTE':
+      symbol = '>=';
+      break;
+    case 'EQ':
+      symbol = '=';
+      break;
+    case 'LT':
+      symbol = '<';
+      break;
+    case 'GT':
+      symbol = '>';
+      break;
+  }
+  return {
+    label: symbol,
+    value: comparator.id,
+  };
 });
 
+const metricOptions = Object.values(POLICY_RULE_METRIC).map((metric) => ({
+  label: metric.name,
+  value: metric.id,
+}));
+
+const intervalOptions = Object.values(POLICY_RULE_INTERVAL).map((interval) => ({
+  label: interval.name,
+  value: interval.id,
+}));
+
+const scopeOptions = Object.values(POLICY_RULE_SCOPE).map((scope) => ({
+  label: scope.name,
+  value: scope.id,
+}));
+
+const metricValues = Object.values(POLICY_RULE_METRIC).map((m) => m.id);
+const scopeValues = Object.values(POLICY_RULE_SCOPE).map((m) => m.id);
+const intervalValues = Object.values(POLICY_RULE_INTERVAL).map((m) => m.id);
+const comparatorValues = Object.values(POLICY_RULE_COMPARATOR).map((m) => m.id);
+
+const ruleSchema = z
+  .object({
+    comparator: z.enum(comparatorValues as [string, ...string[]]),
+    interval: z.enum(intervalValues as [string, ...string[]]),
+    scope: z.enum(scopeValues as [string, ...string[]]),
+    metric: z.enum(metricValues as [string, ...string[]]),
+    amount: z.coerce.number().min(0.00000001, 'Must be greater than 0'),
+  })
+  .optional();
+
 const formSchema = z.object({
-  max_budget: z.coerce
+  name: z.string(),
+  max_budget_wei: z.coerce
     .number()
     .min(1, 'Must be greater than 0')
     .refine((val) => !isNaN(val), { message: 'This field is required' }),
-  blockchain: z.object({
-    value: z.string(),
-    label: z.string(),
-    icon: z.string().optional(),
-  }),
-  payInERC20: z.boolean(),
-  sponsorTransactions: z.boolean(),
-  startDate: z.date(),
-  endDate: z.date(),
-  policyDoesNotExpire: z.boolean(),
-  whitelistAllAddresses: z.boolean(),
-  manualAddress: z
+  chain_id: z.number(),
+  is_public: z.boolean(),
+  status_id: z.string(),
+  valid_from: z.date(),
+  valid_to: z.date(),
+  // policyDoesNotExpire: z.boolean(),
+  whitelisted_addresses: z.boolean(),
+  paymaster_address: z
     .string()
     .trim()
     .optional()
     .refine((val) => !val || /^0x[a-fA-F0-9]{40}$/.test(val), {
       message: 'Invalid Ethereum address',
     }),
-  userRules: z.array(userRulesSchema),
+  // manualAddress: z
+  //   .string()
+  //   .trim()
+  //   .optional()
+  //   .refine((val) => !val || /^0x[a-fA-F0-9]{40}$/.test(val), {
+  //     message: 'Invalid Ethereum address',
+  //   }),
+  rules: z.array(ruleSchema),
 });
 
 type TFormData = z.infer<typeof formSchema>;
 
 export const PaymasterSettings = () => {
   const [entries, setEntries] = useState<string[]>([]);
+  const navigate = useNavigate();
 
   const {
     handleSubmit,
@@ -103,21 +128,31 @@ export const PaymasterSettings = () => {
   } = useForm<TFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      max_budget: 0,
-      blockchain: blockchainsOptions[0],
-      payInERC20: true,
-      sponsorTransactions: true,
-      startDate: new Date(),
-      endDate: new Date(),
-      policyDoesNotExpire: true,
-      whitelistAllAddresses: true,
-      manualAddress: '',
-      userRules: [],
+      name: 'Spending Policy',
+      max_budget_wei: 0,
+      chain_id: blockchainsOptions[0].value,
+      is_public: true,
+      status_id: 'ACTIVE',
+      // policyDoesNotExpire: true,
+      paymaster_address: '0x1234567890123456789012345678901234567890',
+      valid_from: new Date(),
+      valid_to: new Date(),
+      whitelisted_addresses: true,
+      // manualAddress: '',
+      rules: [
+        {
+          comparator: undefined,
+          interval: undefined,
+          scope: undefined,
+          metric: undefined,
+          amount: 0,
+        },
+      ],
     },
   });
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'userRules',
+    name: 'rules',
   });
   const manualAddress = watch('manualAddress');
   let _isValidAddress;
@@ -128,7 +163,7 @@ export const PaymasterSettings = () => {
   const handleAddAddress = () => {
     if (/^0x[a-fA-F0-9]{40}$/.test(manualAddress)) {
       setEntries((prev) => [...prev, manualAddress]);
-      setValue('manualAddress', ''); // czyści input po dodaniu
+      setValue('manualAddress', '');
     }
   };
 
@@ -152,17 +187,27 @@ export const PaymasterSettings = () => {
   const onSubmit = (data: FormData) => {
     const payload = {
       ...data,
-      whitelistedAddresses: [...entries],
+      whitelisted_addresses: [...entries],
     };
-    console.log('Submitting form:', payload);
-    // TODO: send this payload to API
+
+    try {
+      const _response = createPolicy(payload);
+      toast.success('Policy added successfully');
+      navigate('/paymaster');
+    } catch (err: unknown) {
+      toast.error(err?.toString());
+    }
   };
 
   return (
     <section className={Style['settings-panel']}>
-      <PaymasterTitle />
-      <Line />
       <form onSubmit={handleSubmit(onSubmit)}>
+        <Controller
+          name="name"
+          control={control}
+          render={({ field }) => <PaymasterTitle value={field.value} onChange={field.onChange} />}
+        />
+        <Line />
         <GeneralAccordion control={control} errors={errors} />
         <Line />
         <WhitelistedAddressesAccordion
@@ -180,51 +225,68 @@ export const PaymasterSettings = () => {
         />
         <Line />
         <Accordion title="User Spending Rules">
-          {fields.map((field, index) => (
-            <div key={field.id} className={Style['user-rule-row']}>
+          {/* {fields.map((field, index) => (
+            <div key={field.id}>
+            <div  className={Style['user-rule-row']}>
               <Controller
-                name={`userRules.${index}.type`}
+                name={`rules.${index}.metric`}
                 control={control}
                 render={({ field }) => (
                   <TinySelect
                     {...field}
-                    options={typeOptions}
-                    value={field.value}
-                    change={(val) => field.onChange(val)}
+                    options={metricOptions}
+                    value={metricOptions.find((o) => o.value === field.value)}
+                    change={field.onChange}
                     withArrow
+                    error={errors.rules?.[index]?.metric?.message}
                   />
                 )}
               />
               <Controller
-                name={`userRules.${index}.target`}
+                name={`rules.${index}.scope`}
                 control={control}
                 render={({ field }) => (
                   <TinySelect
                     {...field}
-                    options={targetOptions}
-                    value={field.value}
-                    change={(val) => field.onChange(val)}
+                    options={scopeOptions}
+                    value={scopeOptions.find((o) => o.value === field.value)}
+                    change={field.onChange}
                     withArrow
+                    error={errors.rules?.[index]?.scope?.message}
                   />
                 )}
               />
               <Typography text="per" tag="p" size="xs" weight="regular" />
               <Controller
-                name={`userRules.${index}.subject`}
+                name={`rules.${index}.interval`}
                 control={control}
                 render={({ field }) => (
                   <TinySelect
                     {...field}
-                    options={subjectOptions}
-                    value={field.value}
-                    change={(val) => field.onChange(val)}
+                    options={intervalOptions}
+                    value={intervalOptions.find((o) => o.value === field.value)}
+                    change={field.onChange}
                     withArrow
+                    error={errors.rules?.[index]?.interval?.message}
                   />
                 )}
               />
-              <Typography text="=" tag="p" size="xs" weight="regular" />
               <Controller
-                name={`userRules.${index}.amount`}
+                name={`rules.${index}.comparator`}
+                control={control}
+                render={({ field }) => (
+                  <TinySelect
+                    {...field}
+                    options={comparatorOptions}
+                    value={comparatorOptions.find((o) => o.value === field.value)}
+                    change={field.onChange}
+                    withArrow
+                    error={errors.rules?.[index]?.comparator?.message}
+                  />
+                )}
+              />
+              <Controller
+                name={`rules.${index}.amount`}
                 control={control}
                 render={({ field }) => (
                   <DynamicInput
@@ -236,7 +298,7 @@ export const PaymasterSettings = () => {
                     className={Style['amount-input']}
                     prefix="$"
                     size="small"
-                    // error={errors.userRules?.[index]?.amount?.message}
+                    error={errors.rules?.[index]?.amount?.message}
                   />
                 )}
               />
@@ -245,14 +307,149 @@ export const PaymasterSettings = () => {
                 onClick={() => remove(index)}
               />
             </div>
+            </div>
+          ))} */}
+          {fields.map((field, index) => (
+            <div key={field.id}>
+              <div className={Style['user-rule-row']}>
+                <Controller
+                  name={`rules.${index}.metric`}
+                  control={control}
+                  render={({ field }) => (
+                    <TinySelect
+                      {...field}
+                      options={metricOptions}
+                      value={metricOptions.find((o) => o.value === field.value)}
+                      change={field.onChange}
+                      withArrow
+                    />
+                  )}
+                />
+                <Controller
+                  name={`rules.${index}.scope`}
+                  control={control}
+                  render={({ field }) => (
+                    <TinySelect
+                      {...field}
+                      options={scopeOptions}
+                      value={scopeOptions.find((o) => o.value === field.value)}
+                      change={field.onChange}
+                      withArrow
+                    />
+                  )}
+                />
+                <Typography text="per" tag="p" size="xs" weight="regular" />
+                <Controller
+                  name={`rules.${index}.interval`}
+                  control={control}
+                  render={({ field }) => (
+                    <TinySelect
+                      {...field}
+                      options={intervalOptions}
+                      value={intervalOptions.find((o) => o.value === field.value)}
+                      change={field.onChange}
+                      withArrow
+                    />
+                  )}
+                />
+                <Controller
+                  name={`rules.${index}.comparator`}
+                  control={control}
+                  render={({ field }) => (
+                    <TinySelect
+                      {...field}
+                      options={comparatorOptions}
+                      value={comparatorOptions.find((o) => o.value === field.value)}
+                      change={field.onChange}
+                      withArrow
+                    />
+                  )}
+                />
+                <Controller
+                  name={`rules.${index}.amount`}
+                  control={control}
+                  render={({ field }) => (
+                    <DynamicInput
+                      {...field}
+                      placeholder="0"
+                      min={0}
+                      step={1}
+                      maxLength={9}
+                      className={Style['amount-input']}
+                      prefix="$"
+                      size="small"
+                    />
+                  )}
+                />
+                <IconButton
+                  icon={<Icon name="exit" width="16" height="16" color="gray400" />}
+                  onClick={() => remove(index)}
+                />
+              </div>
+              {errors.rules?.[index] && (
+                <div className="mb24">
+                  {errors.rules[index].metric && (
+                    <Typography
+                      tag="p"
+                      color="red500"
+                      weight="regular"
+                      style="italic"
+                      text="Metric - this field is required"
+                      size="xs"
+                    />
+                  )}
+                  {errors.rules[index].scope && (
+                    <Typography
+                      tag="p"
+                      color="red500"
+                      weight="regular"
+                      style="italic"
+                      text="Scope - this field is required"
+                      size="xs"
+                    />
+                  )}
+                  {errors.rules[index].interval && (
+                    <Typography
+                      tag="p"
+                      color="red500"
+                      weight="regular"
+                      style="italic"
+                      text="Interval - this field is required"
+                      size="xs"
+                    />
+                  )}
+                  {errors.rules[index].comparator && (
+                    <Typography
+                      tag="p"
+                      color="red500"
+                      weight="regular"
+                      style="italic"
+                      text="Comparator - this field is required"
+                      size="xs"
+                    />
+                  )}
+                  {errors.rules[index].amount && (
+                    <Typography
+                      tag="p"
+                      color="red500"
+                      weight="regular"
+                      style="italic"
+                      text={errors.rules[index].amount.message || `Amount - this field is required`}
+                      size="xs"
+                    />
+                  )}
+                </div>
+              )}
+            </div>
           ))}
+
           <Button
             onClick={() =>
               append({
-                type: typeOptions[0],
-                target: targetOptions[0],
-                frequency: frequencyOptions[0],
-                subject: subjectOptions[0],
+                comparator: comparatorOptions[0],
+                interval: intervalOptions[0],
+                scope: scopeOptions[0],
+                metric: metricOptions[0],
                 amount: 0,
               })
             }

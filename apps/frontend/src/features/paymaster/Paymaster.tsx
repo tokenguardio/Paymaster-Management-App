@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Breadcrumbs, Button, Icon, Modal, Typography } from '@/components';
 import { DeleteModalContent } from './components/DeleteModalContent';
 import { PoliciesGrid } from './components/PoliciesGrid';
+import { usePolicies } from './hooks/usePolicies';
 import Style from './Paymaster.module.css';
 
 export const Paymaster = () => {
@@ -19,6 +20,7 @@ export const Paymaster = () => {
   ];
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
+  const { policies, isLoadingPolicies, refreshData } = usePolicies();
 
   return (
     <>
@@ -26,7 +28,7 @@ export const Paymaster = () => {
         <div className={Style['breadcrumb-container']}>
           <Breadcrumbs items={breadcrumbsItems} />
           <Button
-            moveTo="/paymaster-add"
+            moveTo="/paymaster/new"
             size="large"
             startIcon={<Icon name="plus" width="16" height="16" color="white" />}
           >
@@ -50,6 +52,8 @@ export const Paymaster = () => {
           />
         </div>
         <PoliciesGrid
+          policies={policies}
+          isLoadingPolicies={isLoadingPolicies}
           setDeleteModalOpen={setDeleteModalOpen}
           setSelectedPolicyId={setSelectedPolicyId}
         />
@@ -57,7 +61,7 @@ export const Paymaster = () => {
           <Modal title="Confirm Deletion" hasCloseButton={true} isOpen={setDeleteModalOpen}>
             <DeleteModalContent
               closeFn={setDeleteModalOpen}
-              handleFn={() => console.log('add fn to handle req')}
+              refreshData={refreshData}
               policyId={selectedPolicyId}
             />
           </Modal>

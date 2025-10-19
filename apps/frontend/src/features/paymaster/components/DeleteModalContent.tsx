@@ -6,21 +6,21 @@ import { deletePolicy } from '../utils/fetches';
 
 interface IDeleteModalContentProps {
   closeFn: (open: boolean) => void;
-  handleFn: () => void;
   policyId: string | null;
+  refreshData: () => void;
 }
 
 export const DeleteModalContent: React.FC<IDeleteModalContentProps> = ({
   closeFn,
-  handleFn,
   policyId,
+  refreshData,
 }) => {
   const handleDeletePolicy = async () => {
     if (!policyId) return;
 
     try {
       await deletePolicy(policyId);
-      await handleFn();
+      await refreshData();
       toast.success('Policy removed successfully');
       closeFn(false);
     } catch (err: unknown) {
@@ -37,7 +37,7 @@ export const DeleteModalContent: React.FC<IDeleteModalContentProps> = ({
         text={`Are you sure you want to delete policy with ID ${policyId}?`}
       />
       <div className={Style['action-bar']}>
-        <Button size="large" onClick={handleFn} color="red500" onClick={handleDeletePolicy}>
+        <Button size="large" onClick={handleDeletePolicy} color="red500">
           Delete
         </Button>
         <Button size="large" variant="outline" color="primary500" onClick={() => closeFn(false)}>

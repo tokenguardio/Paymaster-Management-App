@@ -1,8 +1,10 @@
 import React from 'react';
 import { PaymasterAddingPage } from '@/pages/PaymasterAddingPage';
+import { PaymasterEditPage } from '@/pages/PaymasterEditPage';
 import { PaymasterPage } from '@/pages/PaymasterPage';
+import { PaymasterPreviewPage } from '@/pages/PaymasterPreviewPage';
 
-export type TAppRoute = '' | 'paymaster' | 'paymaster-add';
+export type TAppRoute = '' | 'paymaster' | 'paymaster/new' | 'paymaster/:id' | 'paymaster/:id/edit';
 
 export type TRouteConfig = {
   slug: TAppRoute;
@@ -19,9 +21,21 @@ export const routes: TRouteConfig[] = [
     component: <PaymasterPage />,
   },
   {
-    slug: 'paymaster-add',
-    path: '/paymaster-add',
-    label: 'Addd Paymaster',
+    slug: 'paymaster/new',
+    path: '/paymaster/new',
+    label: 'Add Paymaster',
     component: <PaymasterAddingPage />,
+  },
+  {
+    slug: 'paymaster/:id',
+    path: '/paymaster/:id',
+    label: 'Preview Paymaster',
+    component: <PaymasterPreviewPage />,
+  },
+  {
+    slug: 'paymaster/:id/edit',
+    path: '/paymaster/:id/edit',
+    label: 'Edit Paymaster',
+    component: <PaymasterEditPage />,
   },
 ];

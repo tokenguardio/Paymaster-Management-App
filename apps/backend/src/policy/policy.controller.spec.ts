@@ -20,6 +20,7 @@ describe('PolicyController', () => {
 
   const mockPolicyResponse: PolicyResponseDto = {
     id: '1',
+    name: 'policyName',
     paymaster_address: '0x1234567890123456789012345678901234567890',
     chain_id: '1',
     status_id: 'ACTIVE',
@@ -70,6 +71,7 @@ describe('PolicyController', () => {
       const createDto: CreatePolicyDto = {
         paymaster_address: '0x1234567890123456789012345678901234567890',
         chain_id: 1,
+        name: 'policyName',
         status_id: 'ACTIVE',
         max_budget_wei: '1000000000000000000',
         is_public: true,

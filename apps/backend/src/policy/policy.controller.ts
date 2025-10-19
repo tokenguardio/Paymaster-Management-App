@@ -9,8 +9,9 @@ import {
   HttpStatus,
   ParseIntPipe,
   UseGuards,
+  Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { CreatePolicyDto } from './dto/create-policy.dto';
 import { PolicyResponseDto } from './dto/policy-response.dto';
 import { UpdatePolicyDto } from './dto/update-policy.dto';
@@ -27,6 +28,13 @@ export class PolicyController {
   @ApiOperation({
     summary: 'Create a new policy',
     description: 'Creates a new sponsorship policy with the provided parameters',
+  })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    description: 'Optional status filter (e.g. "active", "inactive")',
+    example: 'active',
+    type: String,
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -46,13 +54,19 @@ export class PolicyController {
     summary: 'Get all policies',
     description: 'Retrieves all policies with optional filtering',
   })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    description: 'Filter by status_id (e.g. ACTIVE, INACTIVE)',
+    example: 'ACTIVE',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Policies retrieved successfully',
     type: [PolicyResponseDto],
   })
-  public async findAll(): Promise<PolicyResponseDto[]> {
-    return this.policyService.findAll();
+  public async findAll(@Query('status') status?: string): Promise<PolicyResponseDto[]> {
+    return this.policyService.findAll(status);
   }
 
   @Get(':id')

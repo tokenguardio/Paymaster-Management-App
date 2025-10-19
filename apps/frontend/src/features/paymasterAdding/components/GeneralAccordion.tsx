@@ -1,25 +1,15 @@
 import React from 'react';
 import { Controller, Control, FieldErrors } from 'react-hook-form';
-import ethereumLogo from '@/assets/images/ethereum.svg';
 import { Accordion, Checkbox, DatePicker, Icon, NumberInput, Select } from '@/components';
+import { blockchainsOptions } from '@/utils/constans';
 import Style from './GeneralAccordion.module.css';
 
-const blockchainsOptions = [
-  {
-    value: 'ethereum',
-    label: 'Ethereum',
-    icon: ethereumLogo,
-  },
-];
-
 type TFormValues = {
-  max_budget?: number;
-  blockchain?: string;
-  payInERC20?: boolean;
-  sponsorTransactions?: boolean;
-  startDate?: Date | null;
-  endDate?: Date | null;
-  policyDoesNotExpire?: boolean;
+  max_budget_wei?: number;
+  blockchain?: number;
+  valid_from?: Date | null;
+  valid_to?: Date | null;
+  // policyDoesNotExpire?: boolean;
 };
 
 type TGeneralAccordionProps = {
@@ -31,7 +21,7 @@ export const GeneralAccordion = ({ control, errors }: TGeneralAccordionProps) =>
   <Accordion title="General">
     <div className={Style['general-container']}>
       <Controller
-        name="max_budget"
+        name="max_budget_wei"
         control={control}
         render={({ field }) => (
           <NumberInput
@@ -40,7 +30,7 @@ export const GeneralAccordion = ({ control, errors }: TGeneralAccordionProps) =>
             prefix="$"
             className="mt8"
             fullWidth
-            error={errors.max_budget?.message}
+            error={errors.max_budget_wei?.message}
           />
         )}
       />
@@ -50,7 +40,7 @@ export const GeneralAccordion = ({ control, errors }: TGeneralAccordionProps) =>
         render={({ field }) => (
           <Select
             {...field}
-            id="Blockchain"
+            id="blockchain"
             name="blockchain"
             label="Network of choice"
             withArrow
@@ -58,6 +48,7 @@ export const GeneralAccordion = ({ control, errors }: TGeneralAccordionProps) =>
             options={blockchainsOptions}
             change={field.onChange}
             value={field.value}
+            error={errors.blockchain?.message}
           />
         )}
       />

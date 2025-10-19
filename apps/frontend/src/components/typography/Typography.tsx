@@ -6,6 +6,7 @@ type TTypographySize = 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl';
 type TTypographyWeight = 'regular' | 'medium' | 'semi-bold' | 'bold';
 type TTypographyTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
 type TTypographyAlign = 'center' | 'left' | 'right';
+type TTypographyStyle = 'italic';
 
 type TTypographyProps = {
   text: string | number;
@@ -14,6 +15,7 @@ type TTypographyProps = {
   weight?: TTypographyWeight;
   color?: string;
   align?: TTypographyAlign;
+  style?: TTypographyStyle;
   className?: string;
 };
 
@@ -24,12 +26,14 @@ export const Typography = ({
   weight,
   color,
   align,
+  style,
   className,
 }: TTypographyProps) => {
   const typographyStyle = clsx(
     Style['typography'],
     size && Style[`size-${size}`],
     weight && Style[`weight-${weight}`],
+    style && Style[`style-${style}`],
     align && Style[`align-${align}`],
     color && Style[color],
     className && className,

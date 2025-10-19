@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { validateEnvVars } from './env-vars-validation';
 import { PolicyModule } from './policy/policy.module';
+import { PolicyRuleModule } from './policy-rule/policy-rule.module';
 import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
 import { SiweModule } from './siwe/siwe.module';
 
@@ -18,6 +19,7 @@ import { SiweModule } from './siwe/siwe.module';
     PrismaModule,
     PolicyModule,
     SiweModule,
+    PolicyRuleModule,
   ],
   controllers: [AppController],
   providers: [

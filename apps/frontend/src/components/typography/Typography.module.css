@@ -5,6 +5,10 @@
   color: var(--color-secondary800);
 }
 
+.style-italic {
+  font-style: italic;
+}
+
 .align-left {
   text-align: left;
 }
