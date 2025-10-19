@@ -5,10 +5,10 @@ import {
   Body,
   Session,
   UnauthorizedException,
-  UnprocessableEntityException,
-  InternalServerErrorException,
+  BadRequestException,
+  HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiExcludeEndpoint } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { MeResponseDto, VerifyDto, VerifyResponseDto } from './dto/verify.dto';
 import { SiweService } from './siwe.service';
 import { ISessionData } from '../shared/interfaces/session.interface';
@@ -47,16 +47,9 @@ export class SiweController {
     type: VerifyResponseDto,
   })
   @ApiResponse({
-    status: 401,
-    description: 'Message expired',
-  })
-  @ApiResponse({
-    status: 422,
-    description: 'Invalid signature',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Verification failed',
+    status: 400,
+    description:
+      'Verification failed - invalid signature, expired message, missing nonce, or other validation error',
   })
   public async verify(
     @Body() verifyDto: VerifyDto,
@@ -82,14 +75,10 @@ export class SiweController {
       session.siwe = null;
       session.nonce = null;
 
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-
-      if (errorMessage.includes('Expired message')) {
-        throw new UnauthorizedException('Message expired');
-      } else if (errorMessage.includes('Invalid signature')) {
-        throw new UnprocessableEntityException('Invalid signature');
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
       } else {
-        throw new InternalServerErrorException(errorMessage || 'Verification failed');
+        throw new BadRequestException('Verification failed');
       }
     }
   }
@@ -100,7 +89,7 @@ export class SiweController {
     description: "Returns the authenticated user's Ethereum address. Requires an active session.",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "Returns the authenticated user's address",
     type: MeResponseDto,
   })
@@ -108,7 +97,6 @@ export class SiweController {
     status: 401,
     description: 'Not authenticated or invalid session',
   })
-  @ApiExcludeEndpoint()
   public async getMe(@Session() session: ISessionData): Promise<MeResponseDto> {
     if (!this.siweService.isAuthenticated(session)) {
       throw new UnauthorizedException('Not authenticated');
@@ -120,5 +108,45 @@ export class SiweController {
     }
 
     return { address };
+  }
+
+  @Post('dev-login')
+  @ApiOperation({
+    summary: 'Dev login (development only)',
+    description:
+      'Creates an authenticated session for testing purposes without requiring wallet signature. Sets a session cookie in the browser that will be used for subsequent authenticated requests. Only available in development mode.',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        address: {
+          type: 'string',
+          example: '0x8E52493362F51bf843d1561312AFEE4794766663',
+          description: 'Ethereum address to authenticate as',
+        },
+      },
+      required: ['address'],
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Logged in for testing' })
+  public async devLogin(
+    @Body() body: { address: string },
+    @Session() session: ISessionData,
+  ): Promise<{ message: string }> {
+    // Create fake but valid SIWE data
+    session.siwe = {
+      domain: 'localhost:3000',
+      address: body.address,
+      statement: 'Dev login',
+      uri: 'http://localhost:3000',
+      version: '1',
+      chainId: 1,
+      nonce: 'dev-nonce',
+      issuedAt: new Date().toISOString(),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any;
+
+    return { message: 'Logged in for testing' };
   }
 }

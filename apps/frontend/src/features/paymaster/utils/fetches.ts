@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // temporary serverURL - TODO set to env
-const serverURL = 'http://127.0.0.1:3000';
+const serverURL = 'http://localhost:3000';
 
 export const fetchPolicies = async () => {
   const response = await axios.get(`${serverURL}/policies`, { withCredentials: true });

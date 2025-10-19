@@ -18,8 +18,8 @@ import { PolicyService } from './policy.service';
 import { SiweAuthGuard } from '../auth/auth.guard';
 
 @ApiTags('Policies')
-@Controller('policies')
 @UseGuards(SiweAuthGuard)
+@Controller('policies')
 export class PolicyController {
   public constructor(private readonly policyService: PolicyService) {}
 

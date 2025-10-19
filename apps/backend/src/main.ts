@@ -81,11 +81,7 @@ async function bootstrap(): Promise<void> {
 
   const openAPIDocument = SwaggerModule.createDocument(
     app,
-    new DocumentBuilder()
-      .setTitle('Paymaster Management API Service')
-      .setVersion('')
-      .addCookieAuth('siwe-session') // Add cookie auth to Swagger
-      .build(),
+    new DocumentBuilder().setTitle('Paymaster Management API Service').setVersion('').build(),
   );
   SwaggerModule.setup(SWAGGER_UI_PATH, app, openAPIDocument);
 
