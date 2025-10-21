@@ -12,7 +12,9 @@ export const fetchPolicies = async (param?: string) => {
 };
 
 export const deletePolicy = async (policyId: string): Promise<void> => {
-  const response = await axios.delete(`${serverURL}/policies/${policyId}`);
+  const response = await axios.delete(`${serverURL}/policies/${policyId}`, {
+    withCredentials: true,
+  });
 
   return response.data;
 };

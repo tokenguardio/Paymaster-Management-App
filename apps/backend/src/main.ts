@@ -46,7 +46,8 @@ async function bootstrap(): Promise<void> {
       cookie: {
         secure: NODE_ENV === 'production', // Use secure cookies in production
         httpOnly: true,
-        sameSite: 'lax',
+        // sameSite: 'lax',
+        sameSite: false,
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
       },
     }),

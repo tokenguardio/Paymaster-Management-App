@@ -4,22 +4,12 @@ import { TPolicy } from '@/types/policy';
 import { blockchainsOptions } from '@/utils/constans';
 import Style from './GeneralAccordion.module.css';
 
-type TFormValues = {
-  max_budget?: number;
-  blockchain?: number;
-  payInERC20?: boolean;
-  sponsorTransactions?: boolean;
-  startDate?: Date | null;
-  endDate?: Date | null;
-  policyDoesNotExpire?: boolean;
-};
-
 type TGeneralAccordionProps = {
   policy: TPolicy;
 };
 
 export const GeneralAccordion = ({ policy }: TGeneralAccordionProps) => (
-  <Accordion title="General">
+  <Accordion defaultOpen title="General">
     <div className={Style['general-container']}>
       <NumberInput
         label="Maximum budget in USD"
@@ -43,7 +33,6 @@ export const GeneralAccordion = ({ policy }: TGeneralAccordionProps) => (
           value={policy?.valid_from}
           fullWidth
           disabled
-          // calendarIcon={<Icon width="14" height="16" name="calendar" color="gray900" />}
           calendarIcon={false}
           clearIcon={false}
         />

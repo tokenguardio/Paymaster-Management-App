@@ -1,10 +1,12 @@
 import axios from 'axios';
 
 // temporary serverURL - TODO set to env
-const serverURL = 'http://0.0.0.0:3000';
+const serverURL = 'http://localhost:3000';
 
 export const createPolicy = async (payload: unknown) => {
-  const response = await axios.post(`${serverURL}/policies`, payload);
+  const response = await axios.post(`${serverURL}/policies`, payload, {
+    withCredentials: true,
+  });
 
   return response.data;
 };

@@ -15,7 +15,7 @@ export const PreviewWhitelistedAddressesAccordion = ({
   whiteListedAddresses,
 }: TPreviewWhitelistedAddressesAccordionProps) => {
   return (
-    <Accordion title="Whitelisted addresses">
+    <Accordion defaultOpen title="Whitelisted addresses">
       <div className={Style['whitelisted-addresses']}>
         <div className={Style['whitelisted-checkbox-container']}>
           <Label forInput="whitelistAllAddresses" text="Whitelist smart contracts" />
