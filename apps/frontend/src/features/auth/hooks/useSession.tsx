@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 export function useSession() {
@@ -5,14 +6,11 @@ export function useSession() {
   const [address, setAddress] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:3001/siwe/me', {
-      credentials: 'include',
-    })
-      .then(async (res) => {
-        if (!res.ok) throw new Error();
-        const data = await res.json();
+    axios
+      .get('http://localhost:3000/siwe/me', { withCredentials: true })
+      .then((res) => {
         setAuthenticated(true);
-        setAddress(data.address);
+        setAddress(res.data.address);
       })
       .catch(() => {
         setAuthenticated(false);

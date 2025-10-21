@@ -13,9 +13,18 @@
   box-sizing: border-box;
 }
 
-.react-date-picker--disabled {
-  background-color: #ffffff;
-  color: #6d6d6d;
+.react-date-picker--disabled .react-date-picker__wrapper {
+  background-color: var(--color-gray50);
+  border: 1px solid var(--color-gray200) !important;
+  color: var(--color-gray600);
+}
+
+.react-date-picker--disabled .react-date-picker__inputGroup__month,
+.react-date-picker__inputGroup__day,
+.react-date-picker__inputGroup__year {
+  background-color: none !important;
+  border: none !important;
+  color: none !important;
 }
 
 .react-date-picker__wrapper {

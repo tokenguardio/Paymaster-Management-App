@@ -52,9 +52,9 @@ export const WhitelistedAddressesAccordion: React.FC<IWhitelistedAddressesAccord
     <Accordion title="Whitelisted addresses">
       <div className={Style['whitelisted-addresses']}>
         <div className={Style['whitelisted-checkbox-container']}>
-          <Label forInput="whitelistAllAddresses" text="Whitelist smart contracts" />
+          <Label forInput="is_public" text="Whitelist smart contracts" />
           <Controller
-            name="whitelistAllAddresses"
+            name="is_public"
             control={control}
             render={({ field }) => (
               <Checkbox

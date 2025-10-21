@@ -11,7 +11,7 @@ export const PreviewPolicyRulesAccordion = ({ policyRules }: TPreviewPolicyRules
   if (!policyRules) return null;
 
   return (
-    <Accordion title="Rules">
+    <Accordion defaultOpen title="Rules">
       <div className={Style['rules-container']}>
         {policyRules?.length === 0 ? (
           <Typography tag="p" text="Policy doesn't have rules." />

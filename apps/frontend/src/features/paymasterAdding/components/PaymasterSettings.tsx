@@ -92,8 +92,7 @@ const formSchema = z.object({
   is_public: z.boolean(),
   status_id: z.string(),
   valid_from: z.date(),
-  valid_to: z.date(),
-  // policyDoesNotExpire: z.boolean(),
+  valid_to: z.date().nullable(),
   whitelisted_addresses: z.boolean(),
   paymaster_address: z
     .string()
@@ -133,7 +132,6 @@ export const PaymasterSettings = () => {
       chain_id: blockchainsOptions[0].value,
       is_public: true,
       status_id: 'ACTIVE',
-      // policyDoesNotExpire: true,
       paymaster_address: '0x1234567890123456789012345678901234567890',
       valid_from: new Date(),
       valid_to: new Date(),
@@ -208,7 +206,7 @@ export const PaymasterSettings = () => {
           render={({ field }) => <PaymasterTitle value={field.value} onChange={field.onChange} />}
         />
         <Line />
-        <GeneralAccordion control={control} errors={errors} />
+        <GeneralAccordion control={control} errors={errors} setValue={setValue} />
         <Line />
         <WhitelistedAddressesAccordion
           entries={entries}
@@ -225,90 +223,6 @@ export const PaymasterSettings = () => {
         />
         <Line />
         <Accordion title="User Spending Rules">
-          {/* {fields.map((field, index) => (
-            <div key={field.id}>
-            <div  className={Style['user-rule-row']}>
-              <Controller
-                name={`rules.${index}.metric`}
-                control={control}
-                render={({ field }) => (
-                  <TinySelect
-                    {...field}
-                    options={metricOptions}
-                    value={metricOptions.find((o) => o.value === field.value)}
-                    change={field.onChange}
-                    withArrow
-                    error={errors.rules?.[index]?.metric?.message}
-                  />
-                )}
-              />
-              <Controller
-                name={`rules.${index}.scope`}
-                control={control}
-                render={({ field }) => (
-                  <TinySelect
-                    {...field}
-                    options={scopeOptions}
-                    value={scopeOptions.find((o) => o.value === field.value)}
-                    change={field.onChange}
-                    withArrow
-                    error={errors.rules?.[index]?.scope?.message}
-                  />
-                )}
-              />
-              <Typography text="per" tag="p" size="xs" weight="regular" />
-              <Controller
-                name={`rules.${index}.interval`}
-                control={control}
-                render={({ field }) => (
-                  <TinySelect
-                    {...field}
-                    options={intervalOptions}
-                    value={intervalOptions.find((o) => o.value === field.value)}
-                    change={field.onChange}
-                    withArrow
-                    error={errors.rules?.[index]?.interval?.message}
-                  />
-                )}
-              />
-              <Controller
-                name={`rules.${index}.comparator`}
-                control={control}
-                render={({ field }) => (
-                  <TinySelect
-                    {...field}
-                    options={comparatorOptions}
-                    value={comparatorOptions.find((o) => o.value === field.value)}
-                    change={field.onChange}
-                    withArrow
-                    error={errors.rules?.[index]?.comparator?.message}
-                  />
-                )}
-              />
-              <Controller
-                name={`rules.${index}.amount`}
-                control={control}
-                render={({ field }) => (
-                  <DynamicInput
-                    {...field}
-                    placeholder="0"
-                    min={0}
-                    step={1}
-                    maxLength={9}
-                    className={Style['amount-input']}
-                    prefix="$"
-                    size="small"
-                    error={errors.rules?.[index]?.amount?.message}
-                  />
-                )}
-              />
-              <IconButton
-                icon={<Icon name="exit" width="16" height="16" color="gray400" />}
-                onClick={() => remove(index)}
-              />
-            </div>
-            </div>
-          ))} */}
           {fields.map((field, index) => (
             <div key={field.id}>
               <div className={Style['user-rule-row']}>

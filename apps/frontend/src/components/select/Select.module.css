@@ -92,8 +92,7 @@
 
 .disabled {
   background-color: var(--color-gray50) !important;
-  color: var(--color-gray100) !important;
-  opacity: 50% !important;
+  color: var(--color-gray600) !important;
 }
 
 .small {

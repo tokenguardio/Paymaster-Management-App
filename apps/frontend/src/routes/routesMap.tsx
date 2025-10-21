@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { PaymasterAddingPage } from '@/pages/PaymasterAddingPage';
 import { PaymasterEditPage } from '@/pages/PaymasterEditPage';
 import { PaymasterPage } from '@/pages/PaymasterPage';
