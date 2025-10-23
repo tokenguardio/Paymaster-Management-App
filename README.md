@@ -58,10 +58,10 @@ sponsorship rules and visibility into how those policies are being used.
 
 7. Apply migrations and seed the database
 
-    ```bash
+   ```bash
    # Apply migrations
    pnpm prisma:migrate:deploy
-    
+
    # Seed the database
    pnpm prisma:seed
    ```
