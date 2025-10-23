@@ -1,12 +1,23 @@
 {
   "name": "@repo/constants",
-  "main": "./dist/main.js",
-  "types": "./dist/main.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/main.js",
+      "require": "./dist/cjs/main.js",
+      "types": "./dist/types/main.d.ts"
+    }
+  },
+  "main": "./dist/cjs/main.js",
+  "module": "./dist/esm/main.js",
+  "types": "./dist/types/main.d.ts",
   "files": [
     "dist/**"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "pnpm build:cjs && pnpm build:esm && pnpm build:types",
+    "build:cjs": "tsc -p tsconfig.build-cjs.json",
+    "build:esm": "tsc -p tsconfig.build-esm.json",
+    "build:types": "tsc -p tsconfig.build-types.json",
     "clean:dist": "rimraf dist",
     "clean:node-modules": "rimraf node_modules",
     "clean:turbo": "rimraf .turbo",
