@@ -10,6 +10,11 @@ const envVarsValidationSchema = joi.object({
     .required(),
   BIND_ADDRESS: joi.string().ip().default('127.0.0.1').required(),
   SWAGGER_UI_PATH: joi.string().default('docs'),
+  RPC_URL: joi.string().uri().optional(),
+  PAYMASTER_SIGNER_PK: joi
+    .string()
+    .pattern(/^0x[0-9a-fA-F]{64}$/)
+    .required(),
 });
 
 export const validateEnvVars = (vars: Record<string, unknown>): Record<string, unknown> => {
