@@ -1,4 +1,12 @@
-import { Controller, Get, Param, ParseIntPipe, HttpStatus, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Delete,
+  Param,
+  ParseIntPipe,
+  HttpStatus,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { PolicyRuleResponseDto } from './dto/policy-rule-response.dto';
 import { PolicyRuleService } from './policy-rule.service';
@@ -34,5 +42,28 @@ export class PolicyRuleController {
     @Param('policyId', ParseIntPipe) policyId: number,
   ): Promise<PolicyRuleResponseDto[]> {
     return this.policyRuleService.findByPolicyId(policyId);
+  }
+
+  @Delete(':policyId')
+  @ApiOperation({
+    summary: 'Delete all rules for a specific policy',
+    description: 'Removes all rules assigned to a given policy ID.',
+  })
+  @ApiParam({
+    name: 'policyId',
+    description: 'ID of the policy whose rules you want to delete',
+    example: 1,
+    type: Number,
+  })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Rules deleted successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'No rules found for this policy',
+  })
+  public async deleteByPolicyId(@Param('policyId', ParseIntPipe) policyId: number): Promise<void> {
+    await this.policyRuleService.deleteByPolicyId(policyId);
   }
 }

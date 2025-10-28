@@ -19,7 +19,7 @@ type TGeneralAccordionProps = {
 
 export const GeneralAccordion = ({ control, errors, setValue }: TGeneralAccordionProps) => {
   const [policyNotExpired, setPolicyNotExpired] = useState<boolean>(false);
-  console.log('errors', errors);
+
   const handlePolicyChange = () => {
     setPolicyNotExpired((prevState) => {
       const newValue = !prevState;
@@ -43,11 +43,27 @@ export const GeneralAccordion = ({ control, errors, setValue }: TGeneralAccordio
               className="mt8"
               fullWidth
               error={errors.max_budget_wei?.message}
-              required
-              placeholder="0.0000"
             />
           )}
         />
+        {/* <Controller
+          name="blockchain"
+          control={control}
+          render={({ field }) => (
+            <Select
+              {...field}
+              id="blockchain"
+              name="blockchain"
+              label="Network of choice"
+              withArrow
+              size="large"
+              options={blockchainsOptions}
+              change={field.onChange}
+              value={field.value}
+              error={errors.blockchain?.message}
+            />
+          )}
+        /> */}
         <Controller
           name="chain_id"
           control={control}

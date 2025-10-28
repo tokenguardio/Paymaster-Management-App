@@ -37,7 +37,7 @@ export class PolicyService {
       });
 
       if (createPolicyDto.rules && createPolicyDto.rules.length > 0) {
-        console.log(`🟠 Creating ${createPolicyDto.rules.length} rule...`);
+        console.log(`🟠 Creating ${createPolicyDto.rules.length} reguł...`);
 
         for (const rule of createPolicyDto.rules) {
           await tx.policyRule.create({
@@ -103,6 +103,7 @@ export class PolicyService {
     }
 
     const updateData: Prisma.PolicyUpdateInput = {
+      ...(updatePolicyDto.name && { name: updatePolicyDto.name }),
       ...(updatePolicyDto.paymaster_address && {
         paymaster_address: updatePolicyDto.paymaster_address,
       }),

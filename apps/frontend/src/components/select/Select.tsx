@@ -31,6 +31,7 @@ type TSelectProps = {
   isSearchable?: boolean;
   isFocusable?: boolean;
   error?: string;
+  required?: boolean;
 };
 
 export const Select = ({
@@ -50,6 +51,7 @@ export const Select = ({
   isSearchable,
   isFocusable = true,
   error,
+  required = false,
 }: TSelectProps) => {
   const { Control, Option, Placeholder, SingleValue } = components;
 
@@ -109,7 +111,7 @@ export const Select = ({
 
   return (
     <div className={Style['react-select-container']}>
-      {label && <Label text={label} forInput={name} />}
+      {label && <Label text={label} forInput={name} required={required} />}
 
       <ReactSelect<TDropdownOption, false>
         value={value || null}

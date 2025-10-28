@@ -12,16 +12,14 @@ export const GeneralAccordion = ({ policy }: TGeneralAccordionProps) => (
   <Accordion defaultOpen title="General">
     <div className={Style['general-container']}>
       <NumberInput
-        label="Maximum budget in USD"
-        prefix="$"
+        label="Maximum budget in ETH"
         className="mt8"
         fullWidth
         value={policy?.max_budget_wei}
         disabled
       />
       <Select
-        id="Blockchain"
-        name="blockchain"
+        name="chain_id"
         label="Network of choice"
         options={blockchainsOptions}
         value={blockchainsOptions.filter((item) => item.value == policy?.chain_id)[0]}

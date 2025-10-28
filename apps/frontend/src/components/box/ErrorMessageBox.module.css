@@ -1,0 +1,6 @@
+.error-box {
+  padding: 1rem;
+  border: 1px solid var(--color-gray200);
+  background-color: var(--color-gray50);
+  border-radius: var(--radius);
+}

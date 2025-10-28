@@ -59,7 +59,7 @@ async function bootstrap(): Promise<void> {
     app.enableCors({
       origin: FRONTEND_URL,
       credentials: true, // Important for cookies/sessions
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
     });
     Logger.log(`CORS enabled for development (origin: ${FRONTEND_URL})`, loggerContext);

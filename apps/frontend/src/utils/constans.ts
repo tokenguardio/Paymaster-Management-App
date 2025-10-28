@@ -56,7 +56,7 @@ export const palette = {
 
 export const blockchainsOptions = [
   {
-    value: 1,
+    value: '1',
     label: 'Ethereum',
     icon: ethereumLogo,
   },
