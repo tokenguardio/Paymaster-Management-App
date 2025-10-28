@@ -7,7 +7,7 @@ import {
   POLICY_STATUS,
   USER_OPERATION_STATUS,
 } from '@repo/constants';
-import { PrismaClient } from '../generated/client';
+import { PrismaClient } from '../../generated/client';
 
 const prisma = new PrismaClient();
 

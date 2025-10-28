@@ -13,13 +13,14 @@ services:
       - PORT=3000
       - BIND_ADDRESS=0.0.0.0
       - DATABASE_URL=postgres://postgres:postgres@backend-db:5432/paymaster
+      - RUN_SEED=true
     env_file:
       - apps/backend/.env
     networks:
       app-network:
 
   backend-db:
-    image: postgres:17.6-alpine@sha256:d5f196a551b5cef1c70853c6dd588f456d16ca4ea733e3f31c75bc1ae2f65f3f
+    image: postgres:17.6-alpine@sha256:52c2130c698a7fe22ac565c35a3b8c4d05af65addb994416b84d1bcf0b900dcd
     ports:
       - '127.0.0.1:5432:5432'
     environment:

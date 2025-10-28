@@ -19,7 +19,7 @@ type TGeneralAccordionProps = {
 
 export const GeneralAccordion = ({ control, errors, setValue }: TGeneralAccordionProps) => {
   const [policyNotExpired, setPolicyNotExpired] = useState<boolean>(false);
-  console.log('errors', errors);
+
   const handlePolicyChange = () => {
     setPolicyNotExpired((prevState) => {
       const newValue = !prevState;
