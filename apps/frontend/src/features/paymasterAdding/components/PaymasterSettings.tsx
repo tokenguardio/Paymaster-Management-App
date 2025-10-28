@@ -1,4 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  POLICY_RULE_METRIC,
+  POLICY_RULE_COMPARATOR,
+  POLICY_RULE_SCOPE,
+  POLICY_RULE_INTERVAL,
+} from '@repo/constants';
 import React, { useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -19,12 +25,6 @@ import { GeneralAccordion } from './GeneralAccordion';
 import Style from './PaymasterSettings.module.css';
 import { PaymasterTitle } from './PaymasterTitle';
 import { WhitelistedAddressesAccordion } from './WhitelistedAddressesAccordion';
-import {
-  POLICY_RULE_METRIC,
-  POLICY_RULE_COMPARATOR,
-  POLICY_RULE_SCOPE,
-  POLICY_RULE_INTERVAL,
-} from '../../../../../../packages/constants/src/policy-rule';
 import { createPolicy } from '../utils/fetches';
 
 const comparatorOptions = Object.values(POLICY_RULE_COMPARATOR).map((comparator) => {

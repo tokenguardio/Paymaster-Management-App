@@ -1,71 +1,75 @@
-# Use the official Node.js image
-FROM node:22-alpine@sha256:d2166de198f26e17e5a442f537754dd616ab069c47cc57b889310a717e0abbf9 AS base
+FROM node:22-alpine@sha256:bd26af08779f746650d95a2e4d653b0fd3c8030c44284b6b98d701c9b5eb66b9 AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN apk add --no-cache libc6-compat && \
+    corepack enable && \
+    pnpm install turbo --global
 
-# Enable corepack for package manager management
-RUN corepack enable
-
-# Set working directory
+FROM base AS builder
 WORKDIR /app
+COPY . .
+RUN turbo prune --scope=backend --docker
 
-# Copy root package files and workspace config
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY .npmrc ./
-COPY turbo.json ./
+FROM base AS installer
+WORKDIR /app
+# Copy pruned dependency files
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=builder /app/out/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=builder /app/out/full/.npmrc ./.npmrc
 
-# Copy workspace packages (shared configs, etc.)
-COPY packages/ ./packages/
-
-# Copy only backend app (not other apps)
-COPY apps/backend/ ./apps/backend/
-
-# Set Docker env to skip husky
-ENV DOCKER=1
-
-# Install dependencies for entire monorepo
+# Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# Build stage
-FROM base AS builder
+# Copy pruned source files and build config
+COPY --from=builder /app/out/full/ .
+COPY turbo.json turbo.json
 
-# Build the Prisma package first and backend
-RUN pnpm build --filter=@repo/prisma && \
-    pnpm build --filter=backend
+# Set environment variables
+ENV DOCKER=1
 
-# Production stage
-FROM node:22-alpine@sha256:d2166de198f26e17e5a442f537754dd616ab069c47cc57b889310a717e0abbf9 AS production
+# Build the project (Prisma first, then backend)
+RUN turbo run build --filter=@repo/prisma && \
+    turbo run build --filter=backend
 
-# Enable corepack
-RUN corepack enable
+FROM base AS runner
 WORKDIR /app
 
-# Copy package files
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY .npmrc ./
+# Don't run production as root
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nestjs
 
-# Copy workspace packages source
-COPY packages/ ./packages/
+# Copy package files for production install
+COPY --from=installer /app/package.json ./
+COPY --from=installer /app/pnpm-lock.yaml ./
+COPY --from=installer /app/pnpm-workspace.yaml ./
+COPY --from=installer /app/.npmrc ./
 
-# Copy backend source
-COPY apps/backend/package.json ./apps/backend/
+# Copy built packages
+COPY --from=installer --chown=nestjs:nodejs /app/packages/ ./packages/
+COPY --from=installer --chown=nestjs:nodejs /app/apps/backend/package.json ./apps/backend/
+COPY --from=installer --chown=nestjs:nodejs /app/apps/backend/dist ./apps/backend/dist
 
-# Copy built Prisma package from builder stage
-COPY --from=builder /app/packages/prisma/dist ./packages/prisma/dist
-COPY --from=builder /app/packages/prisma/generated ./packages/prisma/generated
-
-# Copy built backend from builder stage
-COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
-
-# Set Docker env to skip husky
+# Set environment variables
 ENV DOCKER=1
+ENV NODE_ENV=production
 
 # Install only production dependencies
 RUN pnpm install --frozen-lockfile --prod
 
+# Copy entrypoint script from builder stage
+COPY --from=builder --chown=nestjs:nodejs /app/apps/backend/docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
+
+# Change ownership and switch to non-root user
+RUN chown -R nestjs:nodejs /app
+USER nestjs
+
 # Expose port
 EXPOSE 3000
 
-# Set the working directory to backend
+# Set working directory to backend
 WORKDIR /app/apps/backend
 
 # Start the application
-CMD ["node", "dist/main.js"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
