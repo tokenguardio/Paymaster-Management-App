@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
-import { formatEther } from 'ethers';
+import { formatEther, parseEther } from 'ethers';
 import React, { useState, useEffect } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -151,7 +151,7 @@ export const PaymasterSettings = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: 'Spending Policy',
-      max_budget_wei: 0,
+      max_budget_wei: '0',
       chain_id: blockchainsOptions[0].value,
       is_public: true,
       status_id: 'ACTIVE',
@@ -178,7 +178,8 @@ export const PaymasterSettings = () => {
         paymaster_address: policy.paymaster_address ?? '',
         valid_from: policy.valid_from ? new Date(policy.valid_from) : new Date(),
         valid_to: policy.valid_to ? new Date(policy.valid_to) : null,
-        whitelisted_addresses: policy.whitelisted_addresses?.length > 0 ? true : false,
+        whitelisted_addresses:
+          policy.whitelisted_addresses && policy.whitelisted_addresses?.length > 0 ? true : false,
         rules:
           policyRules?.map((rule) => ({
             comparator: rule.comparator?.id,
@@ -266,11 +267,9 @@ export const PaymasterSettings = () => {
           handleFileUpload={handleFileUpload}
           removeEntry={removeEntry}
           setValue={setValue}
-          // manualAddress={manualAddress}
           manualWhitelistAddress={manualWhitelistAddress}
           setManualWhitelistAddress={setManualWhitelistAddress}
           handleAddAddress={handleAddAddress}
-          // isValidAddress={isValidAddress}
         />
         <Line />
         <Accordion defaultOpen title="User Spending Rules">
