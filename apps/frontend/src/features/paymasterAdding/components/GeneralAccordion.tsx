@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Controller, Control, FieldErrors } from 'react-hook-form';
-import { Accordion, Checkbox, DatePicker, Icon, NumberInput, Select } from '@/components';
+import { Accordion, Checkbox, DatePicker, Icon, TextInput, Select } from '@/components';
 import { blockchainsOptions } from '@/utils/constans';
 import Style from './GeneralAccordion.module.css';
 
 type TFormValues = {
-  max_budget_wei?: number;
+  max_budget_wei?: string;
   chain_id?: string;
   valid_from?: Date;
   valid_to?: Date | null;
@@ -37,14 +37,17 @@ export const GeneralAccordion = ({ control, errors, setValue }: TGeneralAccordio
           name="max_budget_wei"
           control={control}
           render={({ field }) => (
-            <NumberInput
+            <TextInput
               {...field}
               label="Maximum budget in ETH"
-              className="mt8"
+              // className="mt8"
+              name="max_budget_wei"
               fullWidth
               error={errors.max_budget_wei?.message}
               required
               placeholder="0.0000"
+              inputmode="decimal"
+              pattern="[0-9]*[.,]?[0-9]*"
             />
           )}
         />

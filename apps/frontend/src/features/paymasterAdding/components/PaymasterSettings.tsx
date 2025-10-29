@@ -4,9 +4,9 @@ import {
   POLICY_RULE_COMPARATOR,
   POLICY_RULE_SCOPE,
   POLICY_RULE_INTERVAL,
-  CHAINS,
 } from '@repo/constants';
 import axios from 'axios';
+import { parseEther } from 'ethers';
 import React, { useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -28,7 +28,7 @@ import Style from './PaymasterSettings.module.css';
 import { PaymasterTitle } from './PaymasterTitle';
 import { WhitelistedAddressesAccordion } from './WhitelistedAddressesAccordion';
 import { createPolicy } from '../utils/fetches';
-console.log('CHAINS', CHAINS);
+
 const comparatorOptions = Object.values(POLICY_RULE_COMPARATOR).map((comparator) => {
   let symbol = '';
   switch (comparator.id) {
@@ -86,10 +86,26 @@ const ruleSchema = z
 
 const formSchema = z.object({
   name: z.string(),
-  max_budget_wei: z.coerce
-    .number()
-    .gt(0, 'Must be greater than 0') // .gt zamiast .min, by wymusić > 0, a nie ≥ 0
-    .refine((val) => !isNaN(val), { message: 'This field is required' }),
+  max_budget_wei: z
+    .string()
+    .trim()
+    .nonempty('This field is required')
+    .transform((val) => val.replace(',', '.'))
+    .refine((val) => /^\d*\.?\d*$/.test(val), {
+      message: 'Invalid number format',
+    })
+    .refine(
+      (val) => {
+        try {
+          const wei = parseEther(val);
+          return wei > BigInt(0);
+        } catch {
+          return false;
+        }
+      },
+      { message: 'Must be greater than 0' },
+    )
+    .transform((val) => parseEther(val).toString()),
   chain_id: z.preprocess(
     (val) => (val == null ? '' : val),
     z.string().nonempty({ message: 'This field is required' }),
@@ -128,7 +144,7 @@ export const PaymasterSettings = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: 'Spending Policy',
-      max_budget_wei: 0,
+      max_budget_wei: '0',
       // chain_id: blockchainsOptions[0].value,
       is_public: true,
       status_id: 'ACTIVE',
@@ -148,7 +164,6 @@ export const PaymasterSettings = () => {
   const handleAddAddress = () => {
     if (/^0x[a-fA-F0-9]{40}$/.test(manualWhitelistAddress)) {
       setEntries((prev) => [...prev, manualWhitelistAddress]);
-      // setValue('manualAddress', '');
       setManualWhitelistAddress('');
     }
   };

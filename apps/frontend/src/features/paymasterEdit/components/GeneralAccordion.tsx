@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Controller, Control, FieldErrors } from 'react-hook-form';
-import { Accordion, Checkbox, DatePicker, Icon, NumberInput, Select } from '@/components';
+import { Accordion, Checkbox, DatePicker, Icon, TextInput, Select } from '@/components';
 import { blockchainsOptions } from '@/utils/constans';
 import Style from './GeneralAccordion.module.css';
 
@@ -37,33 +37,14 @@ export const GeneralAccordion = ({ control, errors, setValue }: TGeneralAccordio
           name="max_budget_wei"
           control={control}
           render={({ field }) => (
-            <NumberInput
+            <TextInput
               {...field}
               label="Maximum budget in ETH"
-              className="mt8"
               fullWidth
               error={errors.max_budget_wei?.message}
             />
           )}
         />
-        {/* <Controller
-          name="blockchain"
-          control={control}
-          render={({ field }) => (
-            <Select
-              {...field}
-              id="blockchain"
-              name="blockchain"
-              label="Network of choice"
-              withArrow
-              size="large"
-              options={blockchainsOptions}
-              change={field.onChange}
-              value={field.value}
-              error={errors.blockchain?.message}
-            />
-          )}
-        /> */}
         <Controller
           name="chain_id"
           control={control}

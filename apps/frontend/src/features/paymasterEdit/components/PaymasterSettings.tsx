@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
+import { formatEther } from 'ethers';
 import React, { useState, useEffect } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -87,10 +88,26 @@ const ruleSchema = z
 
 const formSchema = z.object({
   name: z.string(),
-  max_budget_wei: z.coerce
-    .number()
-    .gt(0, 'Must be greater than 0')
-    .refine((val) => !isNaN(val), { message: 'This field is required' }),
+  max_budget_wei: z
+    .string()
+    .trim()
+    .nonempty('This field is required')
+    .transform((val) => val.replace(',', '.'))
+    .refine((val) => /^\d*\.?\d*$/.test(val), {
+      message: 'Invalid number format',
+    })
+    .refine(
+      (val) => {
+        try {
+          const wei = parseEther(val);
+          return wei > BigInt(0);
+        } catch {
+          return false;
+        }
+      },
+      { message: 'Must be greater than 0' },
+    )
+    .transform((val) => parseEther(val).toString()),
   chain_id: z.preprocess(
     (val) => (val == null ? '' : val),
     z.string().nonempty({ message: 'This field is required' }),
@@ -142,7 +159,6 @@ export const PaymasterSettings = () => {
       valid_from: new Date(),
       valid_to: new Date(),
       whitelisted_addresses: true,
-      // manualAddress: '',
       rules: [],
     },
   });
@@ -155,7 +171,7 @@ export const PaymasterSettings = () => {
     if (policy) {
       reset({
         name: policy.name ?? 'Spending Policy',
-        max_budget_wei: Number(policy.max_budget_wei ?? 0),
+        max_budget_wei: formatEther(policy.max_budget_wei),
         chain_id: policy.chain_id ?? blockchainsOptions[0].value,
         is_public: policy.is_public ?? true,
         status_id: policy.status_id ?? 'ACTIVE',
@@ -241,19 +257,6 @@ export const PaymasterSettings = () => {
         <Line />
         <GeneralAccordion control={control} errors={errors} setValue={setValue} />
         <Line />
-        {/* <WhitelistedAddressesAccordion
-          entries={entries}
-          errors={errors}
-          register={register}
-          control={control}
-          setEntries={setEntries}
-          handleFileUpload={handleFileUpload}
-          removeEntry={removeEntry}
-          setValue={setValue}
-          // manualAddress={manualAddress}
-          handleAddAddress={handleAddAddress}
-          // isValidAddress={isValidAddress}
-        /> */}
         <WhitelistedAddressesAccordion
           entries={entries}
           errors={errors}
