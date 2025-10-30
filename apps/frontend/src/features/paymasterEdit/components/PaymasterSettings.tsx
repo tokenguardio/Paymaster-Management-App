@@ -1,15 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  POLICY_RULE_METRIC,
-  POLICY_RULE_COMPARATOR,
-  POLICY_RULE_SCOPE,
-  POLICY_RULE_INTERVAL,
-} from '@repo/constants';
 import axios from 'axios';
-import { parseEther } from 'ethers';
-import React, { useState } from 'react';
+import { formatEther, parseEther } from 'ethers';
+import React, { useState, useEffect } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 import {
@@ -20,14 +14,22 @@ import {
   IconButton,
   Line,
   TinySelect,
-  ErrorMessageBox,
   Typography,
 } from '@/components';
+import { usePolicy } from '@/hooks/usePolicy';
+import { usePolicyRules } from '@/hooks/usePolicyRules';
+import { blockchainsOptions } from '@/utils/constans';
 import { GeneralAccordion } from './GeneralAccordion';
 import Style from './PaymasterSettings.module.css';
 import { PaymasterTitle } from './PaymasterTitle';
 import { WhitelistedAddressesAccordion } from './WhitelistedAddressesAccordion';
-import { createPolicy } from '../utils/fetches';
+import {
+  POLICY_RULE_METRIC,
+  POLICY_RULE_COMPARATOR,
+  POLICY_RULE_SCOPE,
+  POLICY_RULE_INTERVAL,
+} from '../../../../../../packages/constants/src/policy-rule';
+import { editPolicy } from '../utils/fetches';
 
 const comparatorOptions = Object.values(POLICY_RULE_COMPARATOR).map((comparator) => {
   let symbol = '';
@@ -128,10 +130,14 @@ const formSchema = z.object({
 type TFormData = z.infer<typeof formSchema>;
 
 export const PaymasterSettings = () => {
-  const [entries, setEntries] = useState<string[]>([]);
+  const { id } = useParams<{ id: string }>();
+  const { policy } = usePolicy(id ?? '');
+  const { policyRules } = usePolicyRules(id ?? '');
   const [manualWhitelistAddress, setManualWhitelistAddress] = useState<string>('');
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [_errorMessage, setErrorMessage] = useState<string | null>(null);
   const [_isSubmitting, setIsSubmitting] = useState(false);
+
+  const [entries, setEntries] = useState<string[]>([]);
   const navigate = useNavigate();
 
   const {
@@ -139,20 +145,20 @@ export const PaymasterSettings = () => {
     control,
     setValue,
     register,
+    reset,
     formState: { errors },
   } = useForm<TFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: 'Spending Policy',
       max_budget_wei: '0',
-      // chain_id: blockchainsOptions[0].value,
+      chain_id: blockchainsOptions[0].value,
       is_public: true,
       status_id: 'ACTIVE',
       paymaster_address: '0x1234567890123456789012345678901234567890',
       valid_from: new Date(),
       valid_to: new Date(),
       whitelisted_addresses: true,
-      // manualAddress: '',
       rules: [],
     },
   });
@@ -160,6 +166,35 @@ export const PaymasterSettings = () => {
     control,
     name: 'rules',
   });
+
+  useEffect(() => {
+    if (policy) {
+      reset({
+        name: policy.name ?? 'Spending Policy',
+        max_budget_wei: formatEther(policy.max_budget_wei),
+        chain_id: policy.chain_id ?? blockchainsOptions[0].value,
+        is_public: policy.is_public ?? true,
+        status_id: policy.status_id ?? 'ACTIVE',
+        paymaster_address: policy.paymaster_address ?? '',
+        valid_from: policy.valid_from ? new Date(policy.valid_from) : new Date(),
+        valid_to: policy.valid_to ? new Date(policy.valid_to) : null,
+        whitelisted_addresses:
+          policy.whitelisted_addresses && policy.whitelisted_addresses?.length > 0 ? true : false,
+        rules:
+          policyRules?.map((rule) => ({
+            comparator: rule.comparator?.id,
+            interval: rule.interval?.id,
+            scope: rule.scope?.id,
+            metric: rule.metric?.id,
+            amount: rule.value ?? 0,
+          })) ?? [],
+      });
+
+      if (policy.whitelisted_addresses?.length) {
+        setEntries(policy.whitelisted_addresses);
+      }
+    }
+  }, [policy, policyRules, reset]);
 
   const handleAddAddress = () => {
     if (/^0x[a-fA-F0-9]{40}$/.test(manualWhitelistAddress)) {
@@ -169,7 +204,6 @@ export const PaymasterSettings = () => {
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -195,7 +229,7 @@ export const PaymasterSettings = () => {
     setErrorMessage(null);
 
     try {
-      await createPolicy(payload);
+      await editPolicy(id, payload);
       toast.success('Policy added successfully');
       navigate('/paymaster');
     } catch (error: unknown) {
@@ -233,11 +267,9 @@ export const PaymasterSettings = () => {
           handleFileUpload={handleFileUpload}
           removeEntry={removeEntry}
           setValue={setValue}
-          // manualAddress={manualAddress}
           manualWhitelistAddress={manualWhitelistAddress}
           setManualWhitelistAddress={setManualWhitelistAddress}
           handleAddAddress={handleAddAddress}
-          // isValidAddress={isValidAddress}
         />
         <Line />
         <Accordion defaultOpen title="User Spending Rules">
@@ -392,7 +424,6 @@ export const PaymasterSettings = () => {
             Add Rule
           </Button>
         </Accordion>
-        {errorMessage && <ErrorMessageBox errorMessage={errorMessage} />}
         <Button fullWidth color="green500" size="medium" type="submit" className="mt32">
           Save & Create Policy
         </Button>

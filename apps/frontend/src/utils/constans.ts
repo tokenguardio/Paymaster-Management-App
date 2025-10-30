@@ -1,3 +1,4 @@
+import { CHAINS } from '@repo/constants';
 import ethereumLogo from '@/assets/images/ethereum.svg';
 
 export const breakpoints = {
@@ -54,10 +55,15 @@ export const palette = {
   white: '#ffffff',
 };
 
-export const blockchainsOptions = [
-  {
-    value: 1,
-    label: 'Ethereum',
-    icon: ethereumLogo,
-  },
-];
+const chainIconsMap: Record<number, string> = {
+  [CHAINS.ETHEREUM_MAINNET.id]: ethereumLogo,
+};
+
+export const getBlockchainOptions = () =>
+  Object.values(CHAINS).map((chain) => ({
+    value: chain.id.toString(),
+    label: chain.name,
+    icon: chainIconsMap[chain.id] ?? null,
+  }));
+
+export const blockchainsOptions = getBlockchainOptions();

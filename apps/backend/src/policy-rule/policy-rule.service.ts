@@ -37,4 +37,18 @@ export class PolicyRuleService {
       updated_at: r.updated_at.toISOString(),
     }));
   }
+
+  public async deleteByPolicyId(policyId: number): Promise<void> {
+    const existingRules = await this.prisma.policyRule.findMany({
+      where: { policy_id: BigInt(policyId) },
+    });
+
+    if (existingRules.length === 0) {
+      throw new NotFoundException(`No rules found for policy ID ${policyId}`);
+    }
+
+    await this.prisma.policyRule.deleteMany({
+      where: { policy_id: BigInt(policyId) },
+    });
+  }
 }

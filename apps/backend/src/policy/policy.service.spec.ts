@@ -177,7 +177,7 @@ describe('PolicyService', () => {
   });
 
   describe('update', () => {
-    it('should update a policy', async () => {
+    it('should update a policy with simple fields', async () => {
       const updateDto: UpdatePolicyDto = {
         max_budget_wei: '2000000000000000000',
       };
@@ -188,24 +188,19 @@ describe('PolicyService', () => {
       };
 
       mockPrismaService.policy.findUnique.mockResolvedValue(mockPolicyData);
-      mockPrismaService.policy.update.mockResolvedValue(updatedPolicyData);
+
+      mockPrismaService.$transaction.mockImplementation(async (callback) => {
+        const mockTx = {
+          policy: { update: jest.fn().mockResolvedValue(updatedPolicyData) },
+          policyRule: { deleteMany: jest.fn(), create: jest.fn() },
+        };
+        return callback(mockTx);
+      });
 
       const result = await service.update(1, updateDto);
 
       expect(result.max_budget_wei).toBe('2000000000000000000');
-      expect(prismaService.policy.findUnique).toHaveBeenCalledWith({
-        where: { id: BigInt(1) },
-      });
-      expect(prismaService.policy.update).toHaveBeenCalledWith({
-        where: { id: BigInt(1) },
-        data: {
-          max_budget_wei: '2000000000000000000',
-        },
-        include: {
-          chain: true,
-          status: true,
-        },
-      });
+      expect(prismaService.$transaction).toHaveBeenCalled();
     });
 
     it('should throw NotFoundException when policy not found', async () => {
@@ -220,9 +215,7 @@ describe('PolicyService', () => {
     });
 
     it('should update policy status', async () => {
-      const updateDto: UpdatePolicyDto = {
-        status_id: 'INACTIVE',
-      };
+      const updateDto: UpdatePolicyDto = { status_id: 'INACTIVE' };
 
       const updatedPolicyData = {
         ...mockPolicyData,
@@ -237,12 +230,67 @@ describe('PolicyService', () => {
       };
 
       mockPrismaService.policy.findUnique.mockResolvedValue(mockPolicyData);
-      mockPrismaService.policy.update.mockResolvedValue(updatedPolicyData);
+
+      mockPrismaService.$transaction.mockImplementation(async (callback) => {
+        const mockTx = {
+          policy: { update: jest.fn().mockResolvedValue(updatedPolicyData) },
+          policyRule: { deleteMany: jest.fn(), create: jest.fn() },
+        };
+        return callback(mockTx);
+      });
 
       const result = await service.update(1, updateDto);
 
       expect(result.status_id).toBe('INACTIVE');
       expect(result.status?.name).toBe('Inactive');
+    });
+
+    it('should handle updating rules', async () => {
+      const updateDto: UpdatePolicyDto = {
+        rules: [
+          {
+            metric: '1',
+            comparator: 'EQ',
+            interval: 'NOW',
+            scope: 'WALLET',
+            amount: 500,
+            token_address: '0xTokenAddress',
+          },
+        ],
+      };
+
+      mockPrismaService.policy.findUnique.mockResolvedValue(mockPolicyData);
+
+      const deleteManyMock = jest.fn();
+      const createMock = jest.fn();
+
+      mockPrismaService.$transaction.mockImplementation(async (callback) => {
+        const mockTx = {
+          policy: { update: jest.fn().mockResolvedValue(mockPolicyData) },
+          policyRule: { deleteMany: deleteManyMock, create: createMock },
+        };
+        return callback(mockTx);
+      });
+
+      const _result = await service.update(1, updateDto);
+
+      expect(deleteManyMock).toHaveBeenCalledWith({ where: { policy_id: BigInt(1) } });
+
+      expect(createMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            policy: { connect: { id: BigInt(1) } },
+            metric: { connect: { id: '1' } },
+            comparator: { connect: { id: 'EQ' } },
+            interval: { connect: { id: 'NOW' } },
+            scope: { connect: { id: 'WALLET' } },
+            value: 500,
+            token_address: '0xTokenAddress',
+            valid_from: expect.any(Date),
+            valid_to: null,
+          }),
+        }),
+      );
     });
   });
 

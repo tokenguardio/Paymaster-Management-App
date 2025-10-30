@@ -23,7 +23,7 @@ export const PreviewPolicyRulesAccordion = ({ policyRules }: TPreviewPolicyRules
                 <Typography
                   tag="p"
                   size="s"
-                  text={`${rule.metric.name} ${rule.scope.name} per ${rule.interval.name} ${rule.comparator.name} ${rule.value}`}
+                  text={`${rule.interval.name} ${rule.metric.name} ${rule.scope.name} ${rule.comparator.name} ${rule.value}`}
                 />
               </li>
             ))}

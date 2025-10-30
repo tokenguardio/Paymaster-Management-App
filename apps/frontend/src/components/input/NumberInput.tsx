@@ -15,8 +15,9 @@ interface INumberInputProps {
   disabled?: boolean;
   prefix?: string;
   fullWidth?: boolean;
-  error?: string | unknown;
+  error?: string;
   className?: string;
+  required?: boolean;
 }
 
 export const NumberInput = forwardRef<HTMLInputElement, INumberInputProps>(
@@ -33,6 +34,7 @@ export const NumberInput = forwardRef<HTMLInputElement, INumberInputProps>(
       prefix,
       fullWidth,
       error,
+      required,
     } = props;
     const [innerValue, setInnerValue] = useState<string | number>(value || '');
     const numberInputStyle = clsx(
@@ -44,7 +46,7 @@ export const NumberInput = forwardRef<HTMLInputElement, INumberInputProps>(
 
     return (
       <div className={Style['number-input-container']}>
-        {label && <Label text={label} forInput={name} />}
+        {label && <Label text={label} forInput={name} required={required} />}
 
         <div className={Style['input-prefix-container']}>
           {prefix && <span className={Style['prefix']}>{prefix}</span>}
