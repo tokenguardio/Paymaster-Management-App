@@ -1,3 +1,7 @@
+.react-select-container {
+  position: relative;
+}
+
 .react-select-container label {
   margin-bottom: 0.8rem;
   display: block;

@@ -1,5 +1,6 @@
+import { formatEther } from 'ethers';
 import React from 'react';
-import { Accordion, DatePicker, Icon, NumberInput, Select } from '@/components';
+import { Accordion, DatePicker, TextInput, Select } from '@/components';
 import { TPolicy } from '@/types/policy';
 import { blockchainsOptions } from '@/utils/constans';
 import Style from './GeneralAccordion.module.css';
@@ -11,17 +12,14 @@ type TGeneralAccordionProps = {
 export const GeneralAccordion = ({ policy }: TGeneralAccordionProps) => (
   <Accordion defaultOpen title="General">
     <div className={Style['general-container']}>
-      <NumberInput
-        label="Maximum budget in USD"
-        prefix="$"
-        className="mt8"
+      <TextInput
+        label="Maximum budget in ETH"
         fullWidth
-        value={policy?.max_budget_wei}
+        value={policy?.max_budget_wei ? formatEther(policy.max_budget_wei) : ''}
         disabled
       />
       <Select
-        id="Blockchain"
-        name="blockchain"
+        name="chain_id"
         label="Network of choice"
         options={blockchainsOptions}
         value={blockchainsOptions.filter((item) => item.value == policy?.chain_id)[0]}

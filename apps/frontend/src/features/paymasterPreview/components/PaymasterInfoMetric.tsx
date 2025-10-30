@@ -1,15 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import {
-  Accordion,
-  Button,
-  DynamicInput,
-  Icon,
-  IconButton,
-  Line,
-  TinySelect,
-  Typography,
-} from '@/components';
+import { Line, Typography } from '@/components';
 import { usePolicy } from '@/hooks/usePolicy';
 import { usePolicyRules } from '@/hooks/usePolicyRules';
 import { GeneralAccordion } from './GeneralAccordion';

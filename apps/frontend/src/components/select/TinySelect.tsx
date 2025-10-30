@@ -18,11 +18,10 @@ type TSelectProps = {
   options: Array<TDropdownOption>;
   change: (newValue: string | null, actionMeta?: ActionMeta<TDropdownOption>) => void;
   name: string;
-  label: string;
-  size: string;
+  label?: string;
+  size?: string;
   placeholder?: string;
   prefixIcon?: ReactNode;
-  color?: string;
   disabled?: boolean;
   withArrow?: boolean;
   value?: TDropdownOption | null;
@@ -40,7 +39,6 @@ export const TinySelect = ({
   value,
   label,
   size,
-  color,
   withArrow,
   prefixIcon,
   prefix,
@@ -124,8 +122,7 @@ export const TinySelect = ({
           control: ({ isDisabled, isFocused }) =>
             clsx(
               Style['control'],
-              Style[size],
-              Style[color],
+              size && Style[size],
               isFocused && isFocusable && `${Style['control-active']}`,
               isDisabled && `${Style['disabled']}`,
             ),

@@ -32,3 +32,4 @@ export { Typography } from './typography/Typography';
 export { Title } from './title/Title';
 export { Line } from './line/Line';
 export { Dropdown } from './dropdown/Dropdown';
+export { ErrorMessageBox } from './box/ErrorMessageBox';
