@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, ApiHideProperty } from '@nestjs/swagger';
 import { CHAINS, POLICY_STATUS } from '@repo/constants';
 import { Type } from 'class-transformer';
 import {
@@ -7,6 +7,7 @@ import {
   IsDateString,
   IsEthereumAddress,
   IsIn,
+  IsEmpty,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -56,14 +57,9 @@ export class CreatePolicyDto {
   @IsNotEmpty()
   public name!: string;
 
-  @ApiProperty({
-    description: 'Ethereum paymaster address',
-    example: '0x1234567890123456789012345678901234567890',
-  })
-  @IsString()
-  @IsNotEmpty()
-  @IsEthereumAddress()
-  public paymaster_address!: string;
+  @ApiHideProperty() // Hides from Swagger request schema
+  @IsEmpty({ message: 'paymaster_address is server-managed and must not be provided' })
+  public paymaster_address?: never;
 
   @ApiProperty({
     description: 'Blockchain chain ID',
@@ -91,9 +87,9 @@ export class CreatePolicyDto {
     description: 'Maximum budget in Wei (string representation for precision)',
     example: '1000000000000000000',
   })
-  @IsString()
+  @Type(() => Number)
   @IsNotEmpty()
-  public max_budget_wei!: string;
+  public max_budget_wei!: number;
 
   @ApiProperty({
     description: 'Whether the policy is publicly accessible',

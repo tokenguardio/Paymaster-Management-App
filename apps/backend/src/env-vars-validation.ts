@@ -15,6 +15,15 @@ const envVarsValidationSchema = joi.object({
     .string()
     .pattern(/^0x[0-9a-fA-F]{64}$/)
     .required(),
+  PAYMASTER_ADDRESS: joi
+    .string()
+    .pattern(/^0x[0-9a-fA-F]{40}$/)
+    .required()
+    .messages({
+      'string.pattern.base':
+        'PAYMASTER_ADDRESS must be a valid Ethereum address (0x + 40 hex characters)',
+      'any.required': 'PAYMASTER_ADDRESS is required',
+    }),
 });
 
 export const validateEnvVars = (vars: Record<string, unknown>): Record<string, unknown> => {

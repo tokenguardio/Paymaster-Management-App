@@ -132,9 +132,8 @@ export class UserOperationService {
         status_id: UO_STATUS_PENDING,
         status_note: 'User operation submitted and pending validation',
         payload: uo as unknown as Prisma.JsonObject,
-        signature: null,
         actual_gas_cost_wei: null,
-        max_gas_cost_wei: estimatedMaxCostWei.toString(),
+        max_gas_cost_wei: estimatedMaxCostWei,
       },
     });
     await this.logChange(created.id, 'status_id', null, UO_STATUS_PENDING);
@@ -268,7 +267,6 @@ export class UserOperationService {
         status_id: UO_STATUS_SIGNED,
         status_note: 'Sponsored by paymaster.',
         payload: cleanUserOperation as unknown as Prisma.JsonObject,
-        signature: null,
       },
     });
 

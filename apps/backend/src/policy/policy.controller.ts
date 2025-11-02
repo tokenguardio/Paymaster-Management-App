@@ -27,14 +27,8 @@ export class PolicyController {
   @Post()
   @ApiOperation({
     summary: 'Create a new policy',
-    description: 'Creates a new sponsorship policy with the provided parameters',
-  })
-  @ApiQuery({
-    name: 'status',
-    required: false,
-    description: 'Optional status filter (e.g. "active", "inactive")',
-    example: 'active',
-    type: String,
+    description:
+      'Creates a new sponsorship policy with the provided parameters. Paymaster address is automatically set from environment configuration.',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -102,7 +96,7 @@ export class PolicyController {
   @ApiOperation({
     summary: 'Update a policy',
     description:
-      'Updates an existing policy with the provided parameters. Only provided fields will be updated.',
+      'Updates an existing policy with the provided parameters. Only provided fields will be updated. Paymaster address cannot be changed.',
   })
   @ApiParam({
     name: 'id',
