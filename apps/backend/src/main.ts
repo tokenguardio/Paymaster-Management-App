@@ -4,6 +4,8 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as session from 'express-session';
 import { AppModule } from './app.module';
+import { BigIntExceptionFilter } from './shared/filters/big-int-exception.filter';
+import { BigIntInterceptor } from './shared/interceptors/big-int.interceptor';
 import { getLogLevels } from './shared/util/logging.util';
 
 async function bootstrap(): Promise<void> {
@@ -11,6 +13,10 @@ async function bootstrap(): Promise<void> {
   Logger.log('bootstrapping...', loggerContext);
 
   const app = await NestFactory.create(AppModule);
+
+  // Apply BigInt handling for both success and error responses
+  app.useGlobalInterceptors(new BigIntInterceptor());
+  app.useGlobalFilters(new BigIntExceptionFilter());
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -29,7 +35,7 @@ async function bootstrap(): Promise<void> {
   const SWAGGER_UI_PATH = configService.getOrThrow('SWAGGER_UI_PATH');
   const NODE_ENV = configService.get('NODE_ENV');
   const SESSION_SECRET = configService.get('SESSION_SECRET', 'siwe-secret');
-  const FRONTEND_URL = configService.get('FRONTEND_URL', 'http://localhost:4173');
+  const FRONTEND_URL = configService.get('FRONTEND_URL', 'http://localhost:3001');
   const LOG_LEVEL = configService.get('LOG_LEVEL', 'debug');
 
   app.useLogger(getLogLevels(LOG_LEVEL));
@@ -57,9 +63,9 @@ async function bootstrap(): Promise<void> {
   // Configure CORS
   if (NODE_ENV === 'development') {
     app.enableCors({
-      origin: true,
+      origin: FRONTEND_URL,
       credentials: true, // Important for cookies/sessions
-      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
     });
     Logger.log(`CORS enabled for development (origin: ${FRONTEND_URL})`, loggerContext);

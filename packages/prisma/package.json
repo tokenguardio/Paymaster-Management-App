@@ -32,6 +32,6 @@
     "prisma": "6.16.0"
   },
   "prisma": {
-    "seed": "ts-node --transpile-only scripts/seed.ts"
+    "seed": "ts-node --transpile-only src/scripts/seed.ts"
   }
 }

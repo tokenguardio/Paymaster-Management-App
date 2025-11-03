@@ -115,13 +115,6 @@ const formSchema = z.object({
   valid_from: z.date(),
   valid_to: z.date().nullable(),
   whitelisted_addresses: z.boolean(),
-  paymaster_address: z
-    .string()
-    .trim()
-    .optional()
-    .refine((val) => !val || /^0x[a-fA-F0-9]{40}$/.test(val), {
-      message: 'Invalid Ethereum address',
-    }),
   rules: z.array(ruleSchema),
 });
 
@@ -148,7 +141,6 @@ export const PaymasterSettings = () => {
       // chain_id: blockchainsOptions[0].value,
       is_public: true,
       status_id: 'ACTIVE',
-      paymaster_address: '0x1234567890123456789012345678901234567890',
       valid_from: new Date(),
       valid_to: new Date(),
       whitelisted_addresses: true,

@@ -69,11 +69,10 @@ describe('PolicyController', () => {
   describe('create', () => {
     it('should create a new policy', async () => {
       const createDto: CreatePolicyDto = {
-        paymaster_address: '0x1234567890123456789012345678901234567890',
         chain_id: 1,
         name: 'policyName',
         status_id: 'ACTIVE',
-        max_budget_wei: '1000000000000000000',
+        max_budget_wei: 1000000000000000000,
         is_public: true,
         whitelisted_addresses: ['0x1234567890123456789012345678901234567890'],
         valid_from: '2025-01-01T00:00:00Z',
@@ -127,7 +126,7 @@ describe('PolicyController', () => {
   describe('update', () => {
     it('should update a policy', async () => {
       const updateDto: UpdatePolicyDto = {
-        max_budget_wei: '2000000000000000000',
+        max_budget_wei: 2000000000000000000,
       };
 
       const updatedPolicy = { ...mockPolicyResponse, max_budget_wei: '2000000000000000000' };

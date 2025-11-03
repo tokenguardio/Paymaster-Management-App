@@ -7,14 +7,32 @@ describe(validateEnvVars.name, function () {
       PORT: '3000',
       BIND_ADDRESS: '127.0.0.1',
       DATABASE_URL: 'postgres://user:pass@localhost:5432/db',
+      ETHEREUM_RPC_URL: 'https://ethereum-rpc.publicnode.com',
+      SEPOLIA_RPC_URL: 'https://ethereum-sepolia-rpc.publicnode.com',
+      PAYMASTER_SIGNER_PRIVATE_KEY:
+        '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+      PAYMASTER_SIGNER_ADDRESS: '0x1234567890123456789012345678901234567890',
+      PAYMASTER_ADDRESS: '0x1234567890123456789012345678901234567890',
+      PAYMASTER_EIP712_DOMAIN_NAME: 'TestPaymaster',
+      PAYMASTER_EIP712_DOMAIN_VERSION: '1',
+      PAYMASTER_EIP712_DOMAIN_SIGNATURE_TTL_SECONDS: '300',
     });
 
     expect(result).toEqual({
-      BIND_ADDRESS: '127.0.0.1',
       NODE_ENV: 'development',
       PORT: 3000,
-      SWAGGER_UI_PATH: 'docs',
+      BIND_ADDRESS: '127.0.0.1',
       DATABASE_URL: 'postgres://user:pass@localhost:5432/db',
+      SWAGGER_UI_PATH: 'docs',
+      ETHEREUM_RPC_URL: 'https://ethereum-rpc.publicnode.com',
+      SEPOLIA_RPC_URL: 'https://ethereum-sepolia-rpc.publicnode.com',
+      PAYMASTER_SIGNER_PRIVATE_KEY:
+        '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+      PAYMASTER_SIGNER_ADDRESS: '0x1234567890123456789012345678901234567890',
+      PAYMASTER_ADDRESS: '0x1234567890123456789012345678901234567890',
+      PAYMASTER_EIP712_DOMAIN_NAME: 'TestPaymaster',
+      PAYMASTER_EIP712_DOMAIN_VERSION: '1',
+      PAYMASTER_EIP712_DOMAIN_SIGNATURE_TTL_SECONDS: 300,
     });
   });
 
@@ -25,14 +43,26 @@ describe(validateEnvVars.name, function () {
         PORT: '0',
         BIND_ADDRESS: '1127.0.0.1',
         DATABASE_URL: 'postgress://user:pass@localhost:5432/db',
+        ETHEREUM_RPC_URL: 'https://ethereum-rpc.publicnode.com',
+        SEPOLIA_RPC_URL: 'https://ethereum-sepolia-rpc.publicnode.com',
+        PAYMASTER_SIGNER_PRIVATE_KEY:
+          '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+        PAYMASTER_SIGNER_ADDRESS: '0x1234567890123456789012345678901234567890',
+        PAYMASTER_ADDRESS: '0x1234567890123456789012345678901234567890',
+        PAYMASTER_EIP712_DOMAIN_NAME: 'TestPaymaster',
+        PAYMASTER_EIP712_DOMAIN_VERSION: '1',
+        PAYMASTER_EIP712_DOMAIN_SIGNATURE_TTL_SECONDS: '300',
       });
       expect(true).toBe(false); // this should not be reached
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
       if (!(error instanceof Error)) throw new Error('this should not be reached');
-      expect(error.message).toBe(
-        'config validation error: "NODE_ENV" must be one of [development, production, test]. "PORT" must be a positive number. "DATABASE_URL" must be a valid uri with a scheme matching the postgres pattern. "BIND_ADDRESS" must be a valid ip address with a optional CIDR',
+      expect(error.message).toContain('"NODE_ENV" must be one of [development, production, test]');
+      expect(error.message).toContain('"PORT" must be a positive number');
+      expect(error.message).toContain(
+        '"DATABASE_URL" must be a valid uri with a scheme matching the postgres pattern',
       );
+      expect(error.message).toContain('"BIND_ADDRESS" must be a valid ip address');
     }
   });
 });

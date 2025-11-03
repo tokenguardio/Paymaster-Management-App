@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { POLICY_STATUS } from '@repo/constants';
 import { PrismaService, Prisma } from '@repo/prisma';
 import { CreatePolicyDto } from './dto/create-policy.dto';
@@ -14,17 +15,31 @@ type TPolicyWithRelations = Prisma.PolicyGetPayload<{
 
 @Injectable()
 export class PolicyService {
-  public constructor(private readonly prisma: PrismaService) {}
+  private readonly paymasterAddress: string;
+
+  public constructor(
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
+  ) {
+    // Get paymaster address from environment variable and normalize to lowercase
+    const rawPaymasterAddress = this.configService.get<string>('PAYMASTER_ADDRESS') || '';
+
+    if (!rawPaymasterAddress) {
+      throw new Error('PAYMASTER_ADDRESS environment variable is not set');
+    }
+
+    this.paymasterAddress = rawPaymasterAddress.toLowerCase();
+  }
 
   public async create(createPolicyDto: CreatePolicyDto): Promise<PolicyResponseDto> {
     return this.prisma.$transaction(async (tx) => {
       const policy = await tx.policy.create({
         data: {
-          paymaster_address: createPolicyDto.paymaster_address,
+          paymaster_address: this.paymasterAddress,
           chain_id: BigInt(createPolicyDto.chain_id),
           name: createPolicyDto.name,
           status_id: createPolicyDto.status_id,
-          max_budget_wei: createPolicyDto.max_budget_wei,
+          max_budget_wei: BigInt(createPolicyDto.max_budget_wei),
           is_public: createPolicyDto.is_public,
           whitelisted_addresses: createPolicyDto.whitelisted_addresses,
           valid_from: createPolicyDto.valid_from ? new Date(createPolicyDto.valid_from) : undefined,
@@ -37,7 +52,7 @@ export class PolicyService {
       });
 
       if (createPolicyDto.rules && createPolicyDto.rules.length > 0) {
-        console.log(`🟠 Creating ${createPolicyDto.rules.length} reguł...`);
+        console.log(`🟠 Creating ${createPolicyDto.rules.length} rules...`);
 
         for (const rule of createPolicyDto.rules) {
           await tx.policyRule.create({
@@ -104,23 +119,26 @@ export class PolicyService {
 
     return this.prisma.$transaction(async (tx) => {
       const updateData: Prisma.PolicyUpdateInput = {
-        ...(updatePolicyDto.name && { name: updatePolicyDto.name }),
-        ...(updatePolicyDto.paymaster_address && {
-          paymaster_address: updatePolicyDto.paymaster_address,
+        ...(updatePolicyDto.name !== undefined && { name: updatePolicyDto.name }),
+        ...(updatePolicyDto.max_budget_wei !== undefined && {
+          max_budget_wei: BigInt(updatePolicyDto.max_budget_wei),
         }),
-        ...(updatePolicyDto.max_budget_wei && { max_budget_wei: updatePolicyDto.max_budget_wei }),
-        ...(typeof updatePolicyDto.is_public === 'boolean' && {
+        ...(updatePolicyDto.is_public !== undefined && {
           is_public: updatePolicyDto.is_public,
         }),
-        ...(updatePolicyDto.whitelisted_addresses && {
+        ...(updatePolicyDto.whitelisted_addresses !== undefined && {
           whitelisted_addresses: updatePolicyDto.whitelisted_addresses,
         }),
-        ...(updatePolicyDto.valid_from && { valid_from: new Date(updatePolicyDto.valid_from) }),
-        ...(updatePolicyDto.valid_to && { valid_to: new Date(updatePolicyDto.valid_to) }),
-        ...(updatePolicyDto.chain_id && {
+        ...(updatePolicyDto.valid_from !== undefined && {
+          valid_from: new Date(updatePolicyDto.valid_from),
+        }),
+        ...(updatePolicyDto.valid_to !== undefined && {
+          valid_to: new Date(updatePolicyDto.valid_to),
+        }),
+        ...(updatePolicyDto.chain_id !== undefined && {
           chain: { connect: { id: BigInt(updatePolicyDto.chain_id) } },
         }),
-        ...(updatePolicyDto.status_id && {
+        ...(updatePolicyDto.status_id !== undefined && {
           status: { connect: { id: updatePolicyDto.status_id } },
         }),
       };
@@ -134,27 +152,31 @@ export class PolicyService {
         },
       });
 
-      if (updatePolicyDto.rules && updatePolicyDto.rules.length >= 0) {
+      if (updatePolicyDto.rules !== undefined) {
+        // Delete existing rules
         await tx.policyRule.deleteMany({
           where: { policy_id: BigInt(id) },
         });
 
-        for (const rule of updatePolicyDto.rules) {
-          await tx.policyRule.create({
-            data: {
-              policy: { connect: { id: BigInt(id) } },
-              metric: { connect: { id: rule.metric } },
-              comparator: { connect: { id: rule.comparator } },
-              interval: { connect: { id: rule.interval } },
-              scope: { connect: { id: rule.scope } },
-              value: rule.amount,
-              token_address: rule.token_address ?? null,
-              valid_from: updatePolicyDto.valid_from
-                ? new Date(updatePolicyDto.valid_from)
-                : new Date(),
-              valid_to: updatePolicyDto.valid_to ? new Date(updatePolicyDto.valid_to) : null,
-            },
-          });
+        // Create new rules
+        if (updatePolicyDto.rules.length > 0) {
+          for (const rule of updatePolicyDto.rules) {
+            await tx.policyRule.create({
+              data: {
+                policy: { connect: { id: BigInt(id) } },
+                metric: { connect: { id: rule.metric } },
+                comparator: { connect: { id: rule.comparator } },
+                interval: { connect: { id: rule.interval } },
+                scope: { connect: { id: rule.scope } },
+                value: rule.amount,
+                token_address: rule.token_address ?? null,
+                valid_from: updatePolicyDto.valid_from
+                  ? new Date(updatePolicyDto.valid_from)
+                  : new Date(),
+                valid_to: updatePolicyDto.valid_to ? new Date(updatePolicyDto.valid_to) : null,
+              },
+            });
+          }
         }
       }
 

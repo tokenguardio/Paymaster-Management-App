@@ -15,7 +15,6 @@
     "start:dev": "vite --mode development"
   },
   "dependencies": {
-    "@esbuild-plugins/node-globals-polyfill": "0.2.3",
     "@hookform/resolvers": "5.2.2",
     "@repo/constants": "workspace:*",
     "@types/styled-components": "5.1.34",
@@ -37,6 +36,8 @@
     "zod": "4.1.8"
   },
   "devDependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "0.2.3",
+    "@esbuild-plugins/node-modules-polyfill": "0.2.2",
     "@swc/core": "1.13.5",
     "@swc/plugin-styled-components": "9.1.0",
     "@types/react": "19.1.13",

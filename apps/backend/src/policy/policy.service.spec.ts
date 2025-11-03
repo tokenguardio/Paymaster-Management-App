@@ -1,4 +1,5 @@
 import { NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { POLICY_STATUS } from '@repo/constants';
 import { PrismaService } from '@repo/prisma';
@@ -50,6 +51,15 @@ describe('PolicyService', () => {
     $transaction: jest.fn(),
   };
 
+  const mockConfigService = {
+    get: jest.fn((key: string) => {
+      if (key === 'PAYMASTER_ADDRESS') {
+        return '0x1234567890123456789012345678901234567890';
+      }
+      return undefined;
+    }),
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
 
@@ -59,6 +69,10 @@ describe('PolicyService', () => {
         {
           provide: PrismaService,
           useValue: mockPrismaService,
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
         },
       ],
     }).compile();
@@ -74,11 +88,10 @@ describe('PolicyService', () => {
   describe('create', () => {
     it('should create a new policy', async () => {
       const createDto: CreatePolicyDto = {
-        paymaster_address: '0x1234567890123456789012345678901234567890',
         name: 'Test Policy',
         chain_id: 1,
         status_id: 'ACTIVE',
-        max_budget_wei: '1000000000000000000',
+        max_budget_wei: 1000000000000000000,
         is_public: true,
         whitelisted_addresses: ['0x1234567890123456789012345678901234567890'],
         valid_from: '2025-01-01T00:00:00Z',
@@ -179,7 +192,7 @@ describe('PolicyService', () => {
   describe('update', () => {
     it('should update a policy with simple fields', async () => {
       const updateDto: UpdatePolicyDto = {
-        max_budget_wei: '2000000000000000000',
+        max_budget_wei: 2000000000000000000,
       };
 
       const updatedPolicyData = {
@@ -206,10 +219,10 @@ describe('PolicyService', () => {
     it('should throw NotFoundException when policy not found', async () => {
       mockPrismaService.policy.findUnique.mockResolvedValue(null);
 
-      await expect(service.update(999, { max_budget_wei: '2000000000000000000' })).rejects.toThrow(
+      await expect(service.update(999, { max_budget_wei: 2000000000000000000 })).rejects.toThrow(
         NotFoundException,
       );
-      await expect(service.update(999, { max_budget_wei: '2000000000000000000' })).rejects.toThrow(
+      await expect(service.update(999, { max_budget_wei: 2000000000000000000 })).rejects.toThrow(
         'Policy with ID 999 not found',
       );
     });

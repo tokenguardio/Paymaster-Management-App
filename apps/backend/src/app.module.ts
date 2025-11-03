@@ -9,6 +9,7 @@ import { PolicyModule } from './policy/policy.module';
 import { PolicyRuleModule } from './policy-rule/policy-rule.module';
 import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
 import { SiweModule } from './siwe/siwe.module';
+import { UserOperationModule } from './user-operation/user-operation.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { SiweModule } from './siwe/siwe.module';
     PolicyModule,
     SiweModule,
     PolicyRuleModule,
+    UserOperationModule,
   ],
   controllers: [AppController],
   providers: [
