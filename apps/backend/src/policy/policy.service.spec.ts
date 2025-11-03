@@ -1,4 +1,5 @@
 import { NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { POLICY_STATUS } from '@repo/constants';
 import { PrismaService } from '@repo/prisma';
@@ -50,6 +51,15 @@ describe('PolicyService', () => {
     $transaction: jest.fn(),
   };
 
+  const mockConfigService = {
+    get: jest.fn((key: string) => {
+      if (key === 'PAYMASTER_ADDRESS') {
+        return '0x1234567890123456789012345678901234567890';
+      }
+      return undefined;
+    }),
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
 
@@ -59,6 +69,10 @@ describe('PolicyService', () => {
         {
           provide: PrismaService,
           useValue: mockPrismaService,
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
         },
       ],
     }).compile();
