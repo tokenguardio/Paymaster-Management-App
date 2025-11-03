@@ -14,7 +14,7 @@ export interface IPaymasterSigner {
 }
 
 /**
- * EIP-712 Paymaster signer that mirrors your working script.
+ * EIP-712 Paymaster signer
  * It binds all relevant UO fields + EntryPoint + chainId into the signature.
  */
 export class Eip712PaymasterSigner implements IPaymasterSigner {
@@ -24,15 +24,15 @@ export class Eip712PaymasterSigner implements IPaymasterSigner {
   private readonly ttlSeconds: number;
 
   public constructor(opts: {
-    privateKey: string; // PAYMASTER_SIGNER_PK
-    name?: string; // "MyPaymasterECDSASigner"
-    version?: string; // "1"
-    ttlSeconds?: number; // default 600 (10 min)
+    privateKey: string;
+    name: string;
+    version: string;
+    ttlSeconds: number;
   }) {
     this.wallet = new ethers.Wallet(opts.privateKey);
-    this.name = opts.name ?? 'MyPaymasterECDSASigner';
-    this.version = opts.version ?? '1';
-    this.ttlSeconds = opts.ttlSeconds ?? 600;
+    this.name = opts.name;
+    this.version = opts.version;
+    this.ttlSeconds = opts.ttlSeconds;
   }
 
   public async buildPaymasterData(

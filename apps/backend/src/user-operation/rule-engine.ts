@@ -1,4 +1,6 @@
+import { ConfigService } from '@nestjs/config';
 import { PrismaService, Prisma } from '@repo/prisma';
+import { getRpcUrlForChain } from './rule-engine.utils';
 
 /**
  * Configuration interface for rule evaluation context.
@@ -23,7 +25,8 @@ export type TRuleCheckContext = {
   prisma: PrismaService;
   sender: string;
   policyId: number;
-  rpcUrl?: string; // Required for TOKEN_BALANCE metric
+  chainId: bigint; // Required for TOKEN_BALANCE metric
+  configService: ConfigService; // Required for TOKEN_BALANCE metric
 };
 
 const STATUS_SIGNED = 'SIGNED';
@@ -352,17 +355,24 @@ async function evaluateTransactionCountPolicy(
  * Fetches live balance from blockchain using RPC endpoint.
  */
 async function evaluateTokenBalanceWallet(rule: TRule, ctx: TRuleCheckContext): Promise<boolean> {
-  const { sender, rpcUrl } = ctx;
+  const { sender, chainId, configService } = ctx;
 
   if (!rule.token_address) {
     throw new Error('token_address is required for TOKEN_BALANCE metric');
   }
 
-  if (!rpcUrl) {
-    throw new Error('rpcUrl is required in context for TOKEN_BALANCE metric');
+  if (!chainId) {
+    throw new Error('chainId is required in context for TOKEN_BALANCE metric');
+  }
+
+  if (!configService) {
+    throw new Error('configService is required in context for TOKEN_BALANCE metric');
   }
 
   try {
+    // Get the appropriate RPC URL based on chain ID
+    const rpcUrl = getRpcUrlForChain(chainId, configService);
+
     // Fetch token balance from blockchain
     const balance = await getTokenBalance(sender, rule.token_address, rpcUrl);
 

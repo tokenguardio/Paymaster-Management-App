@@ -67,24 +67,28 @@ type TValidationFailureReason =
 @Injectable()
 export class UserOperationService {
   private readonly signer: IPaymasterSigner;
-  private readonly rpcUrl: string;
 
   public constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
   ) {
-    const rpcUrl = this.configService.get<string>('RPC_URL');
-    if (!rpcUrl) throw new Error('RPC_URL environment variable is required but not configured');
-    this.rpcUrl = rpcUrl;
+    const privateKey = this.configService.get<string>('PAYMASTER_SIGNER_PRIVATE_KEY');
+    const name = this.configService.get<string>('PAYMASTER_EIP712_DOMAIN_NAME');
+    const version = this.configService.get<string>('PAYMASTER_EIP712_DOMAIN_VERSION');
+    const ttlSeconds = this.configService.get<number>(
+      'PAYMASTER_EIP712_DOMAIN_SIGNATURE_TTL_SECONDS',
+    );
 
-    const paymasterPk = this.configService.get<string>('PAYMASTER_SIGNER_PK');
-    if (!paymasterPk) throw new Error('PAYMASTER_SIGNER_PK env var is required');
+    if (!privateKey) throw new Error('PAYMASTER_SIGNER_PRIVATE_KEY is required');
+    if (!name) throw new Error('PAYMASTER_EIP712_DOMAIN_NAME is required');
+    if (!version) throw new Error('PAYMASTER_EIP712_DOMAIN_VERSION is required');
+    if (!ttlSeconds) throw new Error('PAYMASTER_EIP712_DOMAIN_SIGNATURE_TTL_SECONDS is required');
 
     this.signer = new Eip712PaymasterSigner({
-      privateKey: paymasterPk,
-      name: 'MyPaymasterECDSASigner',
-      version: '1',
-      ttlSeconds: 600,
+      privateKey,
+      name,
+      version,
+      ttlSeconds,
     });
   }
 
@@ -95,6 +99,7 @@ export class UserOperationService {
     const nowIso = new Date().toISOString();
 
     const { chainId } = req;
+    const chainIdBigInt = BigInt(chainId);
     const uo: RequestUserOperationDto = this.normalize(req.userOperation);
 
     if (!uo.paymaster?.startsWith('0x')) {
@@ -108,7 +113,7 @@ export class UserOperationService {
         FROM core.policies p
         WHERE p.status_id = ${POLICY_STATUS_ACTIVE}
           AND p.paymaster_address = ${uo.paymaster}
-          AND p.chain_id = ${BigInt(chainId)}
+          AND p.chain_id = ${chainIdBigInt}
           AND p.valid_from <= now()
           AND (p.valid_to IS NULL OR p.valid_to >= now())
           AND (p.is_public = true OR ${uo.sender} = ANY(p.whitelisted_addresses))
@@ -205,7 +210,8 @@ export class UserOperationService {
         prisma: this.prisma,
         sender: uo.sender,
         policyId: policy.id,
-        rpcUrl: this.rpcUrl,
+        chainId: chainIdBigInt,
+        configService: this.configService,
       });
 
       if (passing) {
@@ -242,7 +248,7 @@ export class UserOperationService {
     }
 
     // === 4. Build paymasterData ===
-    const { paymasterData } = await this.signer.buildPaymasterData(BigInt(chainId), uo);
+    const { paymasterData } = await this.signer.buildPaymasterData(chainIdBigInt, uo);
 
     // === 5. Format output ===
     const cleanUserOperation: ResponseUserOperationDto = {

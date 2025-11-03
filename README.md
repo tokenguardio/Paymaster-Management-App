@@ -50,6 +50,34 @@ sponsorship rules and visibility into how those policies are being used.
    cp packages/prisma/.env.example packages/prisma/.env
    ```
 
+   **Required Configuration:**
+
+   Edit `apps/backend/.env` and configure the following variables:
+   - **Server Configuration:**
+     - `PORT` - Server port (default: 3000)
+     - `BIND_ADDRESS` - Server bind address (default: 127.0.0.1)
+     - `NODE_ENV` - Environment mode (development/production/test)
+
+   - **Blockchain Configuration:**
+     - `ETHEREUM_RPC_URL` - Ethereum Mainnet RPC endpoint URL
+     - `SEPOLIA_RPC_URL` - Ethereum Sepolia testnet RPC endpoint URL
+
+   - **Paymaster Signer Configuration:**
+     - `PAYMASTER_SIGNER_PRIVATE_KEY` - Private key for signing paymaster operations (with 0x
+       prefix)
+     - `PAYMASTER_SIGNER_ADDRESS` - Address derived from the signer private key
+     - `PAYMASTER_ADDRESS` - Deployed paymaster contract address
+
+   - **EIP-712 Domain Configuration:**
+     - `PAYMASTER_EIP712_DOMAIN_NAME` - Domain name for EIP-712 signing (e.g.,
+       "MyPaymasterECDSASigner")
+     - `PAYMASTER_EIP712_DOMAIN_VERSION` - Domain version for EIP-712 signing (e.g., 1)
+     - `PAYMASTER_EIP712_DOMAIN_SIGNATURE_TTL_SECONDS` - Signature validity duration in seconds
+       (e.g., 600)
+
+   > **Note:** All paymaster-related variables are validated on startup. The application will fail
+   > to start if any required configuration is missing or invalid.
+
 6. Start the database
 
    ```bash
