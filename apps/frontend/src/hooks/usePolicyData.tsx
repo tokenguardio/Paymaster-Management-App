@@ -6,7 +6,6 @@
  **********/
 
 import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
 import { TChartDataPoint } from '@/types/chart';
 import { PolicyDataSchema } from '@/types/policyData';
 import { fetchPolicyData } from '@/utils/fetches';
@@ -34,7 +33,7 @@ export const usePolicyData = (id: string) => {
         setIsLoadingPolicyData(false);
       } catch (err: unknown) {
         setIsLoadingPolicyData(false);
-        toast.error(err?.toString());
+        console.log('err', err);
       }
     };
 
