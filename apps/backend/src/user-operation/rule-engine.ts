@@ -276,7 +276,7 @@ async function evaluateTransactionCountWallet(
         FROM core.user_operations uo
         WHERE uo.sender_address = ${sender}
           AND uo.policy_id = ${policyId}
-          AND uo.status_id IN (${Prisma.join([STATUS_SIGNED, STATUS_EXECUTED])})
+          AND uo.status_id IN (${Prisma.join([STATUS_PENDING, STATUS_SIGNED, STATUS_EXECUTED])})
           ${timeFilter ? timeFilter : Prisma.empty}
         GROUP BY date_trunc(${dateTrunc}, uo.created_at AT TIME ZONE 'UTC')
         HAVING COUNT(*) ${Prisma.raw(op)} ${value}
@@ -294,7 +294,7 @@ async function evaluateTransactionCountWallet(
       FROM core.user_operations uo
       WHERE uo.sender_address = ${sender}
         AND uo.policy_id = ${policyId}
-        AND uo.status_id IN (${Prisma.join([STATUS_SIGNED, STATUS_EXECUTED])})
+        AND uo.status_id IN (${Prisma.join([STATUS_PENDING, STATUS_SIGNED, STATUS_EXECUTED])})
       HAVING COUNT(*) ${Prisma.raw(op)} ${value}
     `,
   );
@@ -324,7 +324,7 @@ async function evaluateTransactionCountPolicy(
         SELECT COUNT(*)::bigint AS count
         FROM core.user_operations uo
         WHERE uo.policy_id = ${policyId}
-          AND uo.status_id IN (${Prisma.join([STATUS_SIGNED, STATUS_EXECUTED])})
+          AND uo.status_id IN (${Prisma.join([STATUS_PENDING, STATUS_SIGNED, STATUS_EXECUTED])})
           ${timeFilter ? timeFilter : Prisma.empty}
         GROUP BY date_trunc(${dateTrunc}, uo.created_at AT TIME ZONE 'UTC')
         HAVING COUNT(*) ${Prisma.raw(op)} ${value}
@@ -341,7 +341,7 @@ async function evaluateTransactionCountPolicy(
       SELECT COUNT(*)::bigint AS count
       FROM core.user_operations uo
       WHERE uo.policy_id = ${policyId}
-        AND uo.status_id IN (${Prisma.join([STATUS_SIGNED, STATUS_EXECUTED])})
+        AND uo.status_id IN (${Prisma.join([STATUS_PENDING, STATUS_SIGNED, STATUS_EXECUTED])})
       HAVING COUNT(*) ${Prisma.raw(op)} ${value}
     `,
   );
