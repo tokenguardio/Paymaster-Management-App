@@ -74,7 +74,7 @@ describe('PolicyRuleController', () => {
       const rules = [mockPolicyRuleResponse];
       mockPolicyRuleService.findByPolicyId.mockResolvedValue(rules);
 
-      const result = await controller.getByPolicyId(policyId, true);
+      const result = await controller.getByPolicyId(policyId, 'true');
 
       expect(result).toEqual(rules);
       expect(service.findByPolicyId).toHaveBeenCalledWith(policyId, true);
@@ -86,7 +86,7 @@ describe('PolicyRuleController', () => {
       const rules = [mockPolicyRuleResponse];
       mockPolicyRuleService.findByPolicyId.mockResolvedValue(rules);
 
-      const result = await controller.getByPolicyId(policyId, false);
+      const result = await controller.getByPolicyId(policyId, 'false');
 
       expect(result).toEqual(rules);
       expect(service.findByPolicyId).toHaveBeenCalledWith(policyId, false);
@@ -100,7 +100,7 @@ describe('PolicyRuleController', () => {
       const result = await controller.getByPolicyId(policyId);
 
       expect(result).toEqual(rules);
-      expect(service.findByPolicyId).toHaveBeenCalledWith(policyId, undefined);
+      expect(service.findByPolicyId).toHaveBeenCalledWith(policyId, false);
     });
 
     it('should return an empty array when policy has no rules', async () => {
@@ -110,7 +110,7 @@ describe('PolicyRuleController', () => {
       const result = await controller.getByPolicyId(policyId);
 
       expect(result).toEqual([]);
-      expect(service.findByPolicyId).toHaveBeenCalledWith(policyId, undefined);
+      expect(service.findByPolicyId).toHaveBeenCalledWith(policyId, false);
     });
 
     it('should throw NotFoundException when policy not found', async () => {
@@ -123,7 +123,7 @@ describe('PolicyRuleController', () => {
       await expect(controller.getByPolicyId(policyId)).rejects.toThrow(
         `No rules found for policy ID ${policyId}`,
       );
-      expect(service.findByPolicyId).toHaveBeenCalledWith(policyId, undefined);
+      expect(service.findByPolicyId).toHaveBeenCalledWith(policyId, false);
     });
   });
 });
