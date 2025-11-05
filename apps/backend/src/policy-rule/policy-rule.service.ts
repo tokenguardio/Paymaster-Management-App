@@ -1,14 +1,32 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '@repo/prisma';
+import { PrismaService, Prisma } from '@repo/prisma';
 import { PolicyRuleResponseDto } from './dto/policy-rule-response.dto';
 
 @Injectable()
 export class PolicyRuleService {
   public constructor(private readonly prisma: PrismaService) {}
 
-  public async findByPolicyId(policyId: number): Promise<PolicyRuleResponseDto[]> {
+  /**
+   * Fetch all rules for a given policy.
+   * Optionally filters only active ones (valid_to is null or in the future).
+   */
+  public async findByPolicyId(
+    policyId: number,
+    onlyActive = false,
+  ): Promise<PolicyRuleResponseDto[]> {
+    const now = new Date();
+
+    const whereClause: Prisma.PolicyRuleWhereInput = {
+      policy_id: BigInt(policyId),
+    };
+    // const whereClause: any = { policy_id: BigInt(policyId) };
+
+    if (onlyActive) {
+      whereClause.OR = [{ valid_to: null }, { valid_to: { gt: now } }];
+    }
+
     const rules = await this.prisma.policyRule.findMany({
-      where: { policy_id: BigInt(policyId) },
+      where: whereClause,
       include: {
         metric: true,
         comparator: true,
@@ -38,6 +56,9 @@ export class PolicyRuleService {
     }));
   }
 
+  /**
+   * Soft delete: sets valid_to = now()
+   */
   public async deleteByPolicyId(policyId: number): Promise<void> {
     const existingRules = await this.prisma.policyRule.findMany({
       where: { policy_id: BigInt(policyId) },
@@ -47,8 +68,12 @@ export class PolicyRuleService {
       throw new NotFoundException(`No rules found for policy ID ${policyId}`);
     }
 
-    await this.prisma.policyRule.deleteMany({
-      where: { policy_id: BigInt(policyId) },
+    await this.prisma.policyRule.updateMany({
+      where: {
+        policy_id: BigInt(policyId),
+        OR: [{ valid_to: null }, { valid_to: { gt: new Date() } }],
+      },
+      data: { valid_to: new Date() },
     });
   }
 }

@@ -21,7 +21,6 @@ export class PolicyService {
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
   ) {
-    // Get paymaster address from environment variable and normalize to lowercase
     const rawPaymasterAddress = this.configService.get<string>('PAYMASTER_ADDRESS') || '';
 
     if (!rawPaymasterAddress) {
@@ -64,7 +63,6 @@ export class PolicyService {
                 ? new Date(createPolicyDto.valid_from)
                 : undefined,
               valid_to: createPolicyDto.valid_to ? new Date(createPolicyDto.valid_to) : undefined,
-
               metric: { connect: { id: rule.metric } },
               comparator: { connect: { id: rule.comparator } },
               interval: { connect: { id: rule.interval } },
@@ -146,37 +144,48 @@ export class PolicyService {
       const updatedPolicy = await tx.policy.update({
         where: { id: BigInt(id) },
         data: updateData,
-        include: {
-          chain: true,
-          status: true,
-        },
+        include: { chain: true, status: true },
       });
 
-      if (updatePolicyDto.rules !== undefined) {
-        // Delete existing rules
-        await tx.policyRule.deleteMany({
-          where: { policy_id: BigInt(id) },
+      if (updatePolicyDto.rules) {
+        const existingRules = await tx.policyRule.findMany({
+          where: {
+            policy_id: BigInt(id),
+            OR: [{ valid_to: null }, { valid_to: { gt: new Date() } }],
+          },
         });
 
-        // Create new rules
-        if (updatePolicyDto.rules.length > 0) {
-          for (const rule of updatePolicyDto.rules) {
-            await tx.policyRule.create({
-              data: {
-                policy: { connect: { id: BigInt(id) } },
-                metric: { connect: { id: rule.metric } },
-                comparator: { connect: { id: rule.comparator } },
-                interval: { connect: { id: rule.interval } },
-                scope: { connect: { id: rule.scope } },
-                value: rule.amount,
-                token_address: rule.token_address ?? null,
-                valid_from: updatePolicyDto.valid_from
-                  ? new Date(updatePolicyDto.valid_from)
-                  : new Date(),
-                valid_to: updatePolicyDto.valid_to ? new Date(updatePolicyDto.valid_to) : null,
-              },
-            });
-          }
+        const incomingRuleIds = updatePolicyDto.rules
+          .filter((r) => r.id !== undefined)
+          .map((r) => BigInt(r.id!));
+
+        const toDeactivate = existingRules.filter((r) => !incomingRuleIds.includes(r.id));
+
+        if (toDeactivate.length > 0) {
+          await tx.policyRule.updateMany({
+            where: { id: { in: toDeactivate.map((r) => r.id) } },
+            data: { valid_to: new Date() },
+          });
+        }
+
+        const newRules = updatePolicyDto.rules.filter((r) => !r.id);
+
+        for (const rule of newRules) {
+          await tx.policyRule.create({
+            data: {
+              policy: { connect: { id: BigInt(id) } },
+              metric: { connect: { id: rule.metric } },
+              comparator: { connect: { id: rule.comparator } },
+              interval: { connect: { id: rule.interval } },
+              scope: { connect: { id: rule.scope } },
+              value: rule.amount,
+              token_address: rule.token_address ?? null,
+              valid_from: updatePolicyDto.valid_from
+                ? new Date(updatePolicyDto.valid_from)
+                : new Date(),
+              valid_to: updatePolicyDto.valid_to ? new Date(updatePolicyDto.valid_to) : null,
+            },
+          });
         }
       }
 
