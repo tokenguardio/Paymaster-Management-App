@@ -78,6 +78,7 @@ const comparatorValues = Object.values(POLICY_RULE_COMPARATOR).map((m) => m.id);
 
 const ruleSchema = z
   .object({
+    id: z.union([z.string(), z.number()]).optional(),
     comparator: z.enum(comparatorValues as [string, ...string[]]),
     interval: z.enum(intervalValues as [string, ...string[]]),
     scope: z.enum(scopeValues as [string, ...string[]]),
@@ -160,7 +161,7 @@ export const PaymasterSettings = () => {
   });
 
   useEffect(() => {
-    if (policy) {
+    if (policy && policyRules) {
       reset({
         name: policy.name ?? 'Spending Policy',
         max_budget_wei: formatEther(policy.max_budget_wei),
@@ -173,6 +174,7 @@ export const PaymasterSettings = () => {
           policy.whitelisted_addresses && policy.whitelisted_addresses?.length > 0 ? true : false,
         rules:
           policyRules?.map((rule) => ({
+            id: rule?.id || null,
             comparator: rule.comparator?.id,
             interval: rule.interval?.id,
             scope: rule.scope?.id,

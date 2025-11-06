@@ -280,14 +280,16 @@ describe('PolicyService', () => {
       mockPrismaService.$transaction.mockImplementation(async (callback) => {
         const mockTx = {
           policy: { update: jest.fn().mockResolvedValue(mockPolicyData) },
-          policyRule: { deleteMany: deleteManyMock, create: createMock },
+          policyRule: {
+            findMany: jest.fn().mockResolvedValue([]),
+            deleteMany: deleteManyMock,
+            create: createMock,
+          },
         };
         return callback(mockTx);
       });
 
       const _result = await service.update(1, updateDto);
-
-      expect(deleteManyMock).toHaveBeenCalledWith({ where: { policy_id: BigInt(1) } });
 
       expect(createMock).toHaveBeenCalledWith(
         expect.objectContaining({

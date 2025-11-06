@@ -19,11 +19,20 @@ const VALID_CHAIN_IDS = Object.values(CHAINS).map((chain) => chain.id);
 const VALID_POLICY_STATUS_IDS = Object.values(POLICY_STATUS).map((status) => status.id);
 
 export class CreatePolicyRuleDto {
+  @ApiPropertyOptional({
+    description: 'Rule ID (only for updates — omit when creating new rule)',
+    example: 1,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  public id?: number;
+
   @ApiPropertyOptional({ example: 'EQ' })
   @IsString()
   public comparator!: string;
 
-  @ApiPropertyOptional({ example: 'NOW' })
+  @ApiPropertyOptional({ example: 'DAILY' })
   @IsString()
   public interval!: string;
 
@@ -31,11 +40,12 @@ export class CreatePolicyRuleDto {
   @IsString()
   public scope!: string;
 
-  @ApiPropertyOptional({ example: 'TOKEN_BALANCE' })
+  @ApiPropertyOptional({ example: 'GAS_SPENT_WEI' })
   @IsString()
   public metric!: string;
 
-  @ApiPropertyOptional({ example: 25 })
+  @ApiPropertyOptional({ example: 100 })
+  @Type(() => Number)
   @IsNumber()
   public amount!: number;
 

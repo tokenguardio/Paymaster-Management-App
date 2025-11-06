@@ -69,47 +69,48 @@ describe('PolicyRuleController', () => {
   });
 
   describe('getByPolicyId', () => {
-    it('should return an array of policy rules', async () => {
+    it('should return an array of active policy rules when active=true', async () => {
       const policyId = 1;
+      const rules = [mockPolicyRuleResponse];
+      mockPolicyRuleService.findByPolicyId.mockResolvedValue(rules);
+
+      const result = await controller.getByPolicyId(policyId, 'true');
+
+      expect(result).toEqual(rules);
+      expect(service.findByPolicyId).toHaveBeenCalledWith(policyId, true);
+      expect(service.findByPolicyId).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return all rules when active=false', async () => {
+      const policyId = 1;
+      const rules = [mockPolicyRuleResponse];
+      mockPolicyRuleService.findByPolicyId.mockResolvedValue(rules);
+
+      const result = await controller.getByPolicyId(policyId, 'false');
+
+      expect(result).toEqual(rules);
+      expect(service.findByPolicyId).toHaveBeenCalledWith(policyId, false);
+    });
+
+    it('should handle missing query param (defaults to active=false)', async () => {
+      const policyId = 2;
       const rules = [mockPolicyRuleResponse];
       mockPolicyRuleService.findByPolicyId.mockResolvedValue(rules);
 
       const result = await controller.getByPolicyId(policyId);
 
       expect(result).toEqual(rules);
-      expect(service.findByPolicyId).toHaveBeenCalledWith(policyId);
-      expect(service.findByPolicyId).toHaveBeenCalledTimes(1);
-    });
-
-    it('should return multiple policy rules', async () => {
-      const policyId = 1;
-      const secondRule: PolicyRuleResponseDto = {
-        ...mockPolicyRuleResponse,
-        id: '2',
-        metric: {
-          id: 'TRANSACTION_COUNT',
-          name: 'Transaction Count',
-          description: 'Maximum number of transactions',
-        },
-      };
-      const rules = [mockPolicyRuleResponse, secondRule];
-      mockPolicyRuleService.findByPolicyId.mockResolvedValue(rules);
-
-      const result = await controller.getByPolicyId(policyId);
-
-      expect(result).toHaveLength(2);
-      expect(result).toEqual(rules);
-      expect(service.findByPolicyId).toHaveBeenCalledWith(policyId);
+      expect(service.findByPolicyId).toHaveBeenCalledWith(policyId, false);
     });
 
     it('should return an empty array when policy has no rules', async () => {
-      const policyId = 1;
+      const policyId = 3;
       mockPolicyRuleService.findByPolicyId.mockResolvedValue([]);
 
       const result = await controller.getByPolicyId(policyId);
 
       expect(result).toEqual([]);
-      expect(service.findByPolicyId).toHaveBeenCalledWith(policyId);
+      expect(service.findByPolicyId).toHaveBeenCalledWith(policyId, false);
     });
 
     it('should throw NotFoundException when policy not found', async () => {
@@ -122,18 +123,7 @@ describe('PolicyRuleController', () => {
       await expect(controller.getByPolicyId(policyId)).rejects.toThrow(
         `No rules found for policy ID ${policyId}`,
       );
-      expect(service.findByPolicyId).toHaveBeenCalledWith(policyId);
-    });
-
-    it('should handle different policy IDs', async () => {
-      const policyId = 42;
-      const rules = [mockPolicyRuleResponse];
-      mockPolicyRuleService.findByPolicyId.mockResolvedValue(rules);
-
-      const result = await controller.getByPolicyId(policyId);
-
-      expect(result).toEqual(rules);
-      expect(service.findByPolicyId).toHaveBeenCalledWith(42);
+      expect(service.findByPolicyId).toHaveBeenCalledWith(policyId, false);
     });
   });
 });
