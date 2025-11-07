@@ -21,9 +21,8 @@ export const Accordion: React.FC<IAccordionProps> = ({ title, children, defaultO
 
   return (
     <div className={Style.accordion}>
-      <button className={Style.header} onClick={toggle}>
+      <button className={Style.header} type="button" onClick={toggle}>
         <Typography tag="p" text={title} size="m" weight="medium" />
-        {/* <h2 className={Style.title}>{title}</h2> */}
         <span className={Style.icon}>
           {isOpen ? (
             <Icon width="12" height="12" name="chevronUp" color="primary500" />

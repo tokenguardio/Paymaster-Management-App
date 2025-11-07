@@ -126,7 +126,7 @@ type TFormData = z.infer<typeof formSchema>;
 export const PaymasterSettings = () => {
   const { id } = useParams<{ id: string }>();
   const { policy } = usePolicy(id ?? '');
-  const { policyRules } = usePolicyRules(id ?? '');
+  const { policyRules } = usePolicyRules(id ?? '', 'active=true');
   const [manualWhitelistAddress, setManualWhitelistAddress] = useState<string>('');
   const [_errorMessage, setErrorMessage] = useState<string | null>(null);
   const [_isSubmitting, setIsSubmitting] = useState(false);
@@ -346,7 +346,7 @@ export const PaymasterSettings = () => {
                   {errors.rules[index].metric && (
                     <Typography
                       tag="p"
-                      color="red500"
+                      color="gray400"
                       weight="regular"
                       style="italic"
                       text="Metric - this field is required"
@@ -356,7 +356,7 @@ export const PaymasterSettings = () => {
                   {errors.rules[index].scope && (
                     <Typography
                       tag="p"
-                      color="red500"
+                      color="gray400"
                       weight="regular"
                       style="italic"
                       text="Scope - this field is required"
@@ -366,7 +366,7 @@ export const PaymasterSettings = () => {
                   {errors.rules[index].interval && (
                     <Typography
                       tag="p"
-                      color="red500"
+                      color="gray400"
                       weight="regular"
                       style="italic"
                       text="Interval - this field is required"
@@ -376,7 +376,7 @@ export const PaymasterSettings = () => {
                   {errors.rules[index].comparator && (
                     <Typography
                       tag="p"
-                      color="red500"
+                      color="gray400"
                       weight="regular"
                       style="italic"
                       text="Comparator - this field is required"
@@ -386,7 +386,7 @@ export const PaymasterSettings = () => {
                   {errors.rules[index].amount && (
                     <Typography
                       tag="p"
-                      color="red500"
+                      color="gray400"
                       weight="regular"
                       style="italic"
                       text={errors.rules[index].amount.message || `Amount - this field is required`}

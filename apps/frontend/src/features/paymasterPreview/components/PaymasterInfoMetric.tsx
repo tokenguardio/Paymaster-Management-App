@@ -11,7 +11,7 @@ import { PreviewWhitelistedAddressesAccordion } from './PreviewWhitelistedAddres
 export const PaymasterInfoMetric = () => {
   const { id } = useParams<{ id: string }>();
   const { policy } = usePolicy(id ?? '');
-  const { policyRules } = usePolicyRules(id ?? '');
+  const { policyRules } = usePolicyRules(id ?? '', 'active=true');
 
   if (!id) return null;
   if (!policy) return null;
