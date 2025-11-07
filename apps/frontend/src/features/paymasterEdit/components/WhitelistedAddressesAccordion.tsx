@@ -81,6 +81,7 @@ export const WhitelistedAddressesAccordion: React.FC<IWhitelistedAddressesAccord
           />
           <Button
             size="large"
+            type="button"
             variant="outline"
             color="primary500"
             disabled={!isValidAddress}

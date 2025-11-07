@@ -12,7 +12,7 @@ import { fetchPolicyRules } from '@/utils/fetches';
 import { _getValidationErrorMessage } from '@/utils/helpers';
 import { _logger } from '@/utils/logger';
 
-export const usePolicyRules = (id: string) => {
+export const usePolicyRules = (id: string, param: string) => {
   const [policyRules, setPolicyRules] = useState<TPolicyRules>();
   const [isLoadingPolicyRules, setIsLoadingPolicyRules] = useState(false);
 
@@ -20,7 +20,7 @@ export const usePolicyRules = (id: string) => {
     try {
       setIsLoadingPolicyRules(true);
 
-      const fetchedPolicyRules = await fetchPolicyRules(id);
+      const fetchedPolicyRules = await fetchPolicyRules(id, param);
       // const validatedPolicyRules = PolicyRulesSchema.safeParse(fetchedPolicyRules);
       //TODO inprogress
       // if (!validatedPolicyRules.success) {

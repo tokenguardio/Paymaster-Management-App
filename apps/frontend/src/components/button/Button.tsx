@@ -14,7 +14,7 @@ interface IButtonProps {
   fullWidth?: boolean;
   disabled?: boolean;
   className?: string;
-  type?: 'submit';
+  type?: 'submit' | 'button';
   moveTo?: string;
 }
 
