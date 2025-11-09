@@ -6,7 +6,7 @@ const envVarsValidationSchema = joi.object({
   PORT: joi.number().integer().positive().default(3000).required(),
   DATABASE_URL: joi
     .string()
-    .uri({ scheme: ['postgres'] })
+    .uri({ scheme: ['postgres', 'postgresql'] })
     .required(),
   BIND_ADDRESS: joi.string().ip().default('127.0.0.1').required(),
   SWAGGER_UI_PATH: joi.string().default('docs'),
@@ -64,6 +64,29 @@ const envVarsValidationSchema = joi.object({
       'number.positive': 'PAYMASTER_EIP712_DOMAIN_SIGNATURE_TTL_SECONDS must be positive',
       'any.required': 'PAYMASTER_EIP712_DOMAIN_SIGNATURE_TTL_SECONDS is required',
     }),
+
+  // Reconciliation Service Configuration
+  RECONCILIATION_BATCH_SIZE: joi.number().integer().positive().default(100).messages({
+    'number.base': 'RECONCILIATION_BATCH_SIZE must be a number',
+    'number.integer': 'RECONCILIATION_BATCH_SIZE must be an integer',
+    'number.positive': 'RECONCILIATION_BATCH_SIZE must be positive',
+  }),
+
+  RECONCILIATION_MAX_BLOCK_RANGE: joi.number().integer().positive().default(50000).messages({
+    'number.base': 'RECONCILIATION_MAX_BLOCK_RANGE must be a number',
+    'number.integer': 'RECONCILIATION_MAX_BLOCK_RANGE must be an integer',
+    'number.positive': 'RECONCILIATION_MAX_BLOCK_RANGE must be positive',
+  }),
+
+  ENTRY_POINT_ADDRESS_V07: joi
+    .string()
+    .pattern(/^0x[0-9a-fA-F]{40}$/)
+    .required()
+    .messages({
+      'string.pattern.base':
+        'ENTRY_POINT_ADDRESS_V07 must be a valid Ethereum address (0x + 40 hex characters)',
+      'any.required': 'ENTRY_POINT_ADDRESS_V07 is required',
+    }),
 });
 
 export const validateEnvVars = (vars: Record<string, unknown>): Record<string, unknown> => {
@@ -73,7 +96,7 @@ export const validateEnvVars = (vars: Record<string, unknown>): Record<string, u
   });
 
   if (error) {
-    throw new Error(`config validation error: ${error.message}`);
+    throw new Error(`Config validation error: ${error.message}`);
   }
 
   return value;

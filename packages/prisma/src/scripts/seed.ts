@@ -19,7 +19,7 @@ async function main(): Promise<void> {
     await prisma.chain.upsert({
       where: { id: chain.id },
       update: { name: chain.name },
-      create: { id: chain.id, name: chain.name },
+      create: { id: chain.id, name: chain.name, rpc_env_var: chain.rpc_env_var },
     });
   }
 

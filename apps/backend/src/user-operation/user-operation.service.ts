@@ -10,6 +10,7 @@ import {
 } from './dto/sign-user-operation.dto';
 import { findPassingRule, TRule } from './rule-engine';
 import { Eip712PaymasterSigner, IPaymasterSigner } from './signer';
+import { computeUserOpHashV07 } from './userop-hash';
 
 const POLICY_STATUS_ACTIVE = 'ACTIVE' as const;
 const UO_STATUS_PENDING = 'PENDING' as const;
@@ -67,6 +68,7 @@ type TValidationFailureReason =
 @Injectable()
 export class UserOperationService {
   private readonly signer: IPaymasterSigner;
+  private readonly entryPointAddress: string;
 
   public constructor(
     private readonly prisma: PrismaService,
@@ -78,11 +80,13 @@ export class UserOperationService {
     const ttlSeconds = this.configService.get<number>(
       'PAYMASTER_EIP712_DOMAIN_SIGNATURE_TTL_SECONDS',
     );
+    const entryPointAddress = this.configService.get<string>('ENTRY_POINT_ADDRESS_V07');
 
     if (!privateKey) throw new Error('PAYMASTER_SIGNER_PRIVATE_KEY is required');
     if (!name) throw new Error('PAYMASTER_EIP712_DOMAIN_NAME is required');
     if (!version) throw new Error('PAYMASTER_EIP712_DOMAIN_VERSION is required');
     if (!ttlSeconds) throw new Error('PAYMASTER_EIP712_DOMAIN_SIGNATURE_TTL_SECONDS is required');
+    if (!entryPointAddress) throw new Error('ENTRY_POINT_ADDRESS_V07 is required');
 
     this.signer = new Eip712PaymasterSigner({
       privateKey,
@@ -90,6 +94,7 @@ export class UserOperationService {
       version,
       ttlSeconds,
     });
+    this.entryPointAddress = entryPointAddress;
   }
 
   public async signUserOperation(
@@ -107,19 +112,23 @@ export class UserOperationService {
     }
 
     // === 1. Find policies ===
-    const candidates: TPolicyRow[] = await this.prisma.$queryRaw<TPolicyRow[]>(
-      Prisma.sql`
-        SELECT p.*
-        FROM core.policies p
-        WHERE p.status_id = ${POLICY_STATUS_ACTIVE}
-          AND p.paymaster_address = ${uo.paymaster}
-          AND p.chain_id = ${chainIdBigInt}
-          AND p.valid_from <= now()
-          AND (p.valid_to IS NULL OR p.valid_to >= now())
-          AND (p.is_public = true OR ${uo.sender} = ANY(p.whitelisted_addresses))
-        ORDER BY p.created_at DESC
-      `,
-    );
+    const candidates: TPolicyRow[] = await this.prisma.$queryRaw<TPolicyRow[]>(Prisma.sql`
+      SELECT p.*
+      FROM core.policies p
+      WHERE p.status_id = ${POLICY_STATUS_ACTIVE}
+        AND lower(p.paymaster_address) = lower(${uo.paymaster})
+        AND p.chain_id = ${chainIdBigInt}
+        AND p.valid_from <= now()
+        AND (p.valid_to IS NULL OR p.valid_to >= now())
+        AND (
+          p.is_public = true OR
+          lower(${uo.sender}) = ANY (
+            SELECT lower(addr)
+            FROM unnest(p.whitelisted_addresses) AS addr
+          )
+        )
+      ORDER BY p.created_at DESC
+    `);
 
     if (candidates.length === 0) {
       throw new ForbiddenException(
@@ -248,7 +257,10 @@ export class UserOperationService {
     }
 
     // === 4. Build paymasterData ===
-    const { paymasterData } = await this.signer.buildPaymasterData(chainIdBigInt, uo);
+    const { paymasterData, validAfter, validUntil } = await this.signer.buildPaymasterData(
+      chainIdBigInt,
+      uo,
+    );
 
     // === 5. Format output ===
     const cleanUserOperation: ResponseUserOperationDto = {
@@ -266,13 +278,26 @@ export class UserOperationService {
       paymasterData,
     };
 
-    // persist and return typed data
+    // === 6. Calculate user operation hash ===
+    const userOpHash = computeUserOpHashV07(
+      cleanUserOperation,
+      this.entryPointAddress,
+      chainIdBigInt,
+    );
+
+    // === 7. Update with hash and validity timestamps ===
+    const validFromDate = new Date(Number(validAfter) * 1000);
+    const validToDate = new Date(Number(validUntil) * 1000);
+
     await this.prisma.userOperation.update({
       where: { id: created.id },
       data: {
+        hash: userOpHash,
         status_id: UO_STATUS_SIGNED,
-        status_note: 'Sponsored by paymaster.',
+        status_note: 'Signed by paymaster',
         payload: cleanUserOperation as unknown as Prisma.JsonObject,
+        valid_from: validFromDate,
+        valid_to: validToDate,
       },
     });
 
