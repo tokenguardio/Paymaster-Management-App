@@ -65,10 +65,13 @@ describe(validateEnvVars.name, function () {
       if (!(error instanceof Error)) throw new Error('this should not be reached');
       expect(error.message).toContain('"NODE_ENV" must be one of [development, production, test]');
       expect(error.message).toContain('"PORT" must be a positive number');
-      expect(error.message).toContain(
-        '"DATABASE_URL" must be a valid uri with a scheme matching the postgres pattern',
+      expect(error.message).toMatch(
+        /"DATABASE_URL" must be a valid uri with a scheme matching the postgres(?:\|postgresql)? pattern/,
       );
-      expect(error.message).toContain('"BIND_ADDRESS" must be a valid ip address');
+
+      expect(error.message).toMatch(
+        /"BIND_ADDRESS" must be a valid ip address(?: with an? optional CIDR)?/,
+      );
     }
   });
 });
