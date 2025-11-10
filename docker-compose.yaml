@@ -39,7 +39,7 @@ services:
       args:
         - BUILD_MODE=development
     ports:
-      - '8080:80'
+      - '3001:80'
     depends_on:
       - backend
     networks:
