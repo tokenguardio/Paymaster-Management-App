@@ -4,9 +4,10 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { PrismaModule } from '@repo/prisma';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { validateEnvVars } from './env-vars-validation';
+import { validateEnvVars } from './config/env-vars-validation';
 import { PolicyModule } from './policy/policy.module';
 import { PolicyRuleModule } from './policy-rule/policy-rule.module';
+import { ReconciliationModule } from './reconciliation/reconciliation.module';
 import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
 import { SiweModule } from './siwe/siwe.module';
 import { UserOperationModule } from './user-operation/user-operation.module';
@@ -22,6 +23,7 @@ import { UserOperationModule } from './user-operation/user-operation.module';
     SiweModule,
     PolicyRuleModule,
     UserOperationModule,
+    ReconciliationModule,
   ],
   controllers: [AppController],
   providers: [
