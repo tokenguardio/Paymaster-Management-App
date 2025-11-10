@@ -3,7 +3,6 @@ import React, { ReactNode } from 'react';
 import ReactSelect, {
   components,
   ControlProps,
-  GroupBase,
   PlaceholderProps,
   SingleValueProps,
   OptionProps,
@@ -12,7 +11,7 @@ import ReactSelect, {
 } from 'react-select';
 import { Icon, Label, Typography } from '@/components';
 import { TDropdownOption } from '@/types/dropdownOption';
-import Style from './Select.module.css';
+import Style from './TinySelect.module.css';
 
 type TSelectProps = {
   options: Array<TDropdownOption>;
@@ -38,7 +37,6 @@ export const TinySelect = ({
   placeholder,
   value,
   label,
-  size,
   withArrow,
   prefixIcon,
   prefix,
@@ -109,6 +107,7 @@ export const TinySelect = ({
 
       <ReactSelect<TDropdownOption, false>
         value={value || null}
+        // value={options.find(o => o.value === value) || null}
         options={options}
         // onChange={change}
         onChange={(option, actionMeta) => change(option ? option.value : null, actionMeta)}
@@ -122,7 +121,6 @@ export const TinySelect = ({
           control: ({ isDisabled, isFocused }) =>
             clsx(
               Style['control'],
-              size && Style[size],
               isFocused && isFocusable && `${Style['control-active']}`,
               isDisabled && `${Style['disabled']}`,
             ),

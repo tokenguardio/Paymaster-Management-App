@@ -321,25 +321,27 @@ export const PaymasterSettings = () => {
                     />
                   )}
                 />
-                <Controller
-                  name={`rules.${index}.amount`}
-                  control={control}
-                  render={({ field }) => (
-                    <DynamicInput
-                      {...field}
-                      placeholder="0"
-                      min={0}
-                      step={1}
-                      maxLength={9}
-                      className={Style['amount-input']}
-                      size="small"
-                    />
-                  )}
-                />
-                <IconButton
-                  icon={<Icon name="exit" width="16" height="16" color="gray400" />}
-                  onClick={() => remove(index)}
-                />
+                <div className={Style['end-row-container']}>
+                  <Controller
+                    name={`rules.${index}.amount`}
+                    control={control}
+                    render={({ field }) => (
+                      <DynamicInput
+                        {...field}
+                        placeholder="0"
+                        min={0}
+                        step={1}
+                        maxLength={9}
+                        className={Style['amount-input']}
+                        size="small"
+                      />
+                    )}
+                  />
+                  <IconButton
+                    icon={<Icon name="exit" width="16" height="16" color="gray400" />}
+                    onClick={() => remove(index)}
+                  />
+                </div>
               </div>
               {errors.rules?.[index] && (
                 <div className="mb24">
