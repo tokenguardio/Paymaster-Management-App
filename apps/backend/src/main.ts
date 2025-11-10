@@ -52,8 +52,6 @@ async function bootstrap(): Promise<void> {
       cookie: {
         secure: NODE_ENV === 'production', // Use secure cookies in production
         httpOnly: true,
-        // sameSite: 'lax',
-        sameSite: false,
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
       },
     }),
@@ -63,7 +61,7 @@ async function bootstrap(): Promise<void> {
   // Configure CORS
   if (NODE_ENV === 'development') {
     app.enableCors({
-      origin: FRONTEND_URL,
+      origin: true,
       credentials: true, // Important for cookies/sessions
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
