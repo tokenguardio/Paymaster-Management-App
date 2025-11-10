@@ -31,6 +31,16 @@ export class ChainConfigService {
     }
 
     const envKey = chain.rpc_env_var;
+
+    if (!envKey) {
+      this.logger.error(
+        `RPC environment variable not configured for chain ${chain.name} (ID: ${chainId})`,
+      );
+      throw new NotFoundException(
+        `RPC URL configuration missing: no environment variable configured for chain ${chain.name}`,
+      );
+    }
+
     let rpcUrl: string;
 
     try {
