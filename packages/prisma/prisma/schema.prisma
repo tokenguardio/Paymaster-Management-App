@@ -90,7 +90,7 @@ model UserOperation {
 model Chain {
   id          BigInt   @id
   name        String   @unique @db.VarChar(50)
-  rpc_env_var String   @db.VarChar(256)
+  rpc_env_var String?  @db.VarChar(256)
   policies    Policy[]
 
   @@map("chains")

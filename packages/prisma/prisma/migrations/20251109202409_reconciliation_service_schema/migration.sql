@@ -5,7 +5,7 @@
 
 */
 -- AlterTable
-ALTER TABLE "core"."chains" ADD COLUMN     "rpc_env_var" VARCHAR(256) NOT NULL;
+ALTER TABLE "core"."chains" ADD COLUMN     "rpc_env_var" VARCHAR(256);
 
 -- AlterTable
 ALTER TABLE "core"."user_operations" ADD COLUMN     "block_number" BIGINT,
