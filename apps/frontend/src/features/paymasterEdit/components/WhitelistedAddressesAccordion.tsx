@@ -46,8 +46,9 @@ export const WhitelistedAddressesAccordion: React.FC<IWhitelistedAddressesAccord
   manualWhitelistAddress,
   setManualWhitelistAddress,
 }) => {
-  const isValidAddress =
-    manualWhitelistAddress && /^0x[a-fA-F0-9]{40}$/.test(manualWhitelistAddress);
+  const isProperFormat = /^0x[a-fA-F0-9]{40}$/.test(manualWhitelistAddress);
+  const isDuplicate = entries.includes(manualWhitelistAddress);
+  const isValidAddress = manualWhitelistAddress && isProperFormat && !isDuplicate;
 
   return (
     <Accordion defaultOpen title="Whitelisted addresses">
@@ -68,7 +69,7 @@ export const WhitelistedAddressesAccordion: React.FC<IWhitelistedAddressesAccord
         </div>
         <div
           className={`${Style['address-input-row']}
-          ${!isValidAddress && manualWhitelistAddress !== '' ? Style['additional-validation-space'] : ''}`}
+          ${(!isProperFormat || isDuplicate) && manualWhitelistAddress !== '' ? Style['additional-validation-space'] : ''}`}
         >
           <TextInput
             placeholder="Enter Address"
@@ -76,7 +77,11 @@ export const WhitelistedAddressesAccordion: React.FC<IWhitelistedAddressesAccord
             value={manualWhitelistAddress}
             onChange={(e) => setManualWhitelistAddress(e.target.value)}
             error={
-              !isValidAddress && manualWhitelistAddress !== '' ? 'Not proper address format' : ''
+              manualWhitelistAddress !== '' && !isProperFormat
+                ? 'Not proper address format'
+                : manualWhitelistAddress !== '' && isDuplicate
+                  ? 'This address has already been added'
+                  : ''
             }
           />
           <Button
