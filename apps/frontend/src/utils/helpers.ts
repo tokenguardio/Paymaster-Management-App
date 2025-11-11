@@ -1,5 +1,6 @@
 import { EChartsOption } from 'echarts';
 import { TChartDataPoint, TChartResult } from '@/types/chart';
+import { POLICY_RULE_CONSTRAINTS } from '@/utils/policyRuleConstraints';
 
 type TSeriesData = {
   [metric: string]: string | number;
@@ -109,4 +110,28 @@ export const getAreaChartOption = ({
       },
     ],
   };
+};
+
+export const getAllowedOptions = (
+  type: 'scope' | 'metric' | 'interval',
+  currentValues: { interval?: string; metric?: string },
+) => {
+  const matchedRules = POLICY_RULE_CONSTRAINTS.filter((rule) => {
+    return Object.entries(rule.match).every(
+      ([key, value]) => currentValues[key as keyof typeof currentValues] === value,
+    );
+  });
+
+  const allowed = new Set<string>();
+  matchedRules.forEach((rule) => {
+    const key =
+      type === 'scope'
+        ? rule.allowedScopes
+        : type === 'metric'
+          ? rule.allowedMetrics
+          : rule.allowedIntervals;
+    key?.forEach((v) => allowed.add(v));
+  });
+
+  return allowed.size > 0 ? Array.from(allowed) : undefined;
 };
