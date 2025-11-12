@@ -6,167 +6,67 @@ The Paymaster Policy Manager is a management tool for creating, editing, and mon
 policies. It’s designed for ecosystem and dApp managers who need fine-grained control over gas
 sponsorship rules and visibility into how those policies are being used.
 
-## 🚀 Getting Started
+## Start the App with Docker
 
-### Prerequisites
+To run the Paymaster Management App using Docker Compose, follow the instructions below.
 
-- **Git**
-- **Node.js 22** - Using [NVM](https://github.com/nvm-sh/nvm) is recommended for Node.js version
-  management
-- **corepack** - Bundled with Node.js; enable it by running `corepack enable`
-- **Docker** and **Docker Compose** - Required for containerized development
+**Prerequisites:**
 
-### Local Development Setup
+- [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) must be
+  installed on your system.
 
-1. **Clone the repository and navigate to the project:**
+### 1. Set up environment variables
 
-   ```bash
-   git clone <repository-url>
-   cd Paymaster-Management-App
-   ```
+Before running the app, make sure to create and configure the required `.env` files:
 
-2. **Set up Node.js version:**
+- Copy example files:
+  ```bash
+  cp apps/backend/.env.example apps/backend/.env
+  cp packages/prisma/.env.example packages/prisma/.env
+  ```
+- Edit `apps/backend/.env` to provide the necessary values. Required configuration for
+  `apps/backend/.env` includes:
+  - **Blockchain Configuration:**
+    - `ETHEREUM_RPC_URL` - Ethereum Mainnet RPC endpoint URL
+    - `SEPOLIA_RPC_URL` - Ethereum Sepolia testnet RPC endpoint URL
 
-   ```bash
-   nvm install && nvm use
-   ```
+  - **Paymaster Signer Configuration:**
+    - `PAYMASTER_SIGNER_PRIVATE_KEY` - Private key for signing paymaster operations (with 0x prefix)
+    - `PAYMASTER_SIGNER_ADDRESS` - Address derived from the signer private key
+    - `PAYMASTER_ADDRESS` - Deployed paymaster contract address
 
-3. **Enable corepack (if a new Node.js version was installed):**
+  - **EIP-712 Domain Configuration:**
+    - `PAYMASTER_EIP712_DOMAIN_NAME` - Domain name for EIP-712 signing (e.g.,
+      "MyPaymasterECDSASigner")
+    - `PAYMASTER_EIP712_DOMAIN_VERSION` - Domain version for EIP-712 signing (e.g., 1)
+    - `PAYMASTER_EIP712_DOMAIN_SIGNATURE_TTL_SECONDS` - Signature validity duration in seconds
+      (e.g., 600)
 
-   ```bash
-   corepack enable
-   ```
-
-4. **Install dependencies:**
-
-   ```bash
-   pnpm install
-   ```
-
-5. **Configure environment variables:**
-
-   ```bash
-   cp apps/backend/.env.example apps/backend/.env
-   cp packages/prisma/.env.example packages/prisma/.env
-   ```
-
-   **Required Configuration:**
-
-   Edit `apps/backend/.env` and configure the following variables:
-   - **Server Configuration:**
-     - `PORT` - Server port (default: 3000)
-     - `BIND_ADDRESS` - Server bind address (default: 127.0.0.1)
-     - `NODE_ENV` - Environment mode (development/production/test)
-
-   - **Blockchain Configuration:**
-     - `ETHEREUM_RPC_URL` - Ethereum Mainnet RPC endpoint URL
-     - `SEPOLIA_RPC_URL` - Ethereum Sepolia testnet RPC endpoint URL
-
-   - **Paymaster Signer Configuration:**
-     - `PAYMASTER_SIGNER_PRIVATE_KEY` - Private key for signing paymaster operations (with 0x
-       prefix)
-     - `PAYMASTER_SIGNER_ADDRESS` - Address derived from the signer private key
-     - `PAYMASTER_ADDRESS` - Deployed paymaster contract address
-
-   - **EIP-712 Domain Configuration:**
-     - `PAYMASTER_EIP712_DOMAIN_NAME` - Domain name for EIP-712 signing (e.g.,
-       "MyPaymasterECDSASigner")
-     - `PAYMASTER_EIP712_DOMAIN_VERSION` - Domain version for EIP-712 signing (e.g., 1)
-     - `PAYMASTER_EIP712_DOMAIN_SIGNATURE_TTL_SECONDS` - Signature validity duration in seconds
-       (e.g., 600)
-
-   > **Note:** All paymaster-related variables are validated on startup. The application will fail
-   > to start if any required configuration is missing or invalid.
-
-6. Start the database
-
-   ```bash
-   docker compose up -d backend-db
-   ```
-
-7. Apply migrations and seed the database
-
-   ```bash
-   # Apply migrations
-   pnpm prisma:migrate:deploy
-
-   # Seed the database
-   pnpm prisma:seed
-   ```
-
-8. **Start development servers:**
-
-   ```bash
-   pnpm start:dev
-   ```
-
-### Available Scripts
-
-#### Development
-
-- `pnpm start:dev` - Start all development servers (frontend + backend) with TUI dashboard
-- `pnpm build` - Build all packages and applications
-- `pnpm test` - Run all tests across the monorepo
-
-#### Code Quality
-
-- `pnpm lint` - Lint all TypeScript code (exits with error if issues found)
-- `pnpm lint:fix` - Lint and auto-fix issues where possible
-- `pnpm format:check` - Check code formatting (exits with error if not formatted)
-- `pnpm format:fix` - Format all code using Prettier
-
-#### Cleanup
-
-- `pnpm clean:all` - Clean all build artifacts, dependencies, and caches
-- `pnpm clean:dist` - Remove build output directories
-- `pnpm clean:coverage` - Remove test coverage reports
-- `pnpm clean:turbo` - Clear Turborepo cache
-- `pnpm clean:node-modules` - Remove all node_modules directories
-
-#### Working with Specific Apps
-
-Use the `--filter` flag to run commands on specific applications:
+### 2. Build and run all services
 
 ```bash
-pnpm build --filter=backend    # Example: build only backend
+docker compose up --build
 ```
 
-## 🐳 Docker
+### 3. Access the applications
 
-### Run application with Docker Compose
+- **Frontend:** http://localhost:3001
+- **Backend API:** http://localhost:3000
+- **API Documentation:** http://localhost:3000/docs
 
-1. **Build and run all services:**
+### 4. Run in detached mode
 
-   ```bash
-   docker compose up --build
-   ```
+```bash
+docker compose up -d --build
+```
 
-2. **Access the applications:**
-   - **Frontend:** http://localhost:8080
-   - **Backend API:** http://localhost:3000
-   - **API Documentation:** http://localhost:3000/docs
+### 5. Stop services
 
-3. **Run in detached mode:**
+```bash
+docker compose down
+```
 
-   ```bash
-   docker compose up -d --build
-   ```
+## Local development setup
 
-4. **Stop services:**
-   ```bash
-   docker compose down
-   ```
-
-## Milestones
-
-Welcome to the 1st milestone of the Patterns Paymaster Management App!
-
-We have implemented SIWE authentication so you'll need a supported wallet to login :) Please note
-that this is just a frontend preview so the application is not functional. All data is mocked up and
-most buttons will not work as they require fully operational backend.
-
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/2d03a651-0ee3-4c55-aaa7-35241591e52e" />
-
-After clicking on "New policy", you'll be able to access the creation of a new policy:
-
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/1c50a89b-d96a-47de-ba29-4c504bfbbb81" />
+See [`README.local-dev.md`](./README.local-dev.md) for instructions on running the app locally as a
+contributor or maintainer.
