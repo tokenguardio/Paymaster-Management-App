@@ -141,7 +141,7 @@ export class UserOperationService {
     const created = await this.prisma.userOperation.create({
       data: {
         policy_id: candidates[0].id,
-        hash: `pending:${requestId}`,
+        hash: null,
         sender_address: uo.sender,
         status_id: UO_STATUS_PENDING,
         status_note: 'User operation submitted and pending validation',
