@@ -65,3 +65,8 @@ docker compose up -d --build
 ```bash
 docker compose down
 ```
+
+## Local development setup
+
+See [`README.local-dev.md`](./README.local-dev.md) for instructions on running the app locally as a
+contributor or maintainer.
