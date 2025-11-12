@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@repo/prisma';
-import { DailyOpsByStatusDto } from './dto/daily-ops-by-status.dto';
-import { DailyOpsDto } from './dto/daily-ops.dto';
+import { DailyUserOpsByStatusDto } from './dto/daily-user-ops-by-status.dto';
+import { DailyUserOpsDto } from './dto/daily-user-ops.dto';
 
-interface IDailyOpsResult {
+interface IDailyUserOpsResult {
   date: Date;
   count: bigint;
 }
 
-interface IDailyOpsByStatusResult {
+interface IDailyUserOpsByStatusResult {
   date: Date;
   status: string;
   count: bigint;
@@ -22,7 +22,7 @@ export class AnalyticsService {
    * Gets the daily count of user operations for a policy,
    * filling in '0' for days with no operations.
    */
-  public async getDailyOpsCountWithHolesFilled(policyId: bigint): Promise<DailyOpsDto[]> {
+  public async getDailyUserOpsCountWithHolesFilled(policyId: bigint): Promise<DailyUserOpsDto[]> {
     // First, check if the policy actually exists
     const policy = await this.prisma.policy.findUnique({
       where: { id: policyId },
@@ -33,7 +33,7 @@ export class AnalyticsService {
       throw new NotFoundException('Policy not found');
     }
 
-    const result: IDailyOpsResult[] = await this.prisma.$queryRaw`
+    const result: IDailyUserOpsResult[] = await this.prisma.$queryRaw`
       WITH date_series AS (
         -- Generate a series of all days from policy creation until today
         SELECT generate_series(
@@ -67,9 +67,9 @@ export class AnalyticsService {
    * Gets the daily count of user operations by status for a policy,
    * filling in '0' for missing date/status combinations.
    */
-  public async getDailyOpsCountByStatusWithHolesFilled(
+  public async getDailyUserOpsCountByStatusWithHolesFilled(
     policyId: bigint,
-  ): Promise<DailyOpsByStatusDto[]> {
+  ): Promise<DailyUserOpsByStatusDto[]> {
     // First, check if the policy actually exists
     const policy = await this.prisma.policy.findUnique({
       where: { id: policyId },
@@ -80,7 +80,7 @@ export class AnalyticsService {
       throw new NotFoundException('Policy not found');
     }
 
-    const result: IDailyOpsByStatusResult[] = await this.prisma.$queryRaw`
+    const result: IDailyUserOpsByStatusResult[] = await this.prisma.$queryRaw`
       WITH date_series AS (
         SELECT generate_series(
           ${policy.created_at}::date,

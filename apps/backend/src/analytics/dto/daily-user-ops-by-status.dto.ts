@@ -1,4 +1,4 @@
-export class DailyOpsByStatusDto {
+export class DailyUserOpsByStatusDto {
   /**
    * The date for the data point.
    * @example '2025-11-12'

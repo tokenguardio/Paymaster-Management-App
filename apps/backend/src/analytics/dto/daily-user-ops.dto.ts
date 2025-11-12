@@ -1,6 +1,6 @@
 // In src/analytics/dto/daily-ops.dto.ts
 
-export class DailyOpsDto {
+export class DailyUserOpsDto {
   /**
    * The date for the data point.
    * @example '2025-11-12'
