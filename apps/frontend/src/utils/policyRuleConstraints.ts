@@ -55,7 +55,7 @@ export const POLICY_RULE_CONSTRAINTS: TRuleConstraint[] = [
     // if interval = DAILY & metric = TOKEN_BALANCE
     match: {
       interval: POLICY_RULE_INTERVAL.DAILY.id,
-      metric: POLICY_RULE_METRIC.GAS_SPENT_WEI.id,
+      metric: POLICY_RULE_METRIC.TOKEN_BALANCE.id,
     },
     allowedScopes: [],
   },
@@ -79,7 +79,7 @@ export const POLICY_RULE_CONSTRAINTS: TRuleConstraint[] = [
     // if interval = WEEKLY & metric = TOKEN_BALANCE
     match: {
       interval: POLICY_RULE_INTERVAL.WEEKLY.id,
-      metric: POLICY_RULE_METRIC.GAS_SPENT_WEI.id,
+      metric: POLICY_RULE_METRIC.TOKEN_BALANCE.id,
     },
     allowedScopes: [],
   },
@@ -103,7 +103,7 @@ export const POLICY_RULE_CONSTRAINTS: TRuleConstraint[] = [
     // if interval = MONTHLY & metric = TOKEN_BALANCE
     match: {
       interval: POLICY_RULE_INTERVAL.MONTHLY.id,
-      metric: POLICY_RULE_METRIC.GAS_SPENT_WEI.id,
+      metric: POLICY_RULE_METRIC.TOKEN_BALANCE.id,
     },
     allowedScopes: [],
   },
@@ -127,7 +127,7 @@ export const POLICY_RULE_CONSTRAINTS: TRuleConstraint[] = [
     // if interval = LIFETIME & metric = TOKEN_BALANCE
     match: {
       interval: POLICY_RULE_INTERVAL.LIFETIME.id,
-      metric: POLICY_RULE_METRIC.GAS_SPENT_WEI.id,
+      metric: POLICY_RULE_METRIC.TOKEN_BALANCE.id,
     },
     allowedScopes: [],
   },

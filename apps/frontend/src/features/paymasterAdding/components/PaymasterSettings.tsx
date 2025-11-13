@@ -79,11 +79,28 @@ const ruleSchema = z
   .object({
     comparator: z.enum(comparatorValues as [string, ...string[]]),
     interval: z.enum(intervalValues as [string, ...string[]]),
-    scope: z.enum(scopeValues as [string, ...string[]]),
     metric: z.enum(metricValues as [string, ...string[]]),
     amount: z.coerce.number().min(0.00000001, 'Must be greater than 0'),
+    scope: z.enum(scopeValues as [string, ...string[]]).optional(),
+    token_address: z.string().optional(),
   })
-  .optional();
+  .superRefine(({ metric, token_address }, ctx) => {
+    if (metric === POLICY_RULE_METRIC.TOKEN_BALANCE.id) {
+      if (!token_address) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['token_address'],
+          message: 'Token address is required for TOKEN_BALANCE metric',
+        });
+      } else if (!/^0x[a-fA-F0-9]{40}$/.test(token_address)) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['token_address'],
+          message: 'Invalid Ethereum token address',
+        });
+      }
+    }
+  });
 
 const formSchema = z.object({
   name: z.string(),
@@ -140,13 +157,11 @@ export const PaymasterSettings = () => {
     defaultValues: {
       name: 'Spending Policy',
       max_budget_wei: '0',
-      // chain_id: blockchainsOptions[0].value,
       is_public: true,
       status_id: 'ACTIVE',
       valid_from: new Date(),
       valid_to: new Date(),
       whitelisted_addresses: true,
-      // manualAddress: '',
       rules: [],
     },
   });
@@ -236,12 +251,13 @@ export const PaymasterSettings = () => {
           {fields.map((field, index) => {
             const interval = watch(`rules.${index}.interval`);
             const metric = watch(`rules.${index}.metric`);
-
             const allowedScopes = getAllowedOptions('scope', { interval, metric });
 
             const filteredScopeOptions = allowedScopes
               ? scopeOptions.filter((s) => allowedScopes.includes(s.value))
               : scopeOptions;
+
+            const isScopeDisabled = allowedScopes?.length === 0;
 
             return (
               <div key={field.id}>
@@ -272,19 +288,35 @@ export const PaymasterSettings = () => {
                       />
                     )}
                   />
-                  <Controller
-                    name={`rules.${index}.scope`}
-                    control={control}
-                    render={({ field }) => (
-                      <TinySelect
-                        {...field}
-                        options={filteredScopeOptions}
-                        value={filteredScopeOptions.find((o) => o.value === field.value)}
-                        change={field.onChange}
-                        withArrow
-                      />
-                    )}
-                  />
+                  {metric === POLICY_RULE_METRIC.TOKEN_BALANCE.id && (
+                    <Controller
+                      name={`rules.${index}.token_address`}
+                      control={control}
+                      render={({ field }) => (
+                        <DynamicInput
+                          {...field}
+                          placeholder="Token Address"
+                          className={Style['amount-input']}
+                          size="small"
+                        />
+                      )}
+                    />
+                  )}
+                  {!isScopeDisabled ? (
+                    <Controller
+                      name={`rules.${index}.scope`}
+                      control={control}
+                      render={({ field }) => (
+                        <TinySelect
+                          {...field}
+                          options={filteredScopeOptions}
+                          value={filteredScopeOptions.find((o) => o.value === field.value)}
+                          change={field.onChange}
+                          withArrow
+                        />
+                      )}
+                    />
+                  ) : null}
                   <Controller
                     name={`rules.${index}.comparator`}
                     control={control}
@@ -329,6 +361,16 @@ export const PaymasterSettings = () => {
                         weight="regular"
                         style="italic"
                         text="Metric - this field is required"
+                        size="xs"
+                      />
+                    )}
+                    {errors.rules?.[index]?.token_address && (
+                      <Typography
+                        tag="p"
+                        color="gray400"
+                        weight="regular"
+                        style="italic"
+                        text={errors.rules[index].token_address?.message}
                         size="xs"
                       />
                     )}
@@ -385,7 +427,7 @@ export const PaymasterSettings = () => {
               append({
                 comparator: comparatorOptions[0],
                 interval: intervalOptions[0],
-                scope: scopeOptions[0],
+                scope: undefined,
                 metric: metricOptions[0],
                 amount: 0,
               })

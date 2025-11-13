@@ -122,6 +122,8 @@ export const getAllowedOptions = (
     );
   });
 
+  if (matchedRules.length === 0) return undefined;
+
   const allowed = new Set<string>();
   matchedRules.forEach((rule) => {
     const key =
@@ -130,8 +132,9 @@ export const getAllowedOptions = (
         : type === 'metric'
           ? rule.allowedMetrics
           : rule.allowedIntervals;
+
     key?.forEach((v) => allowed.add(v));
   });
 
-  return allowed.size > 0 ? Array.from(allowed) : undefined;
+  return Array.from(allowed);
 };

@@ -2,12 +2,12 @@
   position: relative;
   margin: 0;
   padding: 0 0.8rem;
-  border-radius: 0.6rem;
+  border-radius: var(--radius);
   height: 3.2rem;
   max-width: 100%;
   border: 1px solid var(--color-gray200);
   -webkit-appearance: none;
-  -webkit-border-radius: 0.6rem;
+  -webkit-border-radius: var(--radius);
 }
 
 .input:focus {

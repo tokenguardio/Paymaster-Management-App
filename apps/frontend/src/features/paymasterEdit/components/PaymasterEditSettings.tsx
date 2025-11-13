@@ -20,7 +20,7 @@ import { usePolicy } from '@/hooks/usePolicy';
 import { usePolicyRules } from '@/hooks/usePolicyRules';
 import { blockchainsOptions } from '@/utils/constans';
 import { GeneralAccordion } from './GeneralAccordion';
-import Style from './PaymasterSettings.module.css';
+import Style from './PaymasterEditSettings.module.css';
 import { PaymasterTitle } from './PaymasterTitle';
 import { WhitelistedAddressesAccordion } from './WhitelistedAddressesAccordion';
 import {
@@ -87,6 +87,16 @@ const ruleSchema = z
   })
   .optional();
 
+type TRule = z.infer<typeof ruleSchema>;
+
+type TRuleUI = TRule & {
+  newRule?: boolean;
+};
+
+type TFormDataUI = Omit<TFormData, 'rules'> & {
+  rules: TRuleUI[];
+};
+
 const formSchema = z.object({
   name: z.string(),
   max_budget_wei: z
@@ -123,7 +133,7 @@ const formSchema = z.object({
 
 type TFormData = z.infer<typeof formSchema>;
 
-export const PaymasterSettings = () => {
+export const PaymasterEditSettings = () => {
   const { id } = useParams<{ id: string }>();
   const { policy } = usePolicy(id ?? '');
   const { policyRules } = usePolicyRules(id ?? '', 'active=true');
@@ -161,8 +171,9 @@ export const PaymasterSettings = () => {
   });
 
   useEffect(() => {
-    if (policy && policyRules) {
-      reset({
+    if (policy) {
+      reset((prevValues) => ({
+        ...prevValues,
         name: policy.name ?? 'Spending Policy',
         max_budget_wei: formatEther(policy.max_budget_wei),
         chain_id: policy.chain_id ?? blockchainsOptions[0].value,
@@ -171,9 +182,19 @@ export const PaymasterSettings = () => {
         valid_from: policy.valid_from ? new Date(policy.valid_from) : new Date(),
         valid_to: policy.valid_to ? new Date(policy.valid_to) : null,
         whitelisted_addresses:
-          policy.whitelisted_addresses && policy.whitelisted_addresses?.length > 0 ? true : false,
+          policy.whitelisted_addresses && policy.whitelisted_addresses.length > 0 ? true : false,
+      }));
+
+      if (policy.whitelisted_addresses?.length) {
+        setEntries(policy.whitelisted_addresses);
+      }
+    }
+
+    if (policyRules) {
+      reset((prevValues) => ({
+        ...prevValues,
         rules:
-          policyRules?.map((rule) => ({
+          policyRules.map((rule: TRule) => ({
             id: rule?.id || null,
             comparator: rule.comparator?.id,
             interval: rule.interval?.id,
@@ -181,11 +202,7 @@ export const PaymasterSettings = () => {
             metric: rule.metric?.id,
             amount: rule.value ?? 0,
           })) ?? [],
-      });
-
-      if (policy.whitelisted_addresses?.length) {
-        setEntries(policy.whitelisted_addresses);
-      }
+      }));
     }
   }, [policy, policyRules, reset]);
 
@@ -266,140 +283,150 @@ export const PaymasterSettings = () => {
         />
         <Line />
         <Accordion defaultOpen title="User Spending Rules">
-          {fields.map((field, index) => (
-            <div key={field.id}>
-              <div className={Style['user-rule-row']}>
-                <Controller
-                  name={`rules.${index}.interval`}
-                  control={control}
-                  render={({ field }) => (
-                    <TinySelect
-                      {...field}
-                      options={intervalOptions}
-                      value={intervalOptions.find((o) => o.value === field.value)}
-                      change={field.onChange}
-                      withArrow
-                    />
-                  )}
-                />
-                <Controller
-                  name={`rules.${index}.metric`}
-                  control={control}
-                  render={({ field }) => (
-                    <TinySelect
-                      {...field}
-                      options={metricOptions}
-                      value={metricOptions.find((o) => o.value === field.value)}
-                      change={field.onChange}
-                      withArrow
-                    />
-                  )}
-                />
-                <Controller
-                  name={`rules.${index}.scope`}
-                  control={control}
-                  render={({ field }) => (
-                    <TinySelect
-                      {...field}
-                      options={scopeOptions}
-                      value={scopeOptions.find((o) => o.value === field.value)}
-                      change={field.onChange}
-                      withArrow
-                    />
-                  )}
-                />
-                <Controller
-                  name={`rules.${index}.comparator`}
-                  control={control}
-                  render={({ field }) => (
-                    <TinySelect
-                      {...field}
-                      options={comparatorOptions}
-                      value={comparatorOptions.find((o) => o.value === field.value)}
-                      change={field.onChange}
-                      withArrow
-                    />
-                  )}
-                />
-                <div className={Style['end-row-container']}>
+          {fields.map((field: TRuleUI, index) => {
+            const disabled = !field?.newRule;
+
+            return (
+              <div key={field.id}>
+                <div className={Style['user-rule-row']}>
                   <Controller
-                    name={`rules.${index}.amount`}
+                    name={`rules.${index}.interval`}
                     control={control}
                     render={({ field }) => (
-                      <DynamicInput
+                      <TinySelect
                         {...field}
-                        placeholder="0"
-                        min={0}
-                        step={1}
-                        maxLength={9}
-                        className={Style['amount-input']}
-                        size="small"
+                        options={intervalOptions}
+                        value={intervalOptions.find((o) => o.value === field.value)}
+                        change={field.onChange}
+                        disabled={disabled}
+                        withArrow
                       />
                     )}
                   />
-                  <IconButton
-                    icon={<Icon name="exit" width="16" height="16" color="gray400" />}
-                    onClick={() => remove(index)}
+                  <Controller
+                    name={`rules.${index}.metric`}
+                    control={control}
+                    render={({ field }) => (
+                      <TinySelect
+                        {...field}
+                        options={metricOptions}
+                        value={metricOptions.find((o) => o.value === field.value)}
+                        change={field.onChange}
+                        disabled={disabled}
+                        withArrow
+                      />
+                    )}
                   />
+                  <Controller
+                    name={`rules.${index}.scope`}
+                    control={control}
+                    render={({ field }) => (
+                      <TinySelect
+                        {...field}
+                        options={scopeOptions}
+                        value={scopeOptions.find((o) => o.value === field.value)}
+                        change={field.onChange}
+                        disabled={disabled}
+                        withArrow
+                      />
+                    )}
+                  />
+                  <Controller
+                    name={`rules.${index}.comparator`}
+                    control={control}
+                    render={({ field }) => (
+                      <TinySelect
+                        {...field}
+                        options={comparatorOptions}
+                        value={comparatorOptions.find((o) => o.value === field.value)}
+                        change={field.onChange}
+                        disabled={disabled}
+                        withArrow
+                      />
+                    )}
+                  />
+                  <div className={Style['end-row-container']}>
+                    <Controller
+                      name={`rules.${index}.amount`}
+                      control={control}
+                      render={({ field }) => (
+                        <DynamicInput
+                          {...field}
+                          placeholder="0"
+                          min={0}
+                          step={1}
+                          maxLength={9}
+                          className={Style['amount-input']}
+                          disabled={disabled}
+                          size="small"
+                        />
+                      )}
+                    />
+                    <IconButton
+                      icon={<Icon name="exit" width="16" height="16" color="gray400" />}
+                      onClick={() => remove(index)}
+                    />
+                  </div>
                 </div>
+                {errors.rules?.[index] && (
+                  <div className="mb24">
+                    {errors.rules[index].metric && (
+                      <Typography
+                        tag="p"
+                        color="gray400"
+                        weight="regular"
+                        style="italic"
+                        text="Metric - this field is required"
+                        size="xs"
+                      />
+                    )}
+                    {errors.rules[index].scope && (
+                      <Typography
+                        tag="p"
+                        color="gray400"
+                        weight="regular"
+                        style="italic"
+                        text="Scope - this field is required"
+                        size="xs"
+                      />
+                    )}
+                    {errors.rules[index].interval && (
+                      <Typography
+                        tag="p"
+                        color="gray400"
+                        weight="regular"
+                        style="italic"
+                        text="Interval - this field is required"
+                        size="xs"
+                      />
+                    )}
+                    {errors.rules[index].comparator && (
+                      <Typography
+                        tag="p"
+                        color="gray400"
+                        weight="regular"
+                        style="italic"
+                        text="Comparator - this field is required"
+                        size="xs"
+                      />
+                    )}
+                    {errors.rules[index].amount && (
+                      <Typography
+                        tag="p"
+                        color="gray400"
+                        weight="regular"
+                        style="italic"
+                        text={
+                          errors.rules[index].amount.message || `Amount - this field is required`
+                        }
+                        size="xs"
+                      />
+                    )}
+                  </div>
+                )}
               </div>
-              {errors.rules?.[index] && (
-                <div className="mb24">
-                  {errors.rules[index].metric && (
-                    <Typography
-                      tag="p"
-                      color="gray400"
-                      weight="regular"
-                      style="italic"
-                      text="Metric - this field is required"
-                      size="xs"
-                    />
-                  )}
-                  {errors.rules[index].scope && (
-                    <Typography
-                      tag="p"
-                      color="gray400"
-                      weight="regular"
-                      style="italic"
-                      text="Scope - this field is required"
-                      size="xs"
-                    />
-                  )}
-                  {errors.rules[index].interval && (
-                    <Typography
-                      tag="p"
-                      color="gray400"
-                      weight="regular"
-                      style="italic"
-                      text="Interval - this field is required"
-                      size="xs"
-                    />
-                  )}
-                  {errors.rules[index].comparator && (
-                    <Typography
-                      tag="p"
-                      color="gray400"
-                      weight="regular"
-                      style="italic"
-                      text="Comparator - this field is required"
-                      size="xs"
-                    />
-                  )}
-                  {errors.rules[index].amount && (
-                    <Typography
-                      tag="p"
-                      color="gray400"
-                      weight="regular"
-                      style="italic"
-                      text={errors.rules[index].amount.message || `Amount - this field is required`}
-                      size="xs"
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
-
+            );
+          })}
           <Button
             onClick={() =>
               append({
@@ -408,6 +435,7 @@ export const PaymasterSettings = () => {
                 scope: scopeOptions[0],
                 metric: metricOptions[0],
                 amount: 0,
+                newRule: true,
               })
             }
             variant="outline"
