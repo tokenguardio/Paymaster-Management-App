@@ -216,11 +216,31 @@ describe('PolicyService', () => {
       expect(prismaService.$transaction).toHaveBeenCalled();
     });
 
-    it('should return an empty array when no rules exist', async () => {
-      mockPrismaService.policyRule.findMany.mockResolvedValue([]);
+    it('should handle empty rules array during update', async () => {
+      const policyId = 1;
+      const updateDto: UpdatePolicyDto = {
+        rules: [],
+      };
 
-      const result = await service.findByPolicyId(policyId);
-      expect(result).toEqual([]);
+      mockPrismaService.policy.findUnique.mockResolvedValue(mockPolicyData);
+
+      mockPrismaService.$transaction.mockImplementation(async (callback) => {
+        const mockTx = {
+          policy: { update: jest.fn().mockResolvedValue(mockPolicyData) },
+          policyRule: {
+            findMany: jest.fn().mockResolvedValue([]),
+            updateMany: jest.fn(),
+            create: jest.fn(),
+          },
+        };
+        return callback(mockTx);
+      });
+
+      const result = await service.update(policyId, updateDto);
+
+      expect(mockPrismaService.$transaction).toHaveBeenCalled();
+
+      expect(result).toEqual(expect.objectContaining({ id: '1' }));
     });
 
     it('should update policy status', async () => {
