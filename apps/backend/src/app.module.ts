@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { PrismaModule } from '@repo/prisma';
+import { AnalyticsModule } from './analytics/analytics.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { validateEnvVars } from './config/env-vars-validation';
@@ -24,6 +25,7 @@ import { UserOperationModule } from './user-operation/user-operation.module';
     PolicyRuleModule,
     UserOperationModule,
     ReconciliationModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [

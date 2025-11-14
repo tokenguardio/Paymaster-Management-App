@@ -14,7 +14,7 @@ import {
 } from './dto/sign-user-operation.dto';
 import { UserOperationService } from './user-operation.service';
 
-@ApiTags('user-operation')
+@ApiTags('User Operation')
 @Controller('user-operation')
 export class UserOperationController {
   public constructor(private readonly svc: UserOperationService) {}
