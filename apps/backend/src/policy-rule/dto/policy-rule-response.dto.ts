@@ -33,7 +33,7 @@ export class PolicyRuleResponseDto {
     id: string;
     name: string;
     description: string | null;
-  };
+  } | null;
 
   @ApiProperty({ description: 'Rule value', example: '1000' })
   public value!: string;

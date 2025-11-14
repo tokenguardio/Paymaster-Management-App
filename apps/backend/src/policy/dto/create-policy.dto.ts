@@ -37,8 +37,9 @@ export class CreatePolicyRuleDto {
   public interval!: string;
 
   @ApiPropertyOptional({ example: 'WALLET' })
+  @IsOptional()
   @IsString()
-  public scope!: string;
+  public scope?: string;
 
   @ApiPropertyOptional({ example: 'GAS_SPENT_WEI' })
   @IsString()

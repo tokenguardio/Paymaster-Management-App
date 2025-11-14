@@ -107,9 +107,7 @@ export const TinySelect = ({
 
       <ReactSelect<TDropdownOption, false>
         value={value || null}
-        // value={options.find(o => o.value === value) || null}
         options={options}
-        // onChange={change}
         onChange={(option, actionMeta) => change(option ? option.value : null, actionMeta)}
         id={name}
         name={name}

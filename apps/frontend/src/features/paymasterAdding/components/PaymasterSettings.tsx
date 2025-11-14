@@ -327,6 +327,7 @@ export const PaymasterSettings = () => {
                         value={comparatorOptions.find((o) => o.value === field.value)}
                         change={field.onChange}
                         withArrow
+                        isSearchable={false}
                       />
                     )}
                   />

@@ -44,10 +44,6 @@ export class PolicyRuleController {
     description: 'Rules retrieved successfully',
     type: [PolicyRuleResponseDto],
   })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'No rules found for this policy',
-  })
   public async getByPolicyId(
     @Param('policyId', ParseIntPipe) policyId: number,
     @Query('active') active?: string,

@@ -14,11 +14,13 @@ import {
   IconButton,
   Line,
   TinySelect,
+  ErrorMessageBox,
   Typography,
 } from '@/components';
 import { usePolicy } from '@/hooks/usePolicy';
 import { usePolicyRules } from '@/hooks/usePolicyRules';
 import { blockchainsOptions } from '@/utils/constans';
+import { getAllowedOptions } from '@/utils/helpers';
 import { GeneralAccordion } from './GeneralAccordion';
 import Style from './PaymasterEditSettings.module.css';
 import { PaymasterTitle } from './PaymasterTitle';
@@ -81,11 +83,29 @@ const ruleSchema = z
     id: z.union([z.string(), z.number()]).optional(),
     comparator: z.enum(comparatorValues as [string, ...string[]]),
     interval: z.enum(intervalValues as [string, ...string[]]),
-    scope: z.enum(scopeValues as [string, ...string[]]),
     metric: z.enum(metricValues as [string, ...string[]]),
     amount: z.coerce.number().min(0.00000001, 'Must be greater than 0'),
+    scope: z.enum(scopeValues as [string, ...string[]]).optional(),
+    token_address: z.string().nullable().optional(),
   })
-  .optional();
+  .superRefine(({ metric, token_address }, ctx) => {
+    if (metric === POLICY_RULE_METRIC.TOKEN_BALANCE.id) {
+      if (!token_address) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['token_address'],
+          message: 'Token address is required for TOKEN_BALANCE metric',
+        });
+      } else if (!/^0x[a-fA-F0-9]{40}$/.test(token_address)) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['token_address'],
+          message: 'Invalid Ethereum token address',
+        });
+      }
+    }
+  });
+// .optional();
 
 type TRule = z.infer<typeof ruleSchema>;
 
@@ -138,7 +158,7 @@ export const PaymasterEditSettings = () => {
   const { policy } = usePolicy(id ?? '');
   const { policyRules } = usePolicyRules(id ?? '', 'active=true');
   const [manualWhitelistAddress, setManualWhitelistAddress] = useState<string>('');
-  const [_errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [_isSubmitting, setIsSubmitting] = useState(false);
 
   const [entries, setEntries] = useState<string[]>([]);
@@ -150,6 +170,7 @@ export const PaymasterEditSettings = () => {
     setValue,
     register,
     reset,
+    watch,
     formState: { errors },
   } = useForm<TFormData>({
     resolver: zodResolver(formSchema),
@@ -201,6 +222,7 @@ export const PaymasterEditSettings = () => {
             scope: rule.scope?.id,
             metric: rule.metric?.id,
             amount: rule.value ?? 0,
+            token_address: rule?.token_address,
           })) ?? [],
       }));
     }
@@ -229,7 +251,7 @@ export const PaymasterEditSettings = () => {
   const removeEntry = (index: number) => {
     setEntries((prev) => prev.filter((_, i) => i !== index));
   };
-
+  console.log('error', errors);
   const onSubmit = async (data: FormData) => {
     const payload = {
       ...data,
@@ -285,6 +307,15 @@ export const PaymasterEditSettings = () => {
         <Accordion defaultOpen title="User Spending Rules">
           {fields.map((field: TRuleUI, index) => {
             const disabled = !field?.newRule;
+            const interval = watch(`rules.${index}.interval`);
+            const metric = watch(`rules.${index}.metric`);
+            const allowedScopes = getAllowedOptions('scope', { interval, metric });
+
+            const filteredScopeOptions = allowedScopes
+              ? scopeOptions.filter((s) => allowedScopes.includes(s.value))
+              : scopeOptions;
+
+            const isScopeDisabled = allowedScopes?.length === 0;
 
             return (
               <div key={field.id}>
@@ -299,6 +330,7 @@ export const PaymasterEditSettings = () => {
                         value={intervalOptions.find((o) => o.value === field.value)}
                         change={field.onChange}
                         disabled={disabled}
+                        isSearchable={false}
                         withArrow
                       />
                     )}
@@ -313,24 +345,43 @@ export const PaymasterEditSettings = () => {
                         value={metricOptions.find((o) => o.value === field.value)}
                         change={field.onChange}
                         disabled={disabled}
+                        isSearchable={false}
                         withArrow
                       />
                     )}
                   />
-                  <Controller
-                    name={`rules.${index}.scope`}
-                    control={control}
-                    render={({ field }) => (
-                      <TinySelect
-                        {...field}
-                        options={scopeOptions}
-                        value={scopeOptions.find((o) => o.value === field.value)}
-                        change={field.onChange}
-                        disabled={disabled}
-                        withArrow
-                      />
-                    )}
-                  />
+                  {(field.metric === POLICY_RULE_METRIC.TOKEN_BALANCE.id ||
+                    metric === POLICY_RULE_METRIC.TOKEN_BALANCE.id) && (
+                    <Controller
+                      name={`rules.${index}.token_address`}
+                      control={control}
+                      render={({ field }) => (
+                        <DynamicInput
+                          {...field}
+                          placeholder="Token Address"
+                          className={Style['amount-input']}
+                          value={field.value}
+                          disabled={disabled}
+                        />
+                      )}
+                    />
+                  )}
+                  {!isScopeDisabled ? (
+                    <Controller
+                      name={`rules.${index}.scope`}
+                      control={control}
+                      render={({ field }) => (
+                        <TinySelect
+                          {...field}
+                          options={filteredScopeOptions}
+                          value={filteredScopeOptions.find((o) => o.value === field.value)}
+                          change={field.onChange}
+                          withArrow
+                          disabled={disabled}
+                        />
+                      )}
+                    />
+                  ) : null}
                   <Controller
                     name={`rules.${index}.comparator`}
                     control={control}
@@ -341,6 +392,7 @@ export const PaymasterEditSettings = () => {
                         value={comparatorOptions.find((o) => o.value === field.value)}
                         change={field.onChange}
                         disabled={disabled}
+                        isSearchable={false}
                         withArrow
                       />
                     )}
@@ -432,7 +484,7 @@ export const PaymasterEditSettings = () => {
               append({
                 comparator: comparatorOptions[0],
                 interval: intervalOptions[0],
-                scope: scopeOptions[0],
+                scope: undefined,
                 metric: metricOptions[0],
                 amount: 0,
                 newRule: true,
@@ -447,6 +499,7 @@ export const PaymasterEditSettings = () => {
             Add Rule
           </Button>
         </Accordion>
+        {errorMessage && <ErrorMessageBox errorMessage={errorMessage} />}
         <Button fullWidth color="green500" size="medium" type="submit" className="mt32">
           Save & Create Policy
         </Button>

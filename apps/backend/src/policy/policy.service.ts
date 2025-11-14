@@ -54,22 +54,48 @@ export class PolicyService {
         console.log(`🟠 Creating ${createPolicyDto.rules.length} rules...`);
 
         for (const rule of createPolicyDto.rules) {
-          await tx.policyRule.create({
-            data: {
-              policy: { connect: { id: policy.id } },
-              value: rule.amount,
-              token_address: rule.token_address ?? null,
-              valid_from: createPolicyDto.valid_from
-                ? new Date(createPolicyDto.valid_from)
-                : undefined,
-              valid_to: createPolicyDto.valid_to ? new Date(createPolicyDto.valid_to) : undefined,
-              metric: { connect: { id: rule.metric } },
-              comparator: { connect: { id: rule.comparator } },
-              interval: { connect: { id: rule.interval } },
-              scope: { connect: { id: rule.scope } },
-            },
-          });
+          console.log('Creating rule, scope=', rule.scope);
+
+          const baseData: Prisma.PolicyRuleCreateInput = {
+            policy: { connect: { id: BigInt(policy.id) } },
+            value: rule.amount,
+            token_address: rule.token_address ?? null,
+            valid_from: createPolicyDto.valid_from
+              ? new Date(createPolicyDto.valid_from)
+              : undefined,
+            valid_to: createPolicyDto.valid_to ? new Date(createPolicyDto.valid_to) : null,
+            metric: { connect: { id: rule.metric } },
+            comparator: { connect: { id: rule.comparator } },
+            interval: { connect: { id: rule.interval } },
+          };
+
+          if (rule.scope) {
+            baseData.scope = { connect: { id: rule.scope } };
+          }
+
+          await tx.policyRule.create({ data: baseData });
         }
+        // for (const rule of createPolicyDto.rules) {
+
+        //   const baseData: any = {
+        //     policy: { connect: { id: BigInt(policy.id) } },
+        //     value: rule.amount,
+        //     token_address: rule.token_address ?? null,
+        //     valid_from: createPolicyDto.valid_from ? new Date(createPolicyDto.valid_from) : undefined,
+        //     valid_to: createPolicyDto.valid_to ? new Date(createPolicyDto.valid_to) : null,
+        //     metric: { connect: { id: rule.metric } },
+        //     comparator: { connect: { id: rule.comparator } },
+        //     interval: { connect: { id: rule.interval } },
+        //   };
+
+        //   if (rule.scope !== undefined && rule.scope !== null && String(rule.scope).trim() !== '') {
+        //     baseData.scope = { connect: { id: rule.scope } };
+        //   }
+
+        //   await tx.policyRule.create({
+        //     data: baseData,
+        //   });
+        // }
       }
 
       return this.transformPolicyResponse(policy);
@@ -171,20 +197,25 @@ export class PolicyService {
         const newRules = updatePolicyDto.rules.filter((r) => !r.id);
 
         for (const rule of newRules) {
+          const ruleData: Prisma.PolicyRuleCreateInput = {
+            policy: { connect: { id: BigInt(id) } },
+            metric: { connect: { id: rule.metric } },
+            comparator: { connect: { id: rule.comparator } },
+            interval: { connect: { id: rule.interval } },
+            value: rule.amount,
+            token_address: rule.token_address ?? null,
+            valid_from: updatePolicyDto.valid_from
+              ? new Date(updatePolicyDto.valid_from)
+              : new Date(),
+            valid_to: updatePolicyDto.valid_to ? new Date(updatePolicyDto.valid_to) : null,
+          };
+
+          if (typeof rule.scope === 'string' && rule.scope.trim().length > 0) {
+            ruleData.scope = { connect: { id: rule.scope } };
+          }
+
           await tx.policyRule.create({
-            data: {
-              policy: { connect: { id: BigInt(id) } },
-              metric: { connect: { id: rule.metric } },
-              comparator: { connect: { id: rule.comparator } },
-              interval: { connect: { id: rule.interval } },
-              scope: { connect: { id: rule.scope } },
-              value: rule.amount,
-              token_address: rule.token_address ?? null,
-              valid_from: updatePolicyDto.valid_from
-                ? new Date(updatePolicyDto.valid_from)
-                : new Date(),
-              valid_to: updatePolicyDto.valid_to ? new Date(updatePolicyDto.valid_to) : null,
-            },
+            data: ruleData,
           });
         }
       }
