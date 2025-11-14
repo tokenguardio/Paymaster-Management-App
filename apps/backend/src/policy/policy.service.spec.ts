@@ -216,15 +216,31 @@ describe('PolicyService', () => {
       expect(prismaService.$transaction).toHaveBeenCalled();
     });
 
-    it('should throw NotFoundException when policy not found', async () => {
-      mockPrismaService.policy.findUnique.mockResolvedValue(null);
+    it('should handle empty rules array during update', async () => {
+      const policyId = 1;
+      const updateDto: UpdatePolicyDto = {
+        rules: [],
+      };
 
-      await expect(service.update(999, { max_budget_wei: 2000000000000000000 })).rejects.toThrow(
-        NotFoundException,
-      );
-      await expect(service.update(999, { max_budget_wei: 2000000000000000000 })).rejects.toThrow(
-        'Policy with ID 999 not found',
-      );
+      mockPrismaService.policy.findUnique.mockResolvedValue(mockPolicyData);
+
+      mockPrismaService.$transaction.mockImplementation(async (callback) => {
+        const mockTx = {
+          policy: { update: jest.fn().mockResolvedValue(mockPolicyData) },
+          policyRule: {
+            findMany: jest.fn().mockResolvedValue([]),
+            updateMany: jest.fn(),
+            create: jest.fn(),
+          },
+        };
+        return callback(mockTx);
+      });
+
+      const result = await service.update(policyId, updateDto);
+
+      expect(mockPrismaService.$transaction).toHaveBeenCalled();
+
+      expect(result).toEqual(expect.objectContaining({ id: '1' }));
     });
 
     it('should update policy status', async () => {

@@ -36,10 +36,6 @@ export class PolicyRuleService {
       orderBy: { created_at: 'desc' },
     });
 
-    if (rules.length === 0) {
-      throw new NotFoundException(`No rules found for policy ID ${policyId}`);
-    }
-
     return rules.map((r) => ({
       id: r.id.toString(),
       policy_id: r.policy_id.toString(),

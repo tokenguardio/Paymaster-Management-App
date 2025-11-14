@@ -1,6 +1,6 @@
 import { POLICY_RULE_COMPARATOR } from '@repo/constants';
 import React from 'react';
-import { Accordion, Typography, TinySelect } from '@/components';
+import { Accordion, Typography, TinySelect, DynamicInput } from '@/components';
 import { TPolicyRules } from '@/types/policyRule';
 import Style from './PreviewPolicyRulesAccordion.module.css';
 
@@ -79,24 +79,27 @@ export const PreviewPolicyRulesAccordion = ({ policyRules }: TPreviewPolicyRules
                 value={{ label: rule.metric.name, value: rule.metric.name }}
                 isSearchable={false}
               />
-              <TinySelect
-                options={[{ label: rule.scope.name, value: rule.scope.name }]}
-                change={() => {}}
-                name={rule.scope.name}
-                disabled
-                withArrow={false}
-                value={{ label: rule.scope.name, value: rule.scope.name }}
-                isSearchable={false}
-              />
-              {/* <TinySelect
-                options={[{ label: rule.comparator.name, value: rule.comparator.name }]}
-                change={() => {}}
-                name={rule.comparator.name}
-                disabled
-                withArrow={false}
-                value={{ label: rule.comparator.name, value: rule.comparator.name }}
-                isSearchable={false}
-              /> */}
+              {rule?.scope && (
+                <TinySelect
+                  options={[{ label: rule.scope.name, value: rule.scope.name }]}
+                  change={() => {}}
+                  name={rule.scope.name}
+                  disabled
+                  withArrow={false}
+                  value={{ label: rule.scope.name, value: rule.scope.name }}
+                  isSearchable={false}
+                />
+              )}
+              {rule?.token_address && (
+                <DynamicInput
+                  name={`rules.${index}.token_address`}
+                  placeholder="Token Address"
+                  className={Style['amount-input']}
+                  value={rule.token_address}
+                  size="xsmall"
+                  disabled
+                />
+              )}
               <TinySelect
                 options={comparatorNameToSymbolOption}
                 change={() => {}}

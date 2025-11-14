@@ -41,7 +41,7 @@ model PolicyRule {
   metric_id     String    @db.VarChar(40)
   comparator_id String    @db.VarChar(40)
   interval_id   String    @db.VarChar(40)
-  scope_id      String    @db.VarChar(40)
+  scope_id      String?   @db.VarChar(40)
   value         Decimal
   token_address String?   @db.VarChar(42)
   valid_from    DateTime  @default(now()) @db.Timestamptz(6)
@@ -53,7 +53,7 @@ model PolicyRule {
   metric     PolicyRuleMetric     @relation(fields: [metric_id], references: [id])
   comparator PolicyRuleComparator @relation(fields: [comparator_id], references: [id])
   interval   PolicyRuleInterval   @relation(fields: [interval_id], references: [id])
-  scope      PolicyRuleScope      @relation(fields: [scope_id], references: [id])
+  scope      PolicyRuleScope?     @relation(fields: [scope_id], references: [id])
 
   @@map("policy_rules")
   @@schema("core")

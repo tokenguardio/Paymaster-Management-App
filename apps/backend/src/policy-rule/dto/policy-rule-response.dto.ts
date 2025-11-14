@@ -28,12 +28,12 @@ export class PolicyRuleResponseDto {
     description: string | null;
   };
 
-  @ApiProperty({ description: 'Scope information' })
+  @ApiPropertyOptional({ description: 'Scope information' })
   public scope!: {
     id: string;
     name: string;
     description: string | null;
-  };
+  } | null;
 
   @ApiProperty({ description: 'Rule value', example: '1000' })
   public value!: string;

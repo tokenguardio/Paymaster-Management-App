@@ -2,18 +2,22 @@
   position: relative;
   margin: 0;
   padding: 0 0.8rem;
-  border-radius: 0.6rem;
+  border-radius: var(--radius);
   height: 3.2rem;
   max-width: 100%;
   border: 1px solid var(--color-gray200);
   -webkit-appearance: none;
-  -webkit-border-radius: 0.6rem;
+  -webkit-border-radius: var(--radius);
 }
 
 .input:focus {
   outline: none;
   border: 1.2px solid var(--color-green500);
   box-shadow: 0px 2px 3px 0px #1018200d;
+}
+
+.input:disabled {
+  color: var(--color-gray900);
 }
 
 .number-input-container {
@@ -28,6 +32,10 @@
 
 .xxsmall {
   height: 2.4rem;
+}
+
+.xsmall {
+  height: 2.8rem;
 }
 
 .small {

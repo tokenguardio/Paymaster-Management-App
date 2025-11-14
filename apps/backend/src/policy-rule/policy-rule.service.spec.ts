@@ -1,4 +1,3 @@
-import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '@repo/prisma';
 import { PolicyRuleService } from './policy-rule.service';
@@ -165,14 +164,14 @@ describe('PolicyRuleService', () => {
       expect(result[0].token_address).toBeNull();
     });
 
-    it('should throw NotFoundException when no rules found', async () => {
-      const policyId = 999;
+    it('should return an empty array when no rules exist', async () => {
+      const policyId = 1;
+
       mockPrismaService.policyRule.findMany.mockResolvedValue([]);
 
-      await expect(service.findByPolicyId(policyId)).rejects.toThrow(NotFoundException);
-      await expect(service.findByPolicyId(policyId)).rejects.toThrow(
-        `No rules found for policy ID ${policyId}`,
-      );
+      const result = await service.findByPolicyId(policyId);
+
+      expect(result).toEqual([]);
     });
 
     it('should convert BigInt IDs to strings', async () => {
