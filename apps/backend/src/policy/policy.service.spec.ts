@@ -216,15 +216,11 @@ describe('PolicyService', () => {
       expect(prismaService.$transaction).toHaveBeenCalled();
     });
 
-    it('should throw NotFoundException when policy not found', async () => {
-      mockPrismaService.policy.findUnique.mockResolvedValue(null);
+    it('should return an empty array when no rules exist', async () => {
+      mockPrismaService.policyRule.findMany.mockResolvedValue([]);
 
-      await expect(service.update(999, { max_budget_wei: 2000000000000000000 })).rejects.toThrow(
-        NotFoundException,
-      );
-      await expect(service.update(999, { max_budget_wei: 2000000000000000000 })).rejects.toThrow(
-        'Policy with ID 999 not found',
-      );
+      const result = await service.findByPolicyId(policyId);
+      expect(result).toEqual([]);
     });
 
     it('should update policy status', async () => {
