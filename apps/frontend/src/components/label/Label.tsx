@@ -3,7 +3,7 @@ import Style from './Label.module.css';
 
 interface ILabelProps {
   text: string;
-  forInput: string;
+  forInput?: string;
   required?: boolean;
 }
 

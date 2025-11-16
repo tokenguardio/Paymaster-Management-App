@@ -78,6 +78,7 @@ export const GeneralAccordion = ({ control, errors, setValue }: TGeneralAccordio
                 label="Start Date"
                 value={field.value}
                 onChange={field.onChange}
+                maxDate={control._formValues.valid_to || undefined}
                 fullWidth
                 calendarIcon={<Icon width="14" height="16" name="calendar" color="gray900" />}
               />
@@ -91,6 +92,7 @@ export const GeneralAccordion = ({ control, errors, setValue }: TGeneralAccordio
                 {...field}
                 label="End Date"
                 value={!policyNotExpired ? field.value : ''}
+                minDate={control._formValues.valid_from || undefined}
                 onChange={field.onChange}
                 fullWidth
                 disabled={policyNotExpired}
