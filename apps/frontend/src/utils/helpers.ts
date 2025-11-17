@@ -4,7 +4,7 @@ import { POLICY_RULE_CONSTRAINTS } from '@/utils/policyRuleConstraints';
 
 type TSeriesData = {
   [metric: string]: string | number;
-  dimension: string;
+  date: string;
 };
 
 interface IAreaChartOptionsParams {
@@ -25,9 +25,7 @@ export const determineChartDataFormat = (data: TChartDataPoint[]): TChartResult 
   const keys = Object.keys(data[0]);
 
   if (keys.includes('differential')) {
-    const mainMeasure = keys.find(
-      (item) => item !== 'dimension' && item !== 'differential',
-    ) as string;
+    const mainMeasure = keys.find((item) => item !== 'date' && item !== 'differential') as string;
 
     const prepareData = <K extends keyof TChartDataPoint>(
       arr: TChartDataPoint[],
@@ -42,7 +40,7 @@ export const determineChartDataFormat = (data: TChartDataPoint[]): TChartResult 
       return Array.from(uniqueKeys);
     };
 
-    const preparedDimension = prepareData(data, 'dimension').sort() as string[];
+    const preparedDimension = prepareData(data, 'date').sort() as string[];
     const preparedDifferential = prepareData(data, 'differential') as string[];
 
     const result: TChartResult = [];
@@ -61,7 +59,7 @@ export const determineChartDataFormat = (data: TChartDataPoint[]): TChartResult 
 
     return result;
   } else {
-    const mainMeasure = keys.find((item) => item !== 'dimension') as string;
+    const mainMeasure = keys.find((item) => item !== 'date') as string;
     return convertDataToSingleLineFormat(data, mainMeasure);
   }
 };
@@ -73,7 +71,7 @@ export const convertDataToSingleLineFormat = (
   if (!metric) return null;
 
   return data.map((item) => ({
-    dimension: String(item.dimension),
+    date: String(item.date),
     [metric]: Number(item[metric]) ?? 0,
   }));
 };
@@ -86,7 +84,7 @@ export const getAreaChartOption = ({
 }: IAreaChartOptionsParams): EChartsOption => {
   if (!data?.length) return {};
 
-  const metricKey = Object.keys(data[0]).find((k) => k !== 'dimension');
+  const metricKey = Object.keys(data[0]).find((k) => k !== 'date');
   if (!metricKey) return {};
 
   return {
@@ -96,15 +94,17 @@ export const getAreaChartOption = ({
     dataZoom: dataZoom ? [{ type: 'slider' }] : undefined,
     xAxis: {
       type: 'category',
-      data: data.map((d) => d.dimension),
+      data: data.map((d) => d.date),
     },
     yAxis: {
       type: 'value',
+      minInterval: 1,
     },
     series: [
       {
         name: metricKey,
         type: 'line',
+        smooth: true,
         areaStyle: {},
         data: data.map((d) => d[metricKey]),
       },

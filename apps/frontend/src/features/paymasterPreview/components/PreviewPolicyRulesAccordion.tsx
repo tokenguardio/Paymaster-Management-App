@@ -56,7 +56,15 @@ export const PreviewPolicyRulesAccordion = ({ policyRules }: TPreviewPolicyRules
   return (
     <Accordion defaultOpen title="Rules">
       {policyRules.length === 0 ? (
-        <Typography tag="p" text="Policy doesn't have rules." />
+        <Typography
+          tag="p"
+          text="Policy doesn't have rules."
+          size="s"
+          style="italic"
+          weight="regular"
+          align="center"
+          className="mt24"
+        />
       ) : (
         <ul className={Style['user-rule-list']}>
           {policyRules.map((rule, index) => (

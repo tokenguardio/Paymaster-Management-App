@@ -1,10 +1,9 @@
 import axios from 'axios';
 
-// temporary serverURL - TODO set to env
-const serverURL = 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const editPolicy = async (id: string, payload: unknown) => {
-  const response = await axios.patch(`${serverURL}/policies/${id}`, payload, {
+  const response = await axios.patch(`${API_URL}/policies/${id}`, payload, {
     withCredentials: true,
   });
 

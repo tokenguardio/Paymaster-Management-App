@@ -1,5 +1,4 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import { Line, Typography } from '@/components';
 import { usePolicy } from '@/hooks/usePolicy';
 import { usePolicyRules } from '@/hooks/usePolicyRules';
@@ -8,12 +7,14 @@ import Style from './PaymasterInfoMetric.module.css';
 import { PreviewPolicyRulesAccordion } from './PreviewPolicyRulesAccordion';
 import { PreviewWhitelistedAddressesAccordion } from './PreviewWhitelistedAddressesAccordion';
 
-export const PaymasterInfoMetric = () => {
-  const { id } = useParams<{ id: string }>();
+type TPaymasterInfoMetricProps = {
+  id: string;
+};
+
+export const PaymasterInfoMetric = ({ id }: TPaymasterInfoMetricProps) => {
   const { policy } = usePolicy(id ?? '');
   const { policyRules } = usePolicyRules(id ?? '', 'active=true');
 
-  if (!id) return null;
   if (!policy) return null;
 
   return (
@@ -24,7 +25,7 @@ export const PaymasterInfoMetric = () => {
       <Line />
       <PreviewWhitelistedAddressesAccordion whiteListedAddresses={policy?.whitelisted_addresses} />
       <Line />
-      <PreviewPolicyRulesAccordion policyRules={policyRules} />
+      {policyRules && <PreviewPolicyRulesAccordion policyRules={policyRules} />}
     </section>
   );
 };

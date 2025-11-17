@@ -1,5 +1,5 @@
 export type TChartDataPoint = {
-  dimension: string;
+  date: string;
   [key: string]: number | string;
 };
 
