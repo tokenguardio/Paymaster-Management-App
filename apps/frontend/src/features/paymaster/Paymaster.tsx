@@ -28,7 +28,7 @@ export const Paymaster = () => {
         <div className={Style['breadcrumb-container']}>
           <Breadcrumbs items={breadcrumbsItems} />
           <Button
-            moveTo="/paymaster/new"
+            moveTo="/policy/new"
             size="large"
             startIcon={<Icon name="plus" width="16" height="16" color="white" />}
           >

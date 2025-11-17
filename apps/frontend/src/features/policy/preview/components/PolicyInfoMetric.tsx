@@ -3,15 +3,15 @@ import { Line, Typography } from '@/components';
 import { usePolicy } from '@/hooks/usePolicy';
 import { usePolicyRules } from '@/hooks/usePolicyRules';
 import { GeneralAccordion } from './GeneralAccordion';
-import Style from './PaymasterInfoMetric.module.css';
+import Style from './PolicyInfoMetric.module.css';
 import { PreviewPolicyRulesAccordion } from './PreviewPolicyRulesAccordion';
 import { PreviewWhitelistedAddressesAccordion } from './PreviewWhitelistedAddressesAccordion';
 
-type TPaymasterInfoMetricProps = {
+type TPolicyInfoMetricProps = {
   id: string;
 };
 
-export const PaymasterInfoMetric = ({ id }: TPaymasterInfoMetricProps) => {
+export const PolicyInfoMetric = ({ id }: TPolicyInfoMetricProps) => {
   const { policy } = usePolicy(id ?? '');
   const { policyRules } = usePolicyRules(id ?? '', 'active=true');
 

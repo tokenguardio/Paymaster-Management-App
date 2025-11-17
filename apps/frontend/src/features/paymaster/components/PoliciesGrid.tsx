@@ -37,13 +37,13 @@ export const PoliciesGrid: React.FC<TPoliciesGridProps> = ({
       label: 'Preview',
       value: 'preview',
       icon: 'preview',
-      action: (id: string) => navigate(`/paymaster/${id}`),
+      action: (id: string) => navigate(`/policy/${id}`),
     },
     {
       label: 'Modify',
       value: 'modify',
       icon: 'edit',
-      action: (id: string) => navigate(`/paymaster/${id}/edit`),
+      action: (id: string) => navigate(`/policy/${id}/edit`),
     },
     {
       label: 'Delete',
