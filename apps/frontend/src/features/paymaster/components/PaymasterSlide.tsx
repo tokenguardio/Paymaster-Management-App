@@ -1,9 +1,9 @@
 import React from 'react';
 import noDataChartInfo from '@/assets/images/no-data-chart.png';
-import { _EChart, Badge, Card, Dropdown, Icon, Typography } from '@/components';
+import { EChart, Badge, Card, Dropdown, Icon, Typography } from '@/components';
 import { usePolicyData } from '@/hooks/usePolicyData';
 import { TDropdownOption } from '@/types/dropdownOption';
-import { _getAreaChartOption } from '@/utils/helpers';
+import { getAreaChartOption } from '@/utils/helpers';
 import Style from './PaymasterSlide.module.css';
 
 interface IPaymasterSlideProps {
@@ -14,13 +14,13 @@ interface IPaymasterSlideProps {
 
 export const PaymasterSlide: React.FC<IPaymasterSlideProps> = ({ id, title, options }) => {
   const { policyData } = usePolicyData(id);
-  // TODO
-  // const option = getAreaChartOption({
-  //   data: data,
-  //   toolbox: false,
-  //   dataZoom: false,
-  //   legend: false,
-  // });
+
+  const option = getAreaChartOption({
+    data: policyData,
+    toolbox: false,
+    dataZoom: false,
+    legend: false,
+  });
 
   return (
     <section className={Style['paymaster-slide']}>
@@ -44,8 +44,7 @@ export const PaymasterSlide: React.FC<IPaymasterSlideProps> = ({ id, title, opti
           ) : null}
         </div>
         {policyData ? (
-          // <EChart option={option} />
-          <></>
+          <EChart option={option} />
         ) : (
           <img src={noDataChartInfo} height={300} alt="no chart data information" />
         )}

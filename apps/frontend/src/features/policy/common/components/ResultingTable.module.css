@@ -50,6 +50,7 @@
 
 .head-cell-title {
   white-space: nowrap;
+  text-align: left;
 }
 
 .table td:first-child,

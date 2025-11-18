@@ -30,7 +30,7 @@ import {
   POLICY_RULE_COMPARATOR,
   POLICY_RULE_SCOPE,
   POLICY_RULE_INTERVAL,
-} from '../../../../../../packages/constants/src/policy-rule';
+} from '../../../../../../../packages/constants/src/policy-rule';
 import { editPolicy } from '../utils/fetches';
 
 const comparatorOptions = Object.values(POLICY_RULE_COMPARATOR).map((comparator) => {
@@ -105,7 +105,6 @@ const ruleSchema = z
       }
     }
   });
-// .optional();
 
 type TRule = z.infer<typeof ruleSchema>;
 
@@ -251,7 +250,7 @@ export const PaymasterEditSettings = () => {
   const removeEntry = (index: number) => {
     setEntries((prev) => prev.filter((_, i) => i !== index));
   };
-  console.log('error', errors);
+
   const onSubmit = async (data: FormData) => {
     const payload = {
       ...data,

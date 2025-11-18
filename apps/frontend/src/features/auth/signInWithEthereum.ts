@@ -1,5 +1,8 @@
+import axios from 'axios';
 import { BrowserProvider } from 'ethers';
 import { SiweMessage } from 'siwe';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export async function signInWithEthereum() {
   try {
@@ -7,17 +10,14 @@ export async function signInWithEthereum() {
       throw new Error('No Ethereum wallet – install MetaMask.');
     }
 
-    // First, get nonce from backend
-    const nonceRes = await fetch('http://localhost:3000/siwe/nonce', {
-      credentials: 'include',
+    // --- GET NONCE ---
+    const nonceRes = await axios.get(`${API_URL}/siwe/nonce`, {
+      withCredentials: true,
     });
 
-    if (!nonceRes.ok) {
-      throw new Error('Failed to get nonce');
-    }
+    const nonce = nonceRes.data; // bo backend zwraca tekst
 
-    const nonce = await nonceRes.text();
-
+    // --- SIGN MESSAGE ---
     const provider = new BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
     const address = await signer.getAddress();
@@ -30,32 +30,34 @@ export async function signInWithEthereum() {
       uri: window.location.origin,
       version: '1',
       chainId,
-      nonce: nonce,
+      nonce,
       issuedAt: new Date().toISOString(),
     });
 
     const signature = await signer.signMessage(message.prepareMessage());
 
-    const res = await fetch('http://localhost:3000/siwe/verify', {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    // --- VERIFY SIWE ---
+    const res = await axios.post(
+      `${API_URL}/siwe/verify`,
+      {
         message: message.toMessage(),
         signature,
-      }),
-    });
+      },
+      {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
 
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || 'SIWE verification error');
-    }
+    const { address: loggedAddress } = res.data;
 
-    const { address: loggedAddress } = await res.json();
     console.log('Logged in as:', loggedAddress);
     return loggedAddress;
   } catch (err) {
     console.error('Login error:', err);
+
     throw err;
   }
 }

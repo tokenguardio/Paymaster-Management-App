@@ -1,10 +1,10 @@
 import React, { JSX } from 'react';
-import { PaymasterAddingPage } from '@/pages/PaymasterAddingPage';
-import { PaymasterEditPage } from '@/pages/PaymasterEditPage';
 import { PaymasterPage } from '@/pages/PaymasterPage';
-import { PaymasterPreviewPage } from '@/pages/PaymasterPreviewPage';
+import { PolicyAddingPage } from '@/pages/PolicyAddingPage';
+import { PolicyEditPage } from '@/pages/PolicyEditPage';
+import { PolicyPreviewPage } from '@/pages/PolicyPreviewPage';
 
-export type TAppRoute = '' | 'paymaster' | 'paymaster/new' | 'paymaster/:id' | 'paymaster/:id/edit';
+export type TAppRoute = '' | 'paymaster' | 'policy/new' | 'policy/:id' | 'policy/:id/edit';
 
 export type TRouteConfig = {
   slug: TAppRoute;
@@ -21,21 +21,21 @@ export const routes: TRouteConfig[] = [
     component: <PaymasterPage />,
   },
   {
-    slug: 'paymaster/new',
-    path: '/paymaster/new',
-    label: 'Add Paymaster',
-    component: <PaymasterAddingPage />,
+    slug: 'policy/new',
+    path: '/policy/new',
+    label: 'Add Policy',
+    component: <PolicyAddingPage />,
   },
   {
-    slug: 'paymaster/:id',
-    path: '/paymaster/:id',
-    label: 'Preview Paymaster',
-    component: <PaymasterPreviewPage />,
+    slug: 'policy/:id',
+    path: '/policy/:id',
+    label: 'Preview Policy',
+    component: <PolicyPreviewPage />,
   },
   {
-    slug: 'paymaster/:id/edit',
-    path: '/paymaster/:id/edit',
-    label: 'Edit Paymaster',
-    component: <PaymasterEditPage />,
+    slug: 'policy/:id/edit',
+    path: '/policy/:id/edit',
+    label: 'Edit Policy',
+    component: <PolicyEditPage />,
   },
 ];

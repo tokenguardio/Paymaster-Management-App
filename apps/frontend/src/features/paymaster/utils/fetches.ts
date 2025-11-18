@@ -1,10 +1,9 @@
 import axios from 'axios';
 
-// temporary serverURL - TODO set to env
-const serverURL = 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const fetchPolicies = async (param?: string) => {
-  const response = await axios.get(`${serverURL}/policies${param || ''}`, {
+  const response = await axios.get(`${API_URL}/policies${param || ''}`, {
     withCredentials: true,
   });
 
@@ -12,7 +11,7 @@ export const fetchPolicies = async (param?: string) => {
 };
 
 export const deletePolicy = async (policyId: string): Promise<void> => {
-  const response = await axios.delete(`${serverURL}/policies/${policyId}`, {
+  const response = await axios.delete(`${API_URL}/policies/${policyId}`, {
     withCredentials: true,
   });
 

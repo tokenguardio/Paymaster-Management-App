@@ -15,6 +15,8 @@ type TDatePickerProps = {
   clearIcon?: boolean;
   fullWidth?: boolean;
   disabled?: boolean;
+  minDate?: Date;
+  maxDate?: Date;
 };
 
 const CustomDatePicker = (props: TDatePickerProps) => {
@@ -27,7 +29,9 @@ const CustomDatePicker = (props: TDatePickerProps) => {
         onChange={props.onChange}
         value={props.value}
         clearIcon={props.clearIcon}
-        locale="en-EN"
+        minDate={props.minDate}
+        maxDate={props.maxDate}
+        locale="en-US"
         showLeadingZeros
         format={props.format}
         disabled={props.disabled}

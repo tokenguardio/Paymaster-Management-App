@@ -1,10 +1,9 @@
 import axios from 'axios';
 
-// temporary serverURL - TODO set to env
-const serverURL = 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const fetchPolicyData = async (id: string) => {
-  const response = await axios.get(`${serverURL}/policy-chart/${id}`, {
+  const response = await axios.get(`${API_URL}/analytics/policy/${id}/daily-user-ops`, {
     withCredentials: true,
   });
 
@@ -12,7 +11,7 @@ export const fetchPolicyData = async (id: string) => {
 };
 
 export const fetchPolicy = async (id: string) => {
-  const response = await axios.get(`${serverURL}/policies/${id}`, {
+  const response = await axios.get(`${API_URL}/policies/${id}`, {
     withCredentials: true,
   });
 
@@ -20,9 +19,7 @@ export const fetchPolicy = async (id: string) => {
 };
 
 export const fetchPolicyRules = async (id: string, param?: string) => {
-  const url = param
-    ? `${serverURL}/policy-rules/${id}?${param}`
-    : `${serverURL}/policy-rules/${id}`;
+  const url = param ? `${API_URL}/policy-rules/${id}?${param}` : `${API_URL}/policy-rules/${id}`;
 
   const response = await axios.get(url, {
     withCredentials: true,
