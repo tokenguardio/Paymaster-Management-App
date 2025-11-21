@@ -22,6 +22,7 @@ Before running the app, make sure to create and configure the required `.env` fi
 - Copy example files:
   ```bash
   cp apps/backend/.env.example apps/backend/.env
+  cp apps/frontend/.env.example apps/frontend/.env
   cp packages/prisma/.env.example packages/prisma/.env
   ```
 - Edit `apps/backend/.env` to provide the necessary values. Required configuration for
